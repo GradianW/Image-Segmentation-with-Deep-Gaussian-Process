@@ -1,0 +1,40 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Temporary / Scratch scripts
+scratch/
+
+# Large Datasets & Checkpoints for Machine Learning / TA
+03_proyek_ta/data/raw/*
+!03_proyek_ta/data/raw/.gitkeep
+03_proyek_ta/data/processed/*
+!03_proyek_ta/data/processed/.gitkeep
+03_proyek_ta/checkpoints/*
+!03_proyek_ta/checkpoints/.gitkeep
+
+# Model weights
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.onnx
+
+# IDE / System
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
