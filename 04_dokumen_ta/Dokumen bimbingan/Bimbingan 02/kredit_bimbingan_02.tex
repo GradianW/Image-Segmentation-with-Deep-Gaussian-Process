@@ -157,22 +157,26 @@ r = \|\mathbf{x} - \mathbf{x}'\|
 k_{\mathrm{SE}}(\mathbf{x}, \mathbf{x}') = \sigma_f^2 \exp\left( -\frac{\|\mathbf{x} - \mathbf{x}'\|^2}{2 l^2} \right) = \sigma_f^2 \exp\left( -\frac{r^2}{2 l^2} \right)
 \end{equation}
 Parameter:
-\begin{itemize}
-    \item $\sigma_f^2$: \textit{signal variance}
-    \item $l$: \textit{lengthscale}
-\end{itemize}
+\begin{center}
+\begin{tabular}{@{} l c l @{}}
+$\sigma_f^2$ & : & \textit{signal variance} \\
+$l$          & : & \textit{lengthscale}
+\end{tabular}
+\end{center}
 
 \subsubsection{Keluarga Kernel Matérn}
 \begin{equation}
 k_{\mathrm{Mat\acute{e}rn}}(r) = \sigma_f^2 \frac{2^{1-\nu}}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} r}{l} \right)^\nu K_\nu\left( \frac{\sqrt{2\nu} r}{l} \right)
 \end{equation}
 Parameter:
-\begin{itemize}
-    \item $\sigma_f^2$: \textit{signal variance}
-    \item $l$: \textit{lengthscale}
-    \item $\Gamma(\cdot)$: \textit{gamma function}
-    \item $K_\nu(\cdot)$: \textit{modified Bessel function}
-\end{itemize}
+\begin{center}
+\begin{tabular}{@{} l c l @{}}
+$\sigma_f^2$     & : & \textit{signal variance} \\
+$l$              & : & \textit{lengthscale} \\
+$\Gamma(\cdot)$  & : & \textit{gamma function} \\
+$K_\nu(\cdot)$   & : & \textit{modified Bessel function}
+\end{tabular}
+\end{center}
 Bentuk khusus $\nu = 3/2$ dan $\nu = 5/2$:
 \begin{itemize}
     \item \textbf{Matérn $\nu = 3/2$}:
