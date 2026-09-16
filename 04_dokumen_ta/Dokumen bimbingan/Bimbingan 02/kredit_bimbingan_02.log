@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  16 SEP 2026 08:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  16 SEP 2026 14:29
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -950,7 +950,7 @@ File: se-pdfdoc.def 2019/11/29 v1.12 stringenc: PDFDocEncoding
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10.95> on input line 112.
-<figures/fig1_prior_posterior.pdf, id=58, 794.97pt x 303.534pt>
+<figures/fig1_prior_posterior.pdf, id=54, 794.97pt x 303.534pt>
 File: figures/fig1_prior_posterior.pdf Graphic file (type pdf)
 <use figures/fig1_prior_posterior.pdf>
 Package pdftex.def Info: figures/fig1_prior_posterior.pdf  used on input line 130.
@@ -958,45 +958,35 @@ Package pdftex.def Info: figures/fig1_prior_posterior.pdf  used on input line 13
  [1
 
 {C:/Users/MyBook Z Series/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathit.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-rm.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathsy.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-mathex.enc} <./figures/fig1_prior_posterior.pdf>]
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 168.
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 161.
  (C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
 File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 ) [2{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}] [3]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 276.
+(Font)              <9> on input line 286.
 Package mdframed Info: mdframed detected package amsthm 
  changed the theorem header of amsthm
-(mdframed)              on input line 303.
-LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 329.
- (C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
-File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-)
-LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 329.
-Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `lmtt' (encoding: T1).
-(microtype)             For optimal results, create family-specific settings.
-(microtype)             See the microtype manual for details.
- [4] [5] [6] (kredit_bimbingan_02.aux)
+(mdframed)              on input line 313.
+ [4] [5] (kredit_bimbingan_02.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `kredit_bimbingan_02.out' has not changed.
-(rerunfilecheck)             Checksum: 5C4F36D275BE0274B6286CBA84B55826;1203.
+(rerunfilecheck)             Checksum: A7C428BEFA220CAF9E9EE3E52B1D95A2;1136.
  ) 
 Here is how much of TeX's memory you used:
- 28835 strings out of 467871
- 540483 string characters out of 5413501
- 979683 words of memory out of 5000000
- 56967 multiletter control sequences out of 15000+600000
- 755176 words of font info for 220 fonts, out of 8000000 for 9000
+ 28765 strings out of 467871
+ 539373 string characters out of 5413501
+ 979635 words of memory out of 5000000
+ 56917 multiletter control sequences out of 15000+600000
+ 749826 words of font info for 211 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,13n,104p,1099b,2139s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbxi10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi9.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmib10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy5.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy6.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy9.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on kredit_bimbingan_02.pdf (6 pages, 420923 bytes).
+ 84i,13n,104p,1099b,2069s stack positions out of 10000i,1000n,20000p,200000b,200000s
+<C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbxi10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi9.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmib10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy5.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy6.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy9.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on kredit_bimbingan_02.pdf (5 pages, 388235 bytes).
 PDF statistics:
- 324 PDF objects out of 1000 (max. 8388607)
- 45 named destinations out of 1000 (max. 500000)
- 70266 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 311 PDF objects out of 1000 (max. 8388607)
+ 43 named destinations out of 1000 (max. 500000)
+ 67698 words of extra memory for PDF output out of 74296 (max. 10000000)
 

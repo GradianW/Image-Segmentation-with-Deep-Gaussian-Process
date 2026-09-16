@@ -153,23 +153,33 @@ r = \|\mathbf{x} - \mathbf{x}'\|
 \end{equation}
 
 \subsubsection{Kernel Squared Exponential (RBF / Gaussian)}
-Kernel \textit{Squared Exponential} (SE) merupakan kernel yang paling umum dipakai, menghasilkan fungsi kontinu yang dapat diturunkan tak hingga kali (\textit{infinitely mean square differentiable}) \citep[hlm.~83, Persamaan~(4.9)]{rasmussen2006}:
 \begin{equation}
-k_{\mathrm{SE}}(\mathbf{x}, \mathbf{x}') = \sigma_f^2 \exp\left( -\frac{\|\mathbf{x} - \mathbf{x}'\|^2}{2 l^2} \right) = \sigma_f^2 \exp\left( -\frac{(\mathbf{x} - \mathbf{x}')^T(\mathbf{x} - \mathbf{x}')}{2 l^2} \right)
+k_{\mathrm{SE}}(\mathbf{x}, \mathbf{x}') = \sigma_f^2 \exp\left( -\frac{\|\mathbf{x} - \mathbf{x}'\|^2}{2 l^2} \right) = \sigma_f^2 \exp\left( -\frac{r^2}{2 l^2} \right)
 \end{equation}
+Parameter:
+\begin{itemize}
+    \item $\sigma_f^2$: \textit{signal variance}
+    \item $l$: \textit{lengthscale}
+\end{itemize}
 
 \subsubsection{Keluarga Kernel Matérn}
-Keluarga kernel Matérn memberikan kendali atas derajat diferensiabilitas fungsi sampel \citep[hlm.~84--85, Persamaan~(4.14)]{rasmussen2006}:
 \begin{equation}
 k_{\mathrm{Mat\acute{e}rn}}(r) = \sigma_f^2 \frac{2^{1-\nu}}{\Gamma(\nu)} \left( \frac{\sqrt{2\nu} r}{l} \right)^\nu K_\nu\left( \frac{\sqrt{2\nu} r}{l} \right)
 \end{equation}
-Dua nilai $\nu$ yang paling lazim dalam literatur adalah:
+Parameter:
 \begin{itemize}
-    \item \textbf{Matérn $\nu = 3/2$} \citep[hlm.~85, Persamaan~(4.17)]{rasmussen2006}:
+    \item $\sigma_f^2$: \textit{signal variance}
+    \item $l$: \textit{lengthscale}
+    \item $\Gamma(\cdot)$: \textit{gamma function}
+    \item $K_\nu(\cdot)$: \textit{modified Bessel function}
+\end{itemize}
+Bentuk khusus $\nu = 3/2$ dan $\nu = 5/2$:
+\begin{itemize}
+    \item \textbf{Matérn $\nu = 3/2$}:
     \begin{equation}
     k_{\nu=3/2}(r) = \sigma_f^2 \left( 1 + \frac{\sqrt{3}r}{l} \right) \exp\left( -\frac{\sqrt{3}r}{l} \right)
     \end{equation}
-    \item \textbf{Matérn $\nu = 5/2$} \citep[hlm.~85, Persamaan~(4.17)]{rasmussen2006}:
+    \item \textbf{Matérn $\nu = 5/2$}:
     \begin{equation}
     k_{\nu=5/2}(r) = \sigma_f^2 \left( 1 + \frac{\sqrt{5}r}{l} + \frac{5r^2}{3l^2} \right) \exp\left( -\frac{\sqrt{5}r}{l} \right)
     \end{equation}
@@ -185,8 +195,8 @@ k(\mathbf{x}, \mathbf{x}') = \sigma_0^2 + \mathbf{x}^T \mathbf{x}'
 \end{equation}
 Parameter $\sigma_0^2 \ge 0$ menyatakan variansi dari suku bias/konstanta. Berdasarkan nilai $\sigma_0^2$, kernel linear dibedakan menjadi dua jenis:
 \begin{itemize}
-    \item \textbf{Homogen (\textit{Homogeneous})}: Jika $\sigma_0^2 = 0$, fungsi kovariansi murni berupa hasil kali titik $k(\mathbf{x}, \mathbf{x}') = \mathbf{x}^T \mathbf{x}'$. Seluruh fungsi sampel linear yang dihasilkan dipaksa melewati titik pusat/origin ($f(\mathbf{0}) = 0$).
-    \item \textbf{Inhomogen (\textit{Inhomogeneous})}: Jika $\sigma_0^2 > 0$, fungsi sampel berupa garis linear sembarang dengan pergeseran vertikal (\textit{intercept}) acak ($f(\mathbf{x}) = \mathbf{w}^T \mathbf{x} + b$).
+    \item \textbf{Homogen}: Jika $\sigma_0^2 = 0$, fungsi kovariansi murni berupa hasil kali titik $k(\mathbf{x}, \mathbf{x}') = \mathbf{x}^T \mathbf{x}'$. Seluruh fungsi sampel linear yang dihasilkan dipaksa melewati titik pusat/origin ($f(\mathbf{0}) = 0$).
+    \item \textbf{Inhomogen}: Jika $\sigma_0^2 > 0$, fungsi sampel berupa garis linear sembarang dengan pergeseran vertikal (\textit{intercept}) acak ($f(\mathbf{x}) = \mathbf{w}^T \mathbf{x} + b$).
 \end{itemize}
 Karena nilainya dipengaruhi langsung oleh magnitudo dan posisi absolut $\mathbf{x}$ serta $\mathbf{x}'$ (bukan selisih jarak $\mathbf{x} - \mathbf{x}'$), kernel linear tergolong non-stasioner.
 
@@ -318,16 +328,5 @@ Untuk kasus test point tunggal $\mathbf{x}_* \in \mathbb{R}^{D \times 1}$ ($N_* 
 \bar{f}_* &= \mathbf{k}_*^T K_y^{-1} \mathbf{y} \quad \in \mathbb{R} \quad \text{\footnotesize (Dimensi: $(1 \times N) \times (N \times N) \times (N \times 1) = 1 \times 1$)} \\
 \mathbb{V}[f_*] &= k_{**} - \mathbf{k}_*^T K_y^{-1} \mathbf{k}_* \quad \in \mathbb{R}^+ \quad \text{\footnotesize (Dimensi: $1 - (1 \times N) \times (N \times N) \times (N \times 1) = 1 \times 1$)}
 \end{align}
-
-% =========================================================================
-% BAGIAN 5: WORKED NUMERICAL EXAMPLES
-% =========================================================================
-\section{Worked Numerical Examples}
-\label{sec:homework_example}
-
-\begin{center}
-\textbf{\large ``\texttt{contoh\_perhitungan.pdf}''} \\
-\textit{Worked Numerical Examples: Gaussian Process Regression (GPR)}
-\end{center}
 
 \end{document}

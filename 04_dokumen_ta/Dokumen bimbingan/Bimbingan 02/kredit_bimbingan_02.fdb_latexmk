@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1789521940.39348 "c:/Users/MyBook Z Series/Desktop/TA/04_dokumen_ta/Dokumen bimbingan/Bimbingan 02/kredit_bimbingan_02.tex" "kredit_bimbingan_02.pdf" "kredit_bimbingan_02" 1789521945.32757 0
+["pdflatex"] 1789543771.20541 "c:/Users/MyBook Z Series/Desktop/TA/04_dokumen_ta/Dokumen bimbingan/Bimbingan 02/kredit_bimbingan_02.tex" "kredit_bimbingan_02.pdf" "kredit_bimbingan_02" 1789543776.03353 0
   "C:/Users/MyBook" 1768832276 12741 6b955be462d069aeb60b28d2959f1e52 ""
   "C:/Users/MyBook Z Series/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1789358391 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/MyBook Z Series/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1788449378 13338362 2ac6be1a9eea22ad629ca953adea21a5 ""
@@ -27,7 +27,6 @@
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/tfm/public/lm/ec-lmr8.tfm" 1256929440 12064 9b9ade9f64cb32ce1d9a88d21fbd5c2d ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/tfm/public/lm/ec-lmr9.tfm" 1256929440 12084 b7f5e4c003de6f57f07c7e9fee73a37c ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/tfm/public/lm/ec-lmri10.tfm" 1256929440 17148 9556e1b5f936b77a796f68d2d559ba99 ""
-  "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/tfm/public/lm/ec-lmtk10.tfm" 1256929440 1368 5bfeb1cf8f9f0acdb7436bfaa8e0da4e ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/tfm/public/lm/lmbsy10.tfm" 1256929440 1300 2df9da0fc09d4a8c772b3dd386a47c6a ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/tfm/public/lm/lmbsy5.tfm" 1256929440 1304 2ff0a255ae754422adbc0e6519ed2658 ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/tfm/public/lm/lmbsy7.tfm" 1256929440 1304 535e0954c1961c817723e44bc6a9662c ""
@@ -87,7 +86,6 @@
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.pfb" 1256929440 27941 d1f5d03f61a46c3fcc3a2ba904ddda52 ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb" 1256929440 27802 5c876bb2c4040caaf035d60bd74a86bd ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy9.pfb" 1256929440 27835 e135c98a7736a509f536880c6a6e3bd9 ""
-  "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtk10.pfb" 1256929440 117319 28a05fff1cac98366062ffbb2e22858d ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/context/base/mkii/supp-pdf.mkii" 1580390158 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/generic/babel/babel.sty" 1765441417 146654 eaac99efd6386094bb8a3980e34ec87b ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/generic/babel/locale/id/babel-id.ini" 1765441421 4026 6180b9139c2513762d4d251193c9ed3d ""
@@ -220,7 +218,6 @@
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/lm/omxlmex.fd" 1430474546 568 a5494d810f2680caf10205cd1226c76c ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/lm/ot1lmr.fd" 1430474546 1882 28c08db1407ebff35a658fd141753d16 ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/lm/t1lmr.fd" 1430474546 1867 996fe743d88a01aca041ed22cc10e1bb ""
-  "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/lm/t1lmtt.fd" 1430474546 2682 555da1faa2e266801e4b221d01a42cb5 ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/lm/ts1lmr.fd" 1430474546 1914 884882d7ebb0fd65cea93fca77ff6f5a ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/mdframed/md-frame-0.mdf" 1372708085 24831 326d9f019009ed0c076106fa6cb860fb ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/mdframed/mdframed.sty" 1372708085 53487 3e997243f47cb3ba8b4c7b8df9c82989 ""
@@ -251,11 +248,11 @@
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/zref/zref-abspage.sty" 1773584792 2269 91cd03da61ab1da00145ba8a81560051 ""
   "C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/tex/latex/zref/zref-base.sty" 1773584792 20785 8db5f0a2b2ce96dda9fac87ccab29449 ""
   "c:/Users/MyBook" 1768832276 12741 6b955be462d069aeb60b28d2959f1e52 ""
-  "c:/Users/MyBook Z Series/Desktop/TA/04_dokumen_ta/Dokumen bimbingan/Bimbingan 02/kredit_bimbingan_02.tex" 1789521933 19619 9917fd2e71102ac267f4abaf37030542 ""
+  "c:/Users/MyBook Z Series/Desktop/TA/04_dokumen_ta/Dokumen bimbingan/Bimbingan 02/kredit_bimbingan_02.tex" 1789543764 18968 c9bac7aeac3c9e960f2aa072fbbcf9df ""
   "figures/fig1_prior_posterior.pdf" 1789383075 34352 2169f990df4c6fa14242e53ed6d6b897 ""
-  "kredit_bimbingan_02.aux" 1789521944 4732 e32df19fb7853e33281f5284795af5ad "pdflatex"
-  "kredit_bimbingan_02.out" 1789521944 1203 5c4f36d275be0274b6286cba84b55826 "pdflatex"
-  "kredit_bimbingan_02.tex" 1789521933 19619 9917fd2e71102ac267f4abaf37030542 ""
+  "kredit_bimbingan_02.aux" 1789543775 4530 8a966c834a47949c59d3f89d1be89a79 "pdflatex"
+  "kredit_bimbingan_02.out" 1789543775 1136 a7c428befa220caf9e9ee3e52b1d95a2 "pdflatex"
+  "kredit_bimbingan_02.tex" 1789543764 18968 c9bac7aeac3c9e960f2aa072fbbcf9df ""
   (generated)
   "kredit_bimbingan_02.aux"
   "kredit_bimbingan_02.log"
