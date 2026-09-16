@@ -1,0 +1,28 @@
+\babel@toc {indonesian}{}\relax 
+\contentsline {section}{\numberline {1}Posterior Formulation Summary}{2}{section.1}%
+\contentsline {section}{\numberline {2}Direct Inversion ($N = 2, N_* = 1$)}{2}{section.2}%
+\contentsline {paragraph}{Langkah 1: Bentuk Matriks Kovariansi $K_y \in \mathbb {R}^{2 \times 2}$:}{2}{section*.2}%
+\contentsline {paragraph}{Langkah 2: Inversi Matriks Langsung via Rumus Adjoin-Determinan:}{3}{section*.3}%
+\contentsline {paragraph}{Langkah 3: Hitung Vektor Bobot $\bm {\alpha } = K_y^{-1} \mathbf {y}$:}{3}{section*.4}%
+\contentsline {paragraph}{Langkah 4: Evaluasi Kovariansi Titik Uji $x_* = 0.5$:}{3}{section*.5}%
+\contentsline {paragraph}{Langkah 5: Hitung Mean dan Variansi Prediktif Posterior:}{3}{section*.6}%
+\contentsline {section}{\numberline {3}Cholesky Decomposition ($N = 3, N_* = 2$)}{3}{section.3}%
+\contentsline {paragraph}{Motivasi Penggunaan Dekomposisi Cholesky:}{3}{section*.7}%
+\contentsline {paragraph}{Strategi Substitusi yang Digunakan:}{4}{section*.8}%
+\contentsline {subsection}{\numberline {3.1}Langkah 1: Konstruksi Matriks Kovariansi Training $K(X, X)$ dan $K_y$}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Langkah 2: Faktorisasi Cholesky $K_y = L L^T$}{5}{subsection.3.2}%
+\contentsline {paragraph}{Perhitungan Kolom 1:}{5}{section*.9}%
+\contentsline {paragraph}{Perhitungan Kolom 2:}{5}{section*.10}%
+\contentsline {paragraph}{Perhitungan Kolom 3:}{5}{section*.11}%
+\contentsline {subsection}{\numberline {3.3}Langkah 3: Solusi Sistem Linier Dua Tahap untuk Menghitung Vektor Bobot $\bm {\alpha }$}{5}{subsection.3.3}%
+\contentsline {paragraph}{Tahap 1: Forward Substitution ($L \mathbf {v} = \mathbf {y}$)}{6}{section*.12}%
+\contentsline {paragraph}{Tahap 2: Backward Substitution ($L^T \bm {\alpha } = \mathbf {v}$)}{6}{section*.13}%
+\contentsline {subsection}{\numberline {3.4}Langkah 4: Evaluasi Kovariansi Titik Test ($K(X_*, X)$ dan $K(X_*, X_*)$)}{6}{subsection.3.4}%
+\contentsline {paragraph}{Evaluasi Matriks Kovariansi Silang $K(X_*, X) \in \mathbb {R}^{2 \times 3}$:}{6}{section*.14}%
+\contentsline {paragraph}{Evaluasi Matriks Prior Antar Titik Test $K(X_*, X_*) \in \mathbb {R}^{2 \times 2}$:}{7}{section*.15}%
+\contentsline {subsection}{\numberline {3.5}Langkah 5: Kalkulasi Vektor Mean Prediktif Posterior $\bar {\mathbf {f}}_*$}{7}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Langkah 6: Kalkulasi Matriks Kovariansi Prediktif $\operatorname {cov}(\mathbf {f}_*)$}{7}{subsection.3.6}%
+\contentsline {paragraph}{Kolom 1 ($x_{*1} = 0.5$):}{8}{section*.16}%
+\contentsline {paragraph}{Kolom 2 ($x_{*2} = 2.5$):}{8}{section*.17}%
+\contentsline {subsection}{\numberline {3.7}Langkah 7: Visualisasi Plot Hasil \& Interpretasi Fisis}{8}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Computational Findings}{9}{section.4}%

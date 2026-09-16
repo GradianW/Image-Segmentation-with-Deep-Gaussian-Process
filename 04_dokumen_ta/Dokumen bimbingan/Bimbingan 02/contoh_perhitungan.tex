@@ -1,0 +1,495 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}              % Notasi tebal untuk vektor & matriks
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+\usepackage{graphicx}
+\usepackage{booktabs}        % Tabel profesional
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{tikz}            % Diagram skematis
+\usetikzlibrary{matrix,decorations.pathreplacing,calc,positioning}
+\usepackage{xcolor}
+\usepackage{mdframed}        % Kotak highlight untuk pengerjaan soal
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+\pdfstringdefDisableCommands{%
+  \def\boldsymbol#1{#1}%
+  \def\bm#1{#1}%
+  \def\mathbf#1{#1}%
+}
+
+% Makro sitasi sederhana (Rasmussen & Williams, 2006)
+\newcommand{\citep}[2][]{(Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+\newcommand{\citet}[2][]{Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+
+% Pengaturan penomoran dan teorema
+\newtheorem{definisi}{Definisi}[section]
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{catatan}{Catatan}[section]
+
+% Path direktori gambar
+\graphicspath{{figures/}{../figures/}{../../figures/}}
+
+% =========================================================================
+% INFORMASI DOKUMEN
+% =========================================================================
+\title{
+    \vspace{-1.0cm}
+    \textbf{\Large CONTOH PERHITUNGAN MANUAL STEP-BY-STEP} \\[0.3em]
+    \textbf{\large \textit{Gaussian Process Regression} (GPR)} \\[0.2em]
+    \textbf{\normalsize Solusi Inversi Langsung ($N = 2$) dan Dekomposisi Cholesky Stabil ($N = 3, N_* = 2$)}
+}
+\author{
+    \textbf{Penulis / Mahasiswa}: Mahasiswa Tugas Akhir \\
+    \textbf{Fokus Riset}: \textit{Image Segmentation with Deep Gaussian Process} \\
+    \textbf{Suplemen Dokumen}: Kredit Bimbingan Tugas Akhir \#2 (16 September 2026)
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\vspace{-0.5cm}
+
+\begin{abstract}
+Dokumen ini merupakan suplemen teknis mandiri yang menyajikan contoh perhitungan manual langkah demi langkah (\textit{worked homework example}) untuk \textit{Gaussian Process Regression} (GPR). Disajikan dua skenario perhitungan: (1) pada dataset berukuran kecil ($N = 2, N_* = 1$) menggunakan metode inversi matriks langsung via rumus adjoin-determinan, dan (2) pada dataset berukuran $N = 3$ dengan $N_* = 2$ titik uji (kasus interpolasi dan ekstrapolasi) menggunakan faktorisasi Cholesky yang stabil secara numerik ($K_y = L L^T$) serta substitusi maju dan mundur. Seluruh tahapan aritmatika diuraikan secara analitik dan eksplisit hingga visualisasi plot hasil serta analisis ketidakpastian epistemik (\textit{epistemic uncertainty}).
+\end{abstract}
+
+\hrule
+\vspace{0.3cm}
+\tableofcontents
+\vspace{0.4cm}
+\hrule
+
+\newpage
+
+% =========================================================================
+% SECTION 1: FORMULATION SUMMARY
+% =========================================================================
+\section{Posterior Formulation Summary}
+\label{sec:formulasi_ringkas}
+
+Sebagai acuan kerja perhitungan manual, model regresi Gaussian Process dengan galat observasi Gaussian $\epsilon_i \sim \mathcal{N}(0, \sigma_n^2)$ mengasumsikan distribusi bersama antara target observasi $\mathbf{y} \in \mathbb{R}^{N \times 1}$ dan fungsi laten titik uji $\mathbf{f}_* \in \mathbb{R}^{N_* \times 1}$ sebagai Gaussian multivariat \citep[hlm.~16, Persamaan~(2.21)]{rasmussen2006}:
+\begin{equation}
+\begin{bmatrix} \mathbf{y} \\ \mathbf{f}_* \end{bmatrix}
+\sim \mathcal{N}\left(
+\mathbf{0},
+\begin{bmatrix}
+K(X, X) + \sigma_n^2 I_N & K(X, X_*) \\
+K(X_*, X) & K(X_*, X_*)
+\end{bmatrix}
+\right)
+\end{equation}
+di mana $K_y = K(X, X) + \sigma_n^2 I_N \in \mathbb{R}^{N \times N}$.
+
+Distribusi posterior bersyarat dari nilai fungsi laten $\mathbf{f}_*$ adalah Gaussian \citep[hlm.~17--19, Persamaan~(2.22)--(2.24)]{rasmussen2006}:
+\begin{mdframed}[linewidth=1.2pt, linecolor=blue!70!black, backgroundcolor=blue!2]
+\textbf{Distribusi Posterior Gaussian Process Regression} \citep[hlm.~17--19]{rasmussen2006}:
+\begin{equation}
+\mathbf{f}_* \mid X, \mathbf{y}, X_* \sim \mathcal{N}\big( \bar{\mathbf{f}}_*, \operatorname{cov}(\mathbf{f}_*) \big)
+\end{equation}
+\begin{align}
+\label{eq:posterior_mean}
+\bar{\mathbf{f}}_* &= K(X_*, X) \left[ K(X, X) + \sigma_n^2 I_N \right]^{-1} \mathbf{y} = K(X_*, X) \boldsymbol{\alpha} \in \mathbb{R}^{N_* \times 1} \\
+\label{eq:posterior_cov}
+\operatorname{cov}(\mathbf{f}_*) &= K(X_*, X_*) - K(X_*, X) \left[ K(X, X) + \sigma_n^2 I_N \right]^{-1} K(X, X_*) \in \mathbb{R}^{N_* \times N_*}
+\end{align}
+dengan vektor bobot dual $\boldsymbol{\alpha} = K_y^{-1} \mathbf{y} \in \mathbb{R}^{N \times 1}$.
+\end{mdframed}
+
+% =========================================================================
+% SECTION 2: DIRECT INVERSION (N = 2)
+% =========================================================================
+\section{Direct Inversion (\texorpdfstring{$N = 2, N_* = 1$}{N = 2, N* = 1})}
+\label{sec:contoh_n2}
+
+\begin{mdframed}[linewidth=1pt, linecolor=black!60, backgroundcolor=blue!3]
+\textbf{Kasus}: Diberikan $N = 2$ data training satu dimensi ($D = 1$):
+\begin{equation*}
+\mathcal{D} = \big\{ (x_1 = 0.0, y_1 = 0.00), \; (x_2 = 1.0, y_2 = 0.84) \big\}
+\end{equation*}
+Parameter kernel RBF: $\sigma_f^2 = 1.0$, $l = 1.0$, dan variansi galat $\sigma_n^2 = 0.01$. Rumus kernel:
+\begin{equation*}
+k(x, x') = \exp\left( -\frac{(x - x')^2}{2} \right)
+\end{equation*}
+\textbf{Tujuan}: Hitung mean prediktif $\bar{f}_*$ dan variansi $\mathbb{V}[f_*]$ pada titik uji tunggal $x_* = 0.5$ menggunakan \textbf{inversi matriks langsung} tanpa dekomposisi.
+\end{mdframed}
+
+\paragraph{Langkah 1: Bentuk Matriks Kovariansi $K_y \in \mathbb{R}^{2 \times 2}$:}
+\begin{align*}
+k(x_1, x_1) = k(x_2, x_2) &= \exp(0) = 1.0000 \\
+k(x_1, x_2) = k(x_2, x_1) &= \exp\left(-\frac{(1.0 - 0.0)^2}{2}\right) = e^{-0.5} \approx 0.6065
+\end{align*}
+Menambahkan variansi galat $\sigma_n^2 = 0.01$ pada diagonal utama:
+\begin{equation}
+K_y = \begin{bmatrix} 1.0000 & 0.6065 \\ 0.6065 & 1.0000 \end{bmatrix} + \begin{bmatrix} 0.01 & 0 \\ 0 & 0.01 \end{bmatrix} = \begin{bmatrix} 1.0100 & 0.6065 \\ 0.6065 & 1.0100 \end{bmatrix}
+\end{equation}
+
+\paragraph{Langkah 2: Inversi Matriks Langsung via Rumus Adjoin-Determinan:}
+Determinan dari $K_y$:
+\begin{equation}
+\det(K_y) = (1.0100)(1.0100) - (0.6065)(0.6065) = 1.0201 - 0.3678 = 0.6523
+\end{equation}
+Invers dari matriks $2 \times 2$ langsung dihitung:
+\begin{equation}
+K_y^{-1} = \frac{1}{\det(K_y)} \begin{bmatrix} [K_y]_{22} & -[K_y]_{12} \\ -[K_y]_{21} & [K_y]_{11} \end{bmatrix} = \frac{1}{0.6523} \begin{bmatrix} 1.0100 & -0.6065 \\ -0.6065 & 1.0100 \end{bmatrix} \approx \begin{bmatrix} 1.5484 & -0.9298 \\ -0.9298 & 1.5484 \end{bmatrix}
+\end{equation}
+
+\paragraph{Langkah 3: Hitung Vektor Bobot $\boldsymbol{\alpha} = K_y^{-1} \mathbf{y}$:}
+Dengan vektor target $\mathbf{y} = [0.00, 0.84]^T$:
+\begin{equation}
+\boldsymbol{\alpha} = \begin{bmatrix} 1.5484 & -0.9298 \\ -0.9298 & 1.5484 \end{bmatrix} \begin{bmatrix} 0.00 \\ 0.84 \end{bmatrix} = \begin{bmatrix} (-0.9298)(0.84) \\ (1.5484)(0.84) \end{bmatrix} \approx \begin{bmatrix} -0.7810 \\ 1.3007 \end{bmatrix}
+\end{equation}
+
+\paragraph{Langkah 4: Evaluasi Kovariansi Titik Uji $x_* = 0.5$:}
+\begin{align*}
+\mathbf{k}_* &= \begin{bmatrix} k(x_1, x_*) \\ k(x_2, x_*) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{(0.0 - 0.5)^2}{2}\right) \\ \exp\left(-\frac{(1.0 - 0.5)^2}{2}\right) \end{bmatrix} = \begin{bmatrix} e^{-0.125} \\ e^{-0.125} \end{bmatrix} \approx \begin{bmatrix} 0.8825 \\ 0.8825 \end{bmatrix} \\
+k_{**} &= k(x_*, x_*) = \exp(0) = 1.0000
+\end{align*}
+
+\paragraph{Langkah 5: Hitung Mean dan Variansi Prediktif Posterior:}
+Mean prediktif:
+\begin{equation}
+\bar{f}_* = \mathbf{k}_*^T \boldsymbol{\alpha} = \begin{bmatrix} 0.8825 & 0.8825 \end{bmatrix} \begin{bmatrix} -0.7810 \\ 1.3007 \end{bmatrix} = (0.8825)(-0.7810 + 1.3007) = (0.8825)(0.5197) \approx \mathbf{0.4586}
+\end{equation}
+Variansi prediktif:
+\begin{align}
+\mathbb{V}[f_*] &= k_{**} - \mathbf{k}_*^T K_y^{-1} \mathbf{k}_* \nonumber \\
+&= 1.0000 - \begin{bmatrix} 0.8825 & 0.8825 \end{bmatrix} \begin{bmatrix} 1.5484 & -0.9298 \\ -0.9298 & 1.5484 \end{bmatrix} \begin{bmatrix} 0.8825 \\ 0.8825 \end{bmatrix} \nonumber \\
+&= 1.0000 - \begin{bmatrix} 0.8825 & 0.8825 \end{bmatrix} \begin{bmatrix} 0.5459 \\ 0.5459 \end{bmatrix} = 1.0000 - 2(0.8825)(0.5459) \nonumber \\
+&= 1.0000 - 0.9635 = \mathbf{0.0365} \implies \sigma_* = \sqrt{0.0365} \approx \mathbf{0.1910}
+\end{align}
+Terlihat bahwa untuk $N = 2$, perhitungan di atas kertas sangat ringkas dan praktis diselesaikan secara langsung tanpa perlu melakukan faktorisasi segitiga.
+
+% =========================================================================
+% SECTION 3: CHOLESKY DECOMPOSITION (N = 3, N* = 2)
+% =========================================================================
+\section{Cholesky Decomposition (\texorpdfstring{$N = 3, N_* = 2$}{N = 3, N* = 2})}
+\label{sec:contoh_n3}
+
+\paragraph{Motivasi Penggunaan Dekomposisi Cholesky:}
+Ketika ukuran data bertambah ($N \ge 3$), mencari invers matriks $K_y^{-1}$ secara langsung di atas kertas menjadi sangat sulit dan tidak efisien karena menuntut kalkulasi $N^2$ kofaktor determinan minor satu per satu yang rawan salah tanda kurung dan aljabar. Selain itu, pada implementasi komputer, matriks kernel sering kali memiliki bilangan kondisi tinggi (\textit{ill-conditioned}), sehingga inversi langsung memicu ledakan galat pembulatan. Oleh karena itu, kita memfaktorkan matriks simetris positif definit $K_y$ menjadi \textbf{Faktorisasi Cholesky} \citep[hlm.~19, Algoritma~2.1]{rasmussen2006}:
+\begin{equation}
+K_y = L L^T
+\end{equation}
+di mana $L$ adalah matriks segitiga bawah riil (\textit{lower triangular}) dengan diagonal positif.
+
+\paragraph{Strategi Substitusi yang Digunakan:}
+Dengan faktorisasi $K_y = L L^T$, kita tidak perlu menghitung matriks $K_y^{-1}$ sama sekali \citep[hlm.~19, Baris 2--6 Algoritma 2.1]{rasmussen2006}:
+\begin{enumerate}
+    \item \textbf{Vektor Bobot $\boldsymbol{\alpha}$ (Mean Posterior)}: Diselesaikan via sistem rantai dua tahap:
+    \begin{itemize}
+        \item \textit{Forward substitution}: Pecahkan $L \mathbf{v} = \mathbf{y}$ untuk memperoleh vektor perantara $\mathbf{v} = L^{-1} \mathbf{y}$.
+        \item \textit{Backward substitution}: Pecahkan $L^T \boldsymbol{\alpha} = \mathbf{v}$ untuk memperoleh vektor bobot $\boldsymbol{\alpha} = L^{-T} \mathbf{v} = K_y^{-1} \mathbf{y}$.
+    \end{itemize}
+    Mean prediktif kemudian dihitung melalui $\bar{\mathbf{f}}_* = K(X_*, X) \boldsymbol{\alpha}$.
+    \item \textbf{Matriks Kovariansi Posterior}: Suku pengurang $\Omega = K(X_*, X) K_y^{-1} K(X, X_*)$ ditransformasikan menjadi bentuk kuadratik $\Omega = W^T W$, di mana matriks $W \in \mathbb{R}^{N \times N_*}$ diselesaikan kolom demi kolom via substitusi maju $L \mathbf{w}_j = K(X, \mathbf{x}_{*j})$ untuk setiap test point $j \in \{1, \dots, N_*\}$.
+\end{enumerate}
+
+\begin{mdframed}[linewidth=1pt, linecolor=black!60, backgroundcolor=yellow!3]
+\textbf{Deskripsi Masalah Tugas (\textit{Homework Assignment})}:\\
+Diberikan training dataset $N = 3$ dengan dimensi input tunggal $D = 1$:
+\begin{equation*}
+\mathcal{D} = \big\{ (x_1 = 0.0, y_1 = 0.00), \; (x_2 = 1.0, y_2 = 0.84), \; (x_3 = 2.0, y_3 = 0.91) \big\}
+\end{equation*}
+Model diasumsikan menggunakan fungsi kernel RBF dengan parameter kernel dan variansi galat yang telah ditetapkan:
+\begin{equation*}
+\sigma_f^2 = 1.0, \quad l = 1.0, \quad \sigma_n^2 = 0.01 \implies k(x, x') = \exp\left( -\frac{(x - x')^2}{2} \right)
+\end{equation*}
+\textbf{Tugas}:
+Hitunglah distribusi posterior prediktif (vektor mean $\bar{\mathbf{f}}_*$ dan matriks kovariansi $\operatorname{cov}(\mathbf{f}_*)$) pada $N_* = 2$ test point:
+\begin{equation*}
+x_{*1} = 0.5 \quad \text{(Kasus Interpolasi)}, \qquad x_{*2} = 2.5 \quad \text{(Kasus Ekstrapolasi)}
+\end{equation*}
+menggunakan \textbf{Faktorisasi Cholesky} $K_y = L L^T$ dan substitusi maju/mundur.
+\end{mdframed}
+
+\subsection{Langkah 1: Konstruksi Matriks Kovariansi Training \texorpdfstring{$K(X, X)$ dan $K_y$}{K(X, X) dan Ky}}
+Matriks desain training data adalah:
+\begin{equation}
+X = \begin{bmatrix} 0.0 \\ 1.0 \\ 2.0 \end{bmatrix} \in \mathbb{R}^{3 \times 1}, \qquad \mathbf{y} = \begin{bmatrix} 0.00 \\ 0.84 \\ 0.91 \end{bmatrix} \in \mathbb{R}^{3 \times 1}
+\end{equation}
+Evaluasi pasangan kernel:
+\begin{align*}
+k(x_1, x_1) = k(x_2, x_2) = k(x_3, x_3) &= \exp(0) = 1.0000 \\
+k(x_1, x_2) = k(x_2, x_3) = \exp\left(-\frac{(1.0 - 0.0)^2}{2}\right) &= e^{-0.5} \approx 0.6065 \\
+k(x_1, x_3) = \exp\left(-\frac{(2.0 - 0.0)^2}{2}\right) &= e^{-2.0} \approx 0.1353
+\end{align*}
+Menyusun matriks Gram $K(X, X) \in \mathbb{R}^{3 \times 3}$:
+\begin{equation}
+K(X, X) = \begin{bmatrix}
+1.0000 & 0.6065 & 0.1353 \\
+0.6065 & 1.0000 & 0.6065 \\
+0.1353 & 0.6065 & 1.0000
+\end{bmatrix}
+\end{equation}
+Menambahkan variansi galat $\sigma_n^2 I_3 = 0.01 I_3$ untuk memperoleh matriks kovariansi observasi total $K_y \in \mathbb{R}^{3 \times 3}$:
+\begin{equation}
+K_y = K(X, X) + 0.01 I_3 = \begin{bmatrix}
+1.0100 & 0.6065 & 0.1353 \\
+0.6065 & 1.0100 & 0.6065 \\
+0.1353 & 0.6065 & 1.0100
+\end{bmatrix}
+\end{equation}
+
+\subsection{Langkah 2: Faktorisasi Cholesky \texorpdfstring{$K_y = L L^T$}{Ky = L L\textasciicircum T}}
+Kita mencari matriks segitiga bawah $L \in \mathbb{R}^{3 \times 3}$ sedemikian sehingga $K_y = L L^T$:
+\begin{equation}
+\begin{bmatrix}
+1.0100 & 0.6065 & 0.1353 \\
+0.6065 & 1.0100 & 0.6065 \\
+0.1353 & 0.6065 & 1.0100
+\end{bmatrix}
+=
+\begin{bmatrix}
+L_{11} & 0 & 0 \\
+L_{21} & L_{22} & 0 \\
+L_{31} & L_{32} & L_{33}
+\end{bmatrix}
+\begin{bmatrix}
+L_{11} & L_{21} & L_{31} \\
+0 & L_{22} & L_{32} \\
+0 & 0 & L_{33}
+\end{bmatrix}
+\end{equation}
+
+\paragraph{Perhitungan Kolom 1:}
+\begin{align*}
+L_{11} &= \sqrt{[K_y]_{11}} = \sqrt{1.0100} \approx \mathbf{1.0050} \\
+L_{21} &= \frac{[K_y]_{21}}{L_{11}} = \frac{0.6065}{1.0050} \approx \mathbf{0.6035} \\
+L_{31} &= \frac{[K_y]_{31}}{L_{11}} = \frac{0.1353}{1.0050} \approx \mathbf{0.1346}
+\end{align*}
+
+\paragraph{Perhitungan Kolom 2:}
+\begin{align*}
+L_{22} &= \sqrt{[K_y]_{22} - L_{21}^2} = \sqrt{1.0100 - (0.6035)^2} = \sqrt{1.0100 - 0.3642} = \sqrt{0.6458} \approx \mathbf{0.8036} \\
+L_{32} &= \frac{[K_y]_{32} - L_{31} L_{21}}{L_{22}} = \frac{0.6065 - (0.1346)(0.6035)}{0.8036} = \frac{0.6065 - 0.0812}{0.8036} = \frac{0.5253}{0.8036} \approx \mathbf{0.6537}
+\end{align*}
+
+\paragraph{Perhitungan Kolom 3:}
+\begin{align*}
+L_{33} &= \sqrt{[K_y]_{33} - L_{31}^2 - L_{32}^2} = \sqrt{1.0100 - (0.1346)^2 - (0.6537)^2} \\
+&= \sqrt{1.0100 - 0.0181 - 0.4273} = \sqrt{0.5646} \approx \mathbf{0.7514}
+\end{align*}
+
+Dengan demikian, matriks faktor Cholesky $L$ adalah:
+\begin{equation}
+L = \begin{bmatrix}
+1.0050 & 0 & 0 \\
+0.6035 & 0.8036 & 0 \\
+0.1346 & 0.6537 & 0.7514
+\end{bmatrix} \in \mathbb{R}^{3 \times 3}
+\end{equation}
+
+\subsection{Langkah 3: Solusi Sistem Linier Dua Tahap untuk Menghitung Vektor Bobot \texorpdfstring{$\boldsymbol{\alpha}$}{alpha}}
+Kita ingin mencari $\boldsymbol{\alpha} = K_y^{-1} \mathbf{y}$ dengan menyelesaikan $L L^T \boldsymbol{\alpha} = \mathbf{y}$.
+
+\paragraph{Tahap 1: Forward Substitution ($L \mathbf{v} = \mathbf{y}$)}
+\begin{equation}
+\begin{bmatrix}
+1.0050 & 0 & 0 \\
+0.6035 & 0.8036 & 0 \\
+0.1346 & 0.6537 & 0.7514
+\end{bmatrix}
+\begin{bmatrix} v_1 \\ v_2 \\ v_3 \end{bmatrix}
+=
+\begin{bmatrix} 0.00 \\ 0.84 \\ 0.91 \end{bmatrix}
+\end{equation}
+\begin{align*}
+v_1 &= \frac{0.00}{1.0050} = \mathbf{0.0000} \\
+v_2 &= \frac{0.84 - (0.6035)(v_1)}{0.8036} = \frac{0.84 - 0}{0.8036} \approx \mathbf{1.0453} \\
+v_3 &= \frac{0.91 - (0.1346)(v_1) - (0.6537)(v_2)}{0.7514} = \frac{0.91 - 0 - (0.6537)(1.0453)}{0.7514} = \frac{0.91 - 0.6833}{0.7514} \approx \mathbf{0.3017}
+\end{align*}
+Diperoleh vektor perantara:
+\begin{equation}
+\mathbf{v} = \begin{bmatrix} 0.0000 \\ 1.0453 \\ 0.3017 \end{bmatrix} \in \mathbb{R}^{3 \times 1}
+\end{equation}
+
+\paragraph{Tahap 2: Backward Substitution ($L^T \boldsymbol{\alpha} = \mathbf{v}$)}
+\begin{equation}
+\begin{bmatrix}
+1.0050 & 0.6035 & 0.1346 \\
+0 & 0.8036 & 0.6537 \\
+0 & 0 & 0.7514
+\end{bmatrix}
+\begin{bmatrix} \alpha_1 \\ \alpha_2 \\ \alpha_3 \end{bmatrix}
+=
+\begin{bmatrix} 0.0000 \\ 1.0453 \\ 0.3017 \end{bmatrix}
+\end{equation}
+\begin{align*}
+\alpha_3 &= \frac{0.3017}{0.7514} \approx \mathbf{0.4015} \\
+\alpha_2 &= \frac{1.0453 - (0.6537)(\alpha_3)}{0.8036} = \frac{1.0453 - (0.6537)(0.4015)}{0.8036} = \frac{1.0453 - 0.2625}{0.8036} \approx \mathbf{0.9741} \\
+\alpha_1 &= \frac{0.0000 - (0.6035)(\alpha_2) - (0.1346)(\alpha_3)}{1.0050} = \frac{-(0.6035)(0.9741) - (0.1346)(0.4015)}{1.0050} \\
+&= \frac{-0.5879 - 0.0540}{1.0050} = \frac{-0.6419}{1.0050} \approx \mathbf{-0.6387}
+\end{align*}
+Diperoleh vektor bobot dual akhir:
+\begin{equation}
+\boldsymbol{\alpha} = \begin{bmatrix} -0.6387 \\ 0.9741 \\ 0.4015 \end{bmatrix} \in \mathbb{R}^{3 \times 1}
+\end{equation}
+
+\subsection{Langkah 4: Evaluasi Kovariansi Titik Test \texorpdfstring{($K(X_*, X)$ dan $K(X_*, X_*)$)}{(K(X*, X) dan K(X*, X*))}}
+Diberikan test point $X_* = [0.5, 2.5]^T \in \mathbb{R}^{2 \times 1}$.
+
+\paragraph{Evaluasi Matriks Kovariansi Silang $K(X_*, X) \in \mathbb{R}^{2 \times 3}$:}
+\begin{itemize}
+    \item Baris 1 ($x_{*1} = 0.5$):
+    \begin{align*}
+    k(0.5, 0.0) &= \exp\left(-\frac{(0.5)^2}{2}\right) = e^{-0.125} \approx 0.8825 \\
+    k(0.5, 1.0) &= \exp\left(-\frac{(-0.5)^2}{2}\right) = e^{-0.125} \approx 0.8825 \\
+    k(0.5, 2.0) &= \exp\left(-\frac{(-1.5)^2}{2}\right) = e^{-1.125} \approx 0.3247
+    \end{align*}
+    \item Baris 2 ($x_{*2} = 2.5$):
+    \begin{align*}
+    k(2.5, 0.0) &= \exp\left(-\frac{(2.5)^2}{2}\right) = e^{-3.125} \approx 0.0439 \\
+    k(2.5, 1.0) &= \exp\left(-\frac{(1.5)^2}{2}\right) = e^{-1.125} \approx 0.3247 \\
+    k(2.5, 2.0) &= \exp\left(-\frac{(0.5)^2}{2}\right) = e^{-0.125} \approx 0.8825
+    \end{align*}
+\end{itemize}
+Sehingga:
+\begin{equation}
+K(X_*, X) = \begin{bmatrix}
+0.8825 & 0.8825 & 0.3247 \\
+0.0439 & 0.3247 & 0.8825
+\end{bmatrix} \in \mathbb{R}^{2 \times 3}
+\end{equation}
+
+\paragraph{Evaluasi Matriks Prior Antar Titik Test $K(X_*, X_*) \in \mathbb{R}^{2 \times 2}$:}
+\begin{align*}
+k(x_{*1}, x_{*1}) = k(x_{*2}, x_{*2}) &= \exp(0) = 1.0000 \\
+k(x_{*1}, x_{*2}) = \exp\left(-\frac{(2.5 - 0.5)^2}{2}\right) &= e^{-2.0} \approx 0.1353
+\end{align*}
+\begin{equation}
+K(X_*, X_*) = \begin{bmatrix}
+1.0000 & 0.1353 \\
+0.1353 & 1.0000
+\end{bmatrix} \in \mathbb{R}^{2 \times 2}
+\end{equation}
+
+\subsection{Langkah 5: Kalkulasi Vektor Mean Prediktif Posterior \texorpdfstring{$\bar{\mathbf{f}}_*$}{f*}}
+Mean prediktif diperoleh dari perkalian matriks:
+\begin{equation}
+\bar{\mathbf{f}}_* = K(X_*, X) \boldsymbol{\alpha} = \begin{bmatrix}
+0.8825 & 0.8825 & 0.3247 \\
+0.0439 & 0.3247 & 0.8825
+\end{bmatrix}
+\begin{bmatrix}
+-0.6387 \\ 0.9741 \\ 0.4015
+\end{bmatrix}
+\end{equation}
+\begin{align*}
+\bar{f}_{*1} &= (0.8825)(-0.6387) + (0.8825)(0.9741) + (0.3247)(0.4015) \\
+&= -0.5637 + 0.8596 + 0.1304 = \mathbf{0.4263} \\
+\bar{f}_{*2} &= (0.0439)(-0.6387) + (0.3247)(0.9741) + (0.8825)(0.4015) \\
+&= -0.0280 + 0.3163 + 0.3543 = \mathbf{0.6426}
+\end{align*}
+Hasil akhir vektor mean prediktif posterior adalah:
+\begin{equation}
+\bar{\mathbf{f}}_* = \begin{bmatrix} 0.4263 \\ 0.6426 \end{bmatrix} \in \mathbb{R}^{2 \times 1}
+\end{equation}
+
+\subsection{Langkah 6: Kalkulasi Matriks Kovariansi Prediktif \texorpdfstring{$\operatorname{cov}(\mathbf{f}_*)$}{cov(f*)}}
+Berdasarkan Persamaan~\eqref{eq:posterior_cov}:
+\begin{equation}
+\operatorname{cov}(\mathbf{f}_*) = K(X_*, X_*) - K(X_*, X) K_y^{-1} K(X, X_*)
+\end{equation}
+Dengan mendefinisikan $W = L^{-1} K(X, X_*) \in \mathbb{R}^{3 \times 2}$, maka suku pengurang dapat dihitung melalui $W^T W$. Kita selesaikan $L W = K(X, X_*)$ melalui substitusi maju untuk kedua kolom $\mathbf{w}_1$ dan $\mathbf{w}_2$:
+
+\paragraph{Kolom 1 ($x_{*1} = 0.5$):}
+\begin{align*}
+w_{11} &= \frac{0.8825}{1.0050} \approx \mathbf{0.8781} \\
+w_{21} &= \frac{0.8825 - (0.6035)(0.8781)}{0.8036} = \frac{0.8825 - 0.5300}{0.8036} = \frac{0.3525}{0.8036} \approx \mathbf{0.4386} \\
+w_{31} &= \frac{0.3247 - (0.1346)(0.8781) - (0.6537)(0.4386)}{0.7514} = \frac{0.3247 - 0.1182 - 0.2867}{0.7514} = \frac{-0.0802}{0.7514} \approx \mathbf{-0.1067}
+\end{align*}
+
+\paragraph{Kolom 2 ($x_{*2} = 2.5$):}
+\begin{align*}
+w_{12} &= \frac{0.0439}{1.0050} \approx \mathbf{0.0437} \\
+w_{22} &= \frac{0.3247 - (0.6035)(0.0437)}{0.8036} = \frac{0.3247 - 0.0264}{0.8036} = \frac{0.2983}{0.8036} \approx \mathbf{0.3712} \\
+w_{32} &= \frac{0.8825 - (0.1346)(0.0437) - (0.6537)(0.3712)}{0.7514} = \frac{0.8825 - 0.0059 - 0.2426}{0.7514} = \frac{0.6340}{0.7514} \approx \mathbf{0.8438}
+\end{align*}
+
+Matriks perantara $W \in \mathbb{R}^{3 \times 2}$ adalah:
+\begin{equation}
+W = \begin{bmatrix}
+0.8781 & 0.0437 \\
+0.4386 & 0.3712 \\
+-0.1067 & 0.8438
+\end{bmatrix}
+\end{equation}
+Menghitung perkalian matriks $W^T W \in \mathbb{R}^{2 \times 2}$:
+\begin{align*}
+[W^T W]_{11} &= (0.8781)^2 + (0.4386)^2 + (-0.1067)^2 = 0.7711 + 0.1924 + 0.0114 = \mathbf{0.9749} \\
+[W^T W]_{22} &= (0.0437)^2 + (0.3712)^2 + (0.8438)^2 = 0.0019 + 0.1378 + 0.7120 = \mathbf{0.8517} \\
+[W^T W]_{12} = [W^T W]_{21} &= (0.8781)(0.0437) + (0.4386)(0.3712) + (-0.1067)(0.8438) \\
+&= 0.0384 + 0.1628 - 0.0900 = \mathbf{0.1112}
+\end{align*}
+Maka matriks kovariansi prediktif posterior adalah:
+\begin{equation}
+\operatorname{cov}(\mathbf{f}_*) = \begin{bmatrix} 1.0000 & 0.1353 \\ 0.1353 & 1.0000 \end{bmatrix} - \begin{bmatrix} 0.9749 & 0.1112 \\ 0.1112 & 0.8517 \end{bmatrix} = \begin{bmatrix}
+\mathbf{0.0251} & 0.0241 \\
+0.0241 & \mathbf{0.1483}
+\end{bmatrix} \in \mathbb{R}^{2 \times 2}
+\end{equation}
+
+\subsection{Langkah 7: Visualisasi Plot Hasil \& Interpretasi Fisis}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{fig5_worked_example.pdf}
+\caption{Hasil Eksak Regresi Gaussian Process pada Soal Latihan ($N=3, N_*=2$): Menampilkan kurva mean kontinu $\bar{f}(x)$, pita ketidakpastian posterior $95\%$ ($\pm 2\sigma(x)$), serta posisi kedua test point $x_{*1}=0.5$ dan $x_{*2}=2.5$.}
+\label{fig:worked_example}
+\end{figure}
+
+Dari hasil matriks kovariansi posterior di atas, kita peroleh variansi individual dan deviasi standar untuk masing-masing test point:
+\begin{itemize}
+    \item \textbf{Titik Interpolasi ($x_{*1} = 0.5$)}:
+    \begin{equation}
+    \mathbb{V}[f_{*1}] = [\operatorname{cov}(\mathbf{f}_*)]_{11} = \mathbf{0.0251} \implies \sigma_{*1} = \sqrt{0.0251} \approx \mathbf{0.1584}
+    \end{equation}
+    Karena $x_{*1} = 0.5$ diapit sangat dekat oleh data observasi $x_1 = 0.0$ dan $x_2 = 1.0$, data memberikan reduksi ketidakpastian yang masif, menyusutkan variansi dari prior $1.0000$ menjadi hanya $0.0251$ (terjadi reduksi ketidakpastian sebesar $97.5\%$).
+    \item \textbf{Titik Ekstrapolasi ($x_{*2} = 2.5$)}:
+    \begin{equation}
+    \mathbb{V}[f_{*2}] = [\operatorname{cov}(\mathbf{f}_*)]_{22} = \mathbf{0.1483} \implies \sigma_{*2} = \sqrt{0.1483} \approx \mathbf{0.3851}
+    \end{equation}
+    Titik $x_{*2} = 2.5$ berada di luar rentang observasi training samples (data terjauh berada di $x_3 = 2.0$). Oleh karena itu, variansinya hampir $6\times$ lipat lebih besar dibanding titik interpolasi, secara matematis membuktikan bahwa model mengekspresikan ketidakpastian epistemik yang tinggi di area tanpa observasi.
+    \item \textbf{Korelasi Silang Posterior}: Elemen non-diagonal bernilai positif ($[\operatorname{cov}(\mathbf{f}_*)]_{12} = 0.0241 > 0$), menunjukkan bahwa meskipun kedua test point terpisah sejauh $\Delta x = 2.0$, keduanya tetap mempertahankan kovariansi positif yang lemah sesuai kontinuitas fungsi kernel.
+\end{itemize}
+
+\section{Computational Findings}
+Dari penurunan manual di atas, kita mengamati dua sifat komputasi krusial:
+\begin{enumerate}
+    \item Algoritma Cholesky dua tahap menghindari inversi langsung $K_y^{-1}$, menjaga kestabilan numerik dan menjamin kompleksitas tetap efisien $\frac{1}{3}N^3$ operasi perkalian-penjumlahan \citep[hlm.~19, Algoritma~2.1]{rasmussen2006}.
+    \item Variansi posterior prediktif terbukti independen dari target observasi $\mathbf{y}$, hanya bergantung pada lokasi masukan $X$ dan $X_*$ serta parameter kernel, sehingga mencerminkan ketidakpastian epistemik murni.
+\end{enumerate}
+
+\vspace{0.4cm}
+% =========================================================================
+% DAFTAR PUSTAKA
+% =========================================================================
+\begin{thebibliography}{1}
+\bibitem[Rasmussen \& Williams(2006)]{rasmussen2006}
+C.~E. Rasmussen and C.~K.~I. Williams.
+\newblock \textit{Gaussian Processes for Machine Learning}.
+\newblock Adaptive Computation and Machine Learning. MIT Press, Cambridge, MA, USA, 2006.
+\newblock URL: \url{http://www.gaussianprocess.org/gpml/}.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,13 @@
+\BOOKMARK [1][-]{section.1}{Function-Space\040View\040&\040Gaussian\040Process}{}% 1
+\BOOKMARK [1][-]{section.2}{Covariance\040Functions\040\(Kernels\)}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Syarat\040Kelayakan\040Kernel\040\(Positive\040Semi-Definite\)}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Kernel\040Stasioner\040\(Stationary\040Kernels\)}{section.2}% 4
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Kernel\040Squared\040Exponential\040\(RBF\040/\040Gaussian\)}{subsection.2.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.2.2}{Keluarga\040Kernel\040Mat\351rn}{subsection.2.2}% 6
+\BOOKMARK [2][-]{subsection.2.3}{Kernel\040Non-Stasioner\040\(Non-Stationary\040Kernels\)}{section.2}% 7
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Kernel\040Linear}{subsection.2.3}% 8
+\BOOKMARK [1][-]{section.3}{Gaussian\040Process\040Regression\040Model}{}% 9
+\BOOKMARK [1][-]{section.4}{Posterior\040Conditioning\040&\040Inference}{}% 10
+\BOOKMARK [2][-]{subsection.4.1}{Distribusi\040Gabungan\040Prior\040\(Joint\040Gaussian\040Prior\)}{section.4}% 11
+\BOOKMARK [2][-]{subsection.4.2}{Distribusi\040Posterior\040Gaussian\040Process\040Regression}{section.4}% 12
+\BOOKMARK [1][-]{section.5}{Worked\040Numerical\040Examples}{}% 13

@@ -1,0 +1,11 @@
+\BOOKMARK [1][-]{section.1}{Posterior\040Formulation\040Summary}{}% 1
+\BOOKMARK [1][-]{section.2}{Direct\040Inversion\040\(N\040=\0402,\040N*\040=\0401\)}{}% 2
+\BOOKMARK [1][-]{section.3}{Cholesky\040Decomposition\040\(N\040=\0403,\040N*\040=\0402\)}{}% 3
+\BOOKMARK [2][-]{subsection.3.1}{Langkah\0401:\040Konstruksi\040Matriks\040Kovariansi\040Training\040K\(X,\040X\)\040dan\040Ky}{section.3}% 4
+\BOOKMARK [2][-]{subsection.3.2}{Langkah\0402:\040Faktorisasi\040Cholesky\040Ky\040=\040L\040L^T}{section.3}% 5
+\BOOKMARK [2][-]{subsection.3.3}{Langkah\0403:\040Solusi\040Sistem\040Linier\040Dua\040Tahap\040untuk\040Menghitung\040Vektor\040Bobot\040alpha}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.4}{Langkah\0404:\040Evaluasi\040Kovariansi\040Titik\040Test\040\(K\(X*,\040X\)\040dan\040K\(X*,\040X*\)\)}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.5}{Langkah\0405:\040Kalkulasi\040Vektor\040Mean\040Prediktif\040Posterior\040f*}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.6}{Langkah\0406:\040Kalkulasi\040Matriks\040Kovariansi\040Prediktif\040cov\(f*\)}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.7}{Langkah\0407:\040Visualisasi\040Plot\040Hasil\040&\040Interpretasi\040Fisis}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Computational\040Findings}{}% 11
