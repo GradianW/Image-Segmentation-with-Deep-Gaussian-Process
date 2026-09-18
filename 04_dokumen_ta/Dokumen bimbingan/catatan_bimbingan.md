@@ -49,35 +49,35 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
 
 ### Pertemuan #2 - Rabu, 16 September 2026 (Offline)
 * **Anggota Kelompok Topik**: Saya & Nabila Azizah Andien (*Topik: Image Segmentation with Deep Gaussian Process*)
-* **Agenda**: Pembahasan Regresi Linear sebagai Kasus Khusus GP, Evaluasi Kredit Kelompok, & Arahan Eksplorasi Kernel
+* **Agenda**: Diskusi Kredit Kelompok, Klarifikasi Fokus Tulisan Kredit, & Arahan Eksplorasi Teori Kernel serta Sampling GP
 * **Poin Pembahasan**:
   - Bimbingan dilaksanakan secara berkelompok. Pada sesi ini, dokumen kredit bimbingan yang dipresentasikan dan dibahas adalah tulisan milik **Nabila Azizah Andien**, sehingga draf kredit bimbingan saya tidak terbahas mendalam secara individual.
-  - Pembahasan konsep **Regresi Linear (Bayesian Linear Regression) sebagai salah satu bentuk Gaussian Process**:
-    - Pembuktian dan penurunan matematika untuk nilai ekspektasi (*mean function*) dan kovariansi (*covariance function*) dari model regresi linear dalam sudut pandang *function-space* GP:
-      - Model: $f(\mathbf{x}) = \mathbf{w}^T \mathbf{x}$ dengan prior bobot $\mathbf{w} \sim \mathcal{N}(\mathbf{0}, \Sigma_p)$.
-      - Mean: $\mathbb{E}[f(\mathbf{x})] = \mathbb{E}[\mathbf{w}^T \mathbf{x}] = \mathbf{0}^T \mathbf{x} = 0$.
-      - Kovariansi: $\operatorname{cov}(f(\mathbf{x}), f(\mathbf{x}')) = \mathbb{E}[f(\mathbf{x}) f(\mathbf{x}')] = \mathbf{x}^T \mathbb{E}[\mathbf{w}\mathbf{w}^T] \mathbf{x}' = \mathbf{x}^T \Sigma_p \mathbf{x}'$ (membuktikan bahwa model linear mendefinisikan GP dengan kernel linear non-stasioner $k(\mathbf{x}, \mathbf{x}') = \mathbf{x}^T \Sigma_p \mathbf{x}'$).
+  - Sempat dibahas konsep **Regresi Linear (Bayesian Linear Regression) sebagai salah satu bentuk GP** karena Nabila memasukkannya ke dalam dokumen kreditnya:
+    - *Catatan/Klarifikasi*: Dosen menilai materi regresi linear ini berstatus *good to know knowledge*, namun **bukan merupakan fokus utama yang diinginkan**.
+    - *Fungsi Hakiki Dokumen Kredit*: Tulisan kredit bimbingan sejatinya disiapkan sebagai **draf bab/landasan teori untuk penulisan laporan Tugas Akhir (skripsi)**. Oleh karena itu, isi kredit harus berfokus langsung pada konsep-konsep inti Gaussian Process, kernel, dan mekanisme inferensi yang menjadi fondasi langsung menuju *Deep Gaussian Process* dan *Image Segmentation*.
 * **Saran & Masukan Dosen Pembimbing**:
   1. **Eksplorasi Perubahan Rumus & Parameter Kernel**:
-     - Melakukan simulasi/eksperimen terhadap perilaku fungsi sampel jika parameter kernel diubah (misalnya variasi *lengthscale* $l$ dan *signal variance* $\sigma_f^2$).
-     - Mengamati efek perubahan matematis pada rumus kernel, contohnya jika jarak (*distance*) $r = \|\mathbf{x} - \mathbf{x}'\|$ pada kernel *Squared Exponential* tidak dikuadratkan ($r$ vs $r^2$).
-  2. **Pemahaman Sampling Fungsi dari GP (Sampling Function Prior/Posterior)**:
-     - Memahami secara konseptual dan komputasional bagaimana cara *generate* / mengambil sampel fungsi dari distribusi Gaussian Process menggunakan matriks kovariansi kernel (misal via dekomposisi Cholesky $K = L L^T$ dan sampling $\mathbf{u} \sim \mathcal{N}(\mathbf{0}, I) \implies \mathbf{f} = L \mathbf{u}$).
+     - Mempelajari dan menganalisis perilaku fungsi sampel jika parameter kernel diubah (misalnya variasi *lengthscale* $l$ dan *signal variance* $\sigma_f^2$).
+     - Mengamati efek matematis pada rumus kernel, khususnya perbandingan jarak linier $r = \|\mathbf{x} - \mathbf{x}'\|$ vs jarak kuadratik $r^2 = \|\mathbf{x} - \mathbf{x}'\|^2$ (*Squared Exponential* vs *Exponential/Ornstein-Uhlenbeck* serta kaitannya dengan kelas keterdiferensialan fungsi / keluarga Matérn).
+  2. **Pemahaman Mendalam Sampling Fungsi dari GP (Sampling Function Prior/Posterior)**:
+     - Memahami secara konseptual, matematis, dan komputasional bagaimana cara membangkitkan (*generate*) sampel fungsi kontinu dari distribusi Gaussian Process menggunakan dekomposisi Cholesky ($K = L L^T \implies \mathbf{f} = \mathbf{m} + L \mathbf{u}$ dengan $\mathbf{u} \sim \mathcal{N}(\mathbf{0}, I)$).
+     - Memahami peran *jitter* / regularisasi diagonal ($\epsilon I$) untuk menjaga kestabilan numerik komputasi.
 * **Tindak Lanjut (To-Do)**:
-  - [ ] Memperdalam kembali pembuktian formal penurunan mean dan kovariansi dari Bayesian Linear Regression ke bentuk GP.
-  - [ ] Membuat kode eksperimen/visualisasi (Python/Jupyter Notebook) untuk membandingkan sampel fungsi GP dari berbagai konfigurasi parameter kernel dan modifikasi rumus (misal $r$ vs $r^2$).
-  - [ ] Memperkuat pemahaman mengenai langkah-langkah *generate* sampel fungsi dari distribusi GP menggunakan dekomposisi Cholesky.
-  - [ ] Menyiapkan dokumen kredit bimbingan dan visualisasi untuk pertemuan berikutnya.
+  - [ ] Menyusun dokumen kredit bimbingan #3 yang berfokus langsung pada teori inti GP (karakteristik kernel, variasi rumus/parameter, dan sampling fungsi Cholesky) yang dirancang sebagai draf siap pakai untuk Bab Landasan Teori Skripsi.
+  - [ ] Membuat skrip Python visualisasi dan eksperimen komparasi fungsi sampel dari berbagai kernel dan variasi hyperparameter.
+  - [ ] Menyiapkan dokumen teknis dalam format LaTeX beserta visualisasi pendukung untuk bimbingan berikutnya.
 
 ---
 
-### Pertemuan #3 - [Hari, Tanggal Bulan Tahun] ([Offline/Online])
-* **Agenda**: [Agenda utama pertemuan]
+### Pertemuan #3 - Rabu, 23 September 2026 (Offline)
+* **Agenda**: Pembahasan Dokumen Kredit #3: Karakteristik Fungsi Kernel, Efek Hyperparameter, dan Mekanisme Sampling Fungsi GP via Dekomposisi Cholesky
 * **Poin Pembahasan**:
-  - [Topik / progres yang dipaparkan]
+  - [Menyampaikan draf landasan teori skripsi mengenai eksplorasi kernel dan sampling fungsi GP]
+  - [Mendiskusikan hasil visualisasi komparasi kernel r vs r^2, Matérn, serta kestabilan numerik dekomposisi Cholesky]
 * **Saran & Masukan Dosen Pembimbing**:
   1. [Masukan / koreksi dari dosen]
 * **Tindak Lanjut (To-Do)**:
   - [ ] [Tugas / revisi untuk pertemuan berikutnya]
+
 
 
