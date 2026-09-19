@@ -33,6 +33,8 @@ TA/
 │   ├── 02_deep_gaussian_process.ipynb         # (Materi berikutnya) Deep Gaussian Process (DGP)
 │   └── README.md                       # Rangkuman & panduan materi belajar
 ├── 02_eksperimen/                       # [FASE 1-2] Prototipe & eksperimen awal
+│   ├── README.md                       # Log & daftar seluruh eksperimen
+│   └── 01_dgp_gpytorch/                # Eksperimen 1: Implementasi Deep GP (GPyTorch)
 ├── 03_proyek_ta/                        # [FASE 2] Source code modular untuk sistem TA
 │   ├── data/                           # Dataset citra (raw & processed)
 │   ├── src/                            # Package Python (models, dataset loader, utils)

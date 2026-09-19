@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  18 SEP 2026 11:32
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  19 SEP 2026 00:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1227,145 +1227,149 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 LaTeX Warning: No \author given.
 
 
+Overfull \hbox (2.38628pt too wide) in paragraph at lines 67--67
+[]\T1/lmr/bx/n/14.4 (-20) Karakteristik Fung-si Ko-va-ri-an-si (Ker-nel) dan Ek
+s-plo-ra-si Hyper-
+ []
+
+
 (C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/generic/stringenc\s
 e-pdfdoc.def
 File: se-pdfdoc.def 2019/11/29 v1.12 stringenc: PDFDocEncoding
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 70.
+(Font)              <10.95> on input line 75.
 
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 72.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 72.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 72.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `superscript' on input line 72.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 72.
-
-
-Overfull \hbox (4.9319pt too wide) in paragraph at lines 74--75
-\T1/lmr/m/n/10.95 (-20) Diberikan dua ti-tik in-put $\OT1/lmr/bx/n/10.95 (-20) 
-x\OML/lmm/m/it/10.95 ; \OT1/lmr/bx/n/10.95 (-20) x[] \OMS/lmsy/m/n/10.95 2 \U/m
-sb/m/n/10.95 R[]$ \T1/lmr/m/n/10.95 (-20) de-ngan ja-rak Eu-cli-de-an $\OML/lmm
-/m/it/10.95 r \OT1/lmr/m/n/10.95 (-20) = \OMS/lmsy/m/n/10.95 k\OT1/lmr/bx/n/10.
-95 (-20) x \OMS/lmsy/m/n/10.95 ^^@ \OT1/lmr/bx/n/10.95 (-20) x[]\OMS/lmsy/m/n/1
-0.95 k[] \OT1/lmr/m/n/10.95 (-20) = []$\T1/lmr/m/n/10.95 (-20) .
+Overfull \hbox (20.6665pt too wide) in paragraph at lines 124--124
+[]|\T1/lmr/bx/n/10 (-20) Hyperparameter| 
  []
 
-<figures/fig1_kernel_profiles.pdf, id=54, 498.663pt x 296.307pt>
-File: figures/fig1_kernel_profiles.pdf Graphic file (type pdf)
-<use figures/fig1_kernel_profiles.pdf>
-Package pdftex.def Info: figures/fig1_kernel_profiles.pdf  used on input line 1
-00.
-(pdftex.def)             Requested size: 341.43307pt x 202.87865pt.
+
+Underfull \hbox (badness 1270) in paragraph at lines 124--124
+[]|$\OML/lmm/m/it/10 p > \OT1/lmr/m/n/10 (+20) 0\OML/lmm/m/it/10 ; l >
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 124--124
+[]|$\OT1/lmr/m/n/10 (+20) ^^F =
+ []
+
+
+Overfull \hbox (16.44954pt too wide) in paragraph at lines 124--124
+[]\OT1/lmr/m/n/10 (-20) (\OML/lmm/m/it/10 ^^[[]; ^^[[]\OT1/lmr/m/n/10 (-20) )\O
+ML/lmm/m/it/10 ; ^^[[] >
+ []
+
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
-13.
-(C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [1
+[1
 
 {C:/Users/MyBook Z Series/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/
 Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.en
 c}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm
--mathit.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/d
-vips/lm/lm-rm.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts
-/enc/dvips/lm/lm-mathsy.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/Mi
+-mathsy.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/d
+vips/lm/lm-mathit.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/f
+onts/enc/dvips/lm/lm-rm.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/Mi
 KTeX/fonts/enc/dvips/lm/lm-mathex.enc}]
-<figures/fig2_sample_paths_kernels.pdf, id=84, 715.47299pt x 551.96214pt>
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
+36.
+
+(C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [2{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/
+lm-ts1.enc}]
+<figures/fig1_kernel_profiles.pdf, id=108, 860.01299pt x 301.07681pt>
+File: figures/fig1_kernel_profiles.pdf Graphic file (type pdf)
+<use figures/fig1_kernel_profiles.pdf>
+Package pdftex.def Info: figures/fig1_kernel_profiles.pdf  used on input line 1
+61.
+(pdftex.def)             Requested size: 432.48051pt x 151.40631pt.
+<figures/fig2_sample_paths_kernels.pdf, id=110, 932.28299pt x 530.53204pt>
 File: figures/fig2_sample_paths_kernels.pdf Graphic file (type pdf)
 <use figures/fig2_sample_paths_kernels.pdf>
 Package pdftex.def Info: figures/fig2_sample_paths_kernels.pdf  used on input l
-ine 121.
-(pdftex.def)             Requested size: 432.48051pt x 333.63914pt.
+ine 170.
+(pdftex.def)             Requested size: 432.48051pt x 246.11198pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-<figures/fig3_hyperparameter_effects.pdf, id=85, 860.01299pt x 463.97339pt>
+<figures/fig3_hyperparameter_effects.pdf, id=112, 1004.553pt x 534.79799pt>
 File: figures/fig3_hyperparameter_effects.pdf Graphic file (type pdf)
 <use figures/fig3_hyperparameter_effects.pdf>
 Package pdftex.def Info: figures/fig3_hyperparameter_effects.pdf  used on input
- line 136.
-(pdftex.def)             Requested size: 432.48051pt x 233.32417pt.
+ line 179.
+(pdftex.def)             Requested size: 446.13727pt x 237.51514pt.
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[2{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm
--ts1.enc} <./figures/fig1_kernel_profiles.pdf>] [3 <./figures/fig2_sample_paths
-_kernels.pdf> <./figures/fig3_hyperparameter_effects.pdf>] [4]
-<figures/fig4_cholesky_sampling_workflow.pdf, id=364, 860.01299pt x 272.74698pt
+[3 <./figures/fig1_kernel_profiles.pdf>] [4 <./figures/fig2_sample_paths_kernel
+s.pdf> <./figures/fig3_hyperparameter_effects.pdf>] [5]
+<figures/fig4_cholesky_sampling_workflow.pdf, id=419, 860.01299pt x 272.74698pt
 >
 File: figures/fig4_cholesky_sampling_workflow.pdf Graphic file (type pdf)
 <use figures/fig4_cholesky_sampling_workflow.pdf>
 Package pdftex.def Info: figures/fig4_cholesky_sampling_workflow.pdf  used on i
-nput line 206.
+nput line 257.
 (pdftex.def)             Requested size: 432.48051pt x 137.15971pt.
- [5 <./figures/fig4_cholesky_sampling_workflow.pdf>]
-<figures/fig5_prior_vs_posterior_samples.pdf, id=474, 860.01299pt x 322.32419pt
+ [6 <./figures/fig4_cholesky_sampling_workflow.pdf>]
+<figures/fig5_prior_vs_posterior_samples.pdf, id=531, 860.01299pt x 322.32419pt
 >
 File: figures/fig5_prior_vs_posterior_samples.pdf Graphic file (type pdf)
 <use figures/fig5_prior_vs_posterior_samples.pdf>
 Package pdftex.def Info: figures/fig5_prior_vs_posterior_samples.pdf  used on i
-nput line 269.
+nput line 320.
 (pdftex.def)             Requested size: 432.48051pt x 162.09125pt.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[6] [7 <./figures/fig5_prior_vs_posterior_samples.pdf>]
+[7] [8 <./figures/fig5_prior_vs_posterior_samples.pdf>] [9]
 (kredit_bimbingan_03.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `kredit_bimbingan_03.out' has not changed.
-(rerunfilecheck)             Checksum: E9D8AAC959CB2F05F71CE927F741FBB4;1384.
+(rerunfilecheck)             Checksum: A0CC6F28A2E9F030CEC4E3229DE08109;1503.
  ) 
 Here is how much of TeX's memory you used:
- 29014 strings out of 467871
- 546995 string characters out of 5413501
- 977134 words of memory out of 5000000
- 57131 multiletter control sequences out of 15000+600000
- 716769 words of font info for 192 fonts, out of 8000000 for 9000
+ 29154 strings out of 467871
+ 549030 string characters out of 5413501
+ 985568 words of memory out of 5000000
+ 57201 multiletter control sequences out of 15000+600000
+ 743102 words of font info for 239 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,10n,104p,1018b,2256s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,17n,104p,1018b,2253s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm
 /lmbx10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1
 /public/lm/lmbx12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/f
-onts/type1/public/lm/lmbxi10.pfb><C:/Users/MyBook Z Series/AppData/Local/Progra
-ms/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/MyBook Z Series/AppData/Lo
-cal/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/MyBook Z Series/
-AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/MyBook
- Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb><C:/Use
-rs/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr10.pf
-b><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm
-/lmr12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/
-public/lm/lmr6.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/font
-s/type1/public/lm/lmr8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiK
-TeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/MyBook Z Series/AppData/Local/Pr
-ograms/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/MyBook Z Series/AppDat
-a/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy6.pfb><C:/Users/MyBook Z Seri
-es/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/MyBo
-ok Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/m
-sbm10.pfb>
-Output written on kredit_bimbingan_03.pdf (7 pages, 560764 bytes).
+onts/type1/public/lm/lmbx7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/lm/lmbxi10.pfb><C:/Users/MyBook Z Series/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/MyBook Z Series/A
+ppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/MyBook 
+Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi5.pfb><C:/User
+s/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi7.pfb
+><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/
+lmmi8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/p
+ublic/lm/lmmib10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fo
+nts/type1/public/lm/lmr10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/
+MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/MyBook Z Series/AppData/Local/
+Programs/MiKTeX/fonts/type1/public/lm/lmr5.pfb><C:/Users/MyBook Z Series/AppDat
+a/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr7.pfb><C:/Users/MyBook Z Serie
+s/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/MyBook
+ Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Us
+ers/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.
+pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/
+lm/lmsy5.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/lm/lmsy6.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/f
+onts/type1/public/lm/lmsy7.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs
+/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/MyBook Z Series/AppData/Local
+/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on kredit_bimbingan_03.pdf (9 pages, 671575 bytes).
 PDF statistics:
- 672 PDF objects out of 1000 (max. 8388607)
- 63 named destinations out of 1000 (max. 500000)
- 47238 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 763 PDF objects out of 1000 (max. 8388607)
+ 77 named destinations out of 1000 (max. 500000)
+ 61582 words of extra memory for PDF output out of 61914 (max. 10000000)
 

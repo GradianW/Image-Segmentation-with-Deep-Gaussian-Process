@@ -1,6 +1,6 @@
 """
 Skrip Generator Visualisasi Matematika & Grafis Dokumen Kredit Bimbingan #3
-Topik: Karakteristik Kernel, Sampling Fungsi GP via Cholesky, & Efek Hyperparameter
+Topik: Karakteristik Kernel Buku Teks Rasmussen & Williams, Eksperimen Hyperparameter, & Sampling GP via Cholesky
 Target: Draf Landasan Teori Skripsi / Laporan Tugas Akhir
 """
 
@@ -16,7 +16,7 @@ plt.rcParams.update({
     'axes.titlesize': 12,
     'xtick.labelsize': 9,
     'ytick.labelsize': 9,
-    'legend.fontsize': 9,
+    'legend.fontsize': 8.5,
     'figure.titlesize': 13,
     'lines.linewidth': 1.6,
     'figure.dpi': 300,
@@ -33,33 +33,74 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 np.random.seed(42)
 
 # =========================================================================
-# DEFINISI FUNGSI KERNEL STANDAR
+# DEFINISI FUNGSI KERNEL BAKU (RASMUSSEN & WILLIAMS, BAB 4)
 # =========================================================================
+
+def kernel_squared_exponential(x1, x2, l=1.0, sigma_f=1.0):
+    """Squared Exponential (SE / RBF / Gaussian) Kernel"""
+    r_sq = (np.subtract.outer(x1, x2)) ** 2
+    return (sigma_f ** 2) * np.exp(-0.5 * r_sq / (l ** 2))
+
 def kernel_exponential(x1, x2, l=1.0, sigma_f=1.0):
-    """Exponential Kernel (Matern nu=1/2, C^0)"""
+    """Exponential Kernel (Matern nu=1/2)"""
     r = np.abs(np.subtract.outer(x1, x2))
     return (sigma_f ** 2) * np.exp(-r / l)
 
 def kernel_matern32(x1, x2, l=1.0, sigma_f=1.0):
-    """Matern 3/2 Kernel (nu=3/2, C^1)"""
+    """Matern 3/2 Kernel (nu=3/2)"""
     r = np.abs(np.subtract.outer(x1, x2))
     factor = np.sqrt(3.0) * r / l
     return (sigma_f ** 2) * (1.0 + factor) * np.exp(-factor)
 
 def kernel_matern52(x1, x2, l=1.0, sigma_f=1.0):
-    """Matern 5/2 Kernel (nu=5/2, C^2)"""
+    """Matern 5/2 Kernel (nu=5/2)"""
     r = np.abs(np.subtract.outer(x1, x2))
     factor = np.sqrt(5.0) * r / l
     return (sigma_f ** 2) * (1.0 + factor + (5.0 * (r ** 2)) / (3.0 * (l ** 2))) * np.exp(-factor)
 
-def kernel_squared_exponential(x1, x2, l=1.0, sigma_f=1.0):
-    """Squared Exponential (RBF) Kernel (nu -> inf, C^inf)"""
+def kernel_rational_quadratic(x1, x2, l=1.0, sigma_f=1.0, alpha=1.0):
+    """Rational Quadratic (RQ) Kernel (Continuous Scale Mixture of SE)"""
     r_sq = (np.subtract.outer(x1, x2)) ** 2
-    return (sigma_f ** 2) * np.exp(-0.5 * r_sq / (l ** 2))
+    return (sigma_f ** 2) * (1.0 + r_sq / (2.0 * alpha * (l ** 2))) ** (-alpha)
 
-def sample_gp_prior(x_grid, kernel_func, n_samples=4, l=1.0, sigma_f=1.0, jitter=1e-6):
+def kernel_gamma_exponential(x1, x2, l=1.0, sigma_f=1.0, gamma=1.0):
+    """Gamma-Exponential Kernel (0 < gamma <= 2)"""
+    r = np.abs(np.subtract.outer(x1, x2))
+    return (sigma_f ** 2) * np.exp(- (r / l) ** gamma)
+
+def kernel_periodic(x1, x2, l=1.0, sigma_f=1.0, p=1.0):
+    """Periodic (Exp-Sine-Squared) Kernel"""
+    r = np.abs(np.subtract.outer(x1, x2))
+    sin_term = np.sin(np.pi * r / p)
+    return (sigma_f ** 2) * np.exp(-2.0 * (sin_term ** 2) / (l ** 2))
+
+def kernel_cosine(x1, x2, sigma_f=1.0, p=1.0):
+    """Cosine Kernel"""
+    r = np.abs(np.subtract.outer(x1, x2))
+    return (sigma_f ** 2) * np.cos(2.0 * np.pi * r / p)
+
+def kernel_linear(x1, x2, sigma_b=0.0, sigma_v=1.0, c=0.0):
+    """Linear (Dot Product) Kernel (Non-stationary)"""
+    x1_c = x1 - c
+    x2_c = x2 - c
+    return (sigma_b ** 2) + (sigma_v ** 2) * np.outer(x1_c, x2_c)
+
+def kernel_polynomial(x1, x2, sigma_0=1.0, sigma_v=1.0, d=2):
+    """Polynomial Kernel (Non-stationary)"""
+    return ((sigma_0 ** 2) + (sigma_v ** 2) * np.outer(x1, x2)) ** d
+
+def kernel_neural_network(x1, x2, sigma_0=1.0, sigma_v=1.0, sigma_f=1.0):
+    """Neural Network (Williams, 1998 / Neal, 1995 Arc-sine) Kernel (Non-stationary)"""
+    num = 2.0 * ((sigma_0 ** 2) + (sigma_v ** 2) * np.outer(x1, x2))
+    den1 = 1.0 + 2.0 * ((sigma_0 ** 2) + (sigma_v ** 2) * (x1 ** 2))
+    den2 = 1.0 + 2.0 * ((sigma_0 ** 2) + (sigma_v ** 2) * (x2 ** 2))
+    den = np.sqrt(np.outer(den1, den2))
+    ratio = np.clip(num / den, -1.0 + 1e-7, 1.0 - 1e-7)
+    return (sigma_f ** 2) * (2.0 / np.pi) * np.arcsin(ratio)
+
+def sample_gp_prior(x_grid, kernel_func, n_samples=4, jitter=1e-6, **kwargs):
     """Fungsi pembantu sampling prior GP via Dekomposisi Cholesky"""
-    K = kernel_func(x_grid, x_grid, l=l, sigma_f=sigma_f)
+    K = kernel_func(x_grid, x_grid, **kwargs)
     K_stable = K + jitter * np.eye(len(x_grid))
     L = np.linalg.cholesky(K_stable)
     u = np.random.randn(len(x_grid), n_samples)
@@ -67,78 +108,107 @@ def sample_gp_prior(x_grid, kernel_func, n_samples=4, l=1.0, sigma_f=1.0, jitter
     return f_samples, K, L
 
 # =========================================================================
-# GAMBAR 1: PROFIL KERNEL (k(r) vs r)
+# GAMBAR 1: PROFIL FUNGSI KOVARIANSI RASMUSSEN (k(r) vs r)
 # =========================================================================
 def generate_fig1_kernel_profiles():
-    print("Menghasilkan Gambar 1: Profil Fungsi Kernel...")
+    print("Menghasilkan Gambar 1: Profil Fungsi Kernel Rasmussen & Williams...")
     r = np.linspace(0, 4.0, 500)
     l_val = 1.0
     sigma_f_val = 1.0
     
+    # 1. Stasioner Monotonik
     k_exp = (sigma_f_val ** 2) * np.exp(-r / l_val)
     k_mat32 = (sigma_f_val ** 2) * (1.0 + np.sqrt(3.0) * r / l_val) * np.exp(-np.sqrt(3.0) * r / l_val)
     k_mat52 = (sigma_f_val ** 2) * (1.0 + np.sqrt(5.0) * r / l_val + 5.0 * (r ** 2) / (3.0 * (l_val ** 2))) * np.exp(-np.sqrt(5.0) * r / l_val)
     k_se = (sigma_f_val ** 2) * np.exp(-0.5 * (r ** 2) / (l_val ** 2))
-
-    fig, ax = plt.subplots(figsize=(7, 4.2))
-    ax.plot(r, k_exp, label=r'Exponential / Matérn $\nu=1/2$ ($r$, $C^0$)', color='#d95f02', linestyle='--')
-    ax.plot(r, k_mat32, label=r'Matérn $\nu=3/2$ ($C^1$)', color='#7570b3', linestyle='-.')
-    ax.plot(r, k_mat52, label=r'Matérn $\nu=5/2$ ($C^2$)', color='#1b9e77', linestyle=':')
-    ax.plot(r, k_se, label=r'Squared Exponential / RBF ($r^2$, $C^\infty$)', color='#2b83ba', linewidth=2.0)
-
-    ax.set_title(r'Perbandingan Profil Kovariansi $k(r)$ terhadap Jarak $r = \|\mathbf{x}-\mathbf{x}^\prime\|$', pad=10)
-    ax.set_xlabel(r'Jarak Euclidean $r = \|\mathbf{x} - \mathbf{x}^\prime\|$')
-    ax.set_ylabel(r'Nilai Kovariansi $k(r)$')
-    ax.set_xlim([0, 4.0])
-    ax.set_ylim([-0.05, 1.05])
-    ax.grid(True, linestyle=':', alpha=0.6)
-    ax.legend(loc='upper right', framealpha=0.95)
+    k_rq = (sigma_f_val ** 2) * (1.0 + (r ** 2) / (2.0 * 0.5 * (l_val ** 2))) ** (-0.5)
     
-    # Anotasi titik r=0
-    ax.annotate(r'Puncak Variansi $k(0) = \sigma_f^2 = 1.0$', xy=(0, 1.0), xytext=(0.6, 0.95),
-                arrowprops=dict(arrowstyle="->", color="black", lw=1.0))
+    # 2. Periodik
+    k_per1 = (sigma_f_val ** 2) * np.exp(-2.0 * (np.sin(np.pi * r / 2.0) ** 2) / (1.0 ** 2))
+    k_per2 = (sigma_f_val ** 2) * np.exp(-2.0 * (np.sin(np.pi * r / 1.0) ** 2) / (0.5 ** 2))
+    k_cos = (sigma_f_val ** 2) * np.cos(2.0 * np.pi * r / 2.0)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4.2))
+    
+    # Panel 1: Stasioner Isotropik Standar
+    ax1.plot(r, k_exp, label=r'Exponential / Matérn $\nu=1/2$', color='#d95f02', linestyle='--')
+    ax1.plot(r, k_mat32, label=r'Matérn $\nu=3/2$', color='#7570b3', linestyle='-.')
+    ax1.plot(r, k_mat52, label=r'Matérn $\nu=5/2$', color='#1b9e77', linestyle=':')
+    ax1.plot(r, k_se, label=r'Squared Exponential / RBF', color='#2b83ba', linewidth=2.0)
+    ax1.plot(r, k_rq, label=r'Rational Quadratic ($\alpha=0.5$)', color='#e7298a', linestyle='-')
+    
+    ax1.set_title(r'(a) Profil Kernel Stasioner Isotropik ($l=1.0, \sigma_f=1.0$)', fontsize=11)
+    ax1.set_xlabel(r'Jarak Euclidean $r = \|\mathbf{x} - \mathbf{x}^\prime\|$')
+    ax1.set_ylabel(r'Nilai Kovariansi $k(r)$')
+    ax1.set_xlim([0, 4.0])
+    ax1.set_ylim([-0.05, 1.05])
+    ax1.grid(True, linestyle=':', alpha=0.6)
+    ax1.legend(loc='upper right', framealpha=0.95)
+    
+    # Panel 2: Periodik & Cosine
+    ax2.plot(r, k_per1, label=r'Periodic ($p=2.0, l=1.0$)', color='#e41a1c', lw=1.8)
+    ax2.plot(r, k_per2, label=r'Periodic ($p=1.0, l=0.5$)', color='#377eb8', linestyle='--', lw=1.6)
+    ax2.plot(r, k_cos, label=r'Cosine ($p=2.0$)', color='#4daf4a', linestyle='-.', lw=1.6)
+    
+    ax2.set_title(r'(b) Profil Kernel Periodik & Gelombang', fontsize=11)
+    ax2.set_xlabel(r'Jarak Euclidean $r = \|\mathbf{x} - \mathbf{x}^\prime\|$')
+    ax2.set_ylabel(r'Nilai Kovariansi $k(r)$')
+    ax2.set_xlim([0, 4.0])
+    ax2.set_ylim([-1.05, 1.05])
+    ax2.grid(True, linestyle=':', alpha=0.6)
+    ax2.legend(loc='upper right', framealpha=0.95)
+
+    fig.suptitle(r'Perbandingan Profil Fungsi Kovariansi $k(r)$ dari Buku Teks Rasmussen \& Williams (2006)', fontsize=12.5)
 
     fig.savefig(os.path.join(OUTPUT_DIR, 'fig1_kernel_profiles.pdf'), bbox_inches='tight')
     fig.savefig(os.path.join(OUTPUT_DIR, 'fig1_kernel_profiles.png'), bbox_inches='tight')
     plt.close(fig)
 
 # =========================================================================
-# GAMBAR 2: SAMPEL FUNGSI PRIOR DARI KERNEL BERBEDA (SPEKTRUM KEHALUSAN)
+# GAMBAR 2: GALERI SAMPEL FUNGSI PRIOR UNTUK RAGAM KERNEL RASMUSSEN
 # =========================================================================
 def generate_fig2_sample_paths_kernels():
-    print("Menghasilkan Gambar 2: Sampel Fungsi Prior untuk Berbagai Kernel...")
+    print("Menghasilkan Gambar 2: Galeri Sampel Fungsi Prior untuk 6 Tipe Kernel Rasmussen...")
     x_grid = np.linspace(-3.0, 3.0, 300)
     
-    kernels = [
-        ("Exponential / Matérn $\\nu=1/2$\n(Jarak Linier $r$, $C^0$ - Kasar/Bergerigi)", kernel_exponential, '#d95f02'),
-        ("Matérn $\\nu=3/2$\n($C^1$ - Realistis / Terdiferensiasi 1x)", kernel_matern32, '#7570b3'),
-        ("Matérn $\\nu=5/2$\n($C^2$ - Sangat Fleksibel / Terdiferensiasi 2x)", kernel_matern52, '#1b9e77'),
-        ("Squared Exponential / RBF\n(Jarak Kuadratik $r^2$, $C^\\infty$ - Sangat Mulus)", kernel_squared_exponential, '#2b83ba')
+    kernel_configs = [
+        ("Squared Exponential (RBF)\n" + r"($l=1.0, \sigma_f=1.0$)", 
+         kernel_squared_exponential, {'l': 1.0, 'sigma_f': 1.0}),
+        ("Matérn 3/2\n" + r"($l=1.0, \sigma_f=1.0$)", 
+         kernel_matern32, {'l': 1.0, 'sigma_f': 1.0}),
+        ("Rational Quadratic (RQ)\n" + r"($l=1.0, \sigma_f=1.0, \alpha=0.5$)", 
+         kernel_rational_quadratic, {'l': 1.0, 'sigma_f': 1.0, 'alpha': 0.5}),
+        ("Periodic (Exp-Sine-Squared)\n" + r"($p=2.0, l=1.0, \sigma_f=1.0$)", 
+         kernel_periodic, {'l': 1.0, 'sigma_f': 1.0, 'p': 2.0}),
+        ("Linear (Non-Stasioner)\n" + r"($c=0.0, \sigma_b=0.2, \sigma_v=1.0$)", 
+         kernel_linear, {'sigma_b': 0.2, 'sigma_v': 1.0, 'c': 0.0}),
+        ("Neural Network (Non-Stasioner)\n" + r"($\sigma_0=1.0, \sigma_v=5.0, \sigma_f=1.0$)", 
+         kernel_neural_network, {'sigma_0': 1.0, 'sigma_v': 5.0, 'sigma_f': 1.0})
     ]
     
-    fig, axs = plt.subplots(2, 2, figsize=(10, 7.5), sharex=True, sharey=True)
+    fig, axs = plt.subplots(2, 3, figsize=(13, 7.2), sharex=True)
     axs = axs.flatten()
     
     colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728']
     
-    for i, (title, k_func, base_color) in enumerate(kernels):
+    for i, (title, k_func, kwargs) in enumerate(kernel_configs):
         ax = axs[i]
-        np.random.seed(100 + i)
-        f_samples, _, _ = sample_gp_prior(x_grid, k_func, n_samples=4, l=1.0, sigma_f=1.0)
+        np.random.seed(150 + i)
+        f_samples, _, _ = sample_gp_prior(x_grid, k_func, n_samples=4, jitter=1e-5, **kwargs)
         
         for s in range(4):
             ax.plot(x_grid, f_samples[:, s], color=colors[s], alpha=0.85, label=f'Sampel #{s+1}' if i == 0 else None)
         
-        ax.set_title(title, fontsize=10.5, pad=8)
+        ax.set_title(title, fontsize=10, pad=6)
         ax.set_xlim([-3.0, 3.0])
-        ax.set_ylim([-3.2, 3.2])
+        ax.set_ylim([-3.5, 3.5])
         ax.grid(True, linestyle=':', alpha=0.6)
-        if i in [2, 3]:
+        if i >= 3:
             ax.set_xlabel(r'Domain Input $x$')
-        if i in [0, 2]:
+        if i % 3 == 0:
             ax.set_ylabel(r'Nilai Fungsi $f(x)$')
             
-    fig.suptitle(r'Perbandingan Realisasi Sampel Fungsi Prior $\mathbf{f} \sim \mathcal{GP}(0, k)$ Berdasarkan Kernel', fontsize=12.5)
+    fig.suptitle(r'Galeri Realisasi Sampel Fungsi Prior $\mathbf{f} \sim \mathcal{GP}(0, K)$ dari Berbagai Kelas Kernel', fontsize=12.5)
     fig.legend(loc='lower center', ncol=4, bbox_to_anchor=(0.5, -0.02), frameon=True)
     
     fig.savefig(os.path.join(OUTPUT_DIR, 'fig2_sample_paths_kernels.pdf'), bbox_inches='tight')
@@ -146,52 +216,91 @@ def generate_fig2_sample_paths_kernels():
     plt.close(fig)
 
 # =========================================================================
-# GAMBAR 3: EFEK HYPERPARAMETER (LENGTHSCALE & SIGNAL VARIANCE)
+# GAMBAR 3: EKSPERIMEN VARIASI HYPERPARAMETER KOMPREHENSIF
 # =========================================================================
 def generate_fig3_hyperparameter_effects():
-    print("Menghasilkan Gambar 3: Analisis Efek Hyperparameter...")
-    x_grid = np.linspace(-4.0, 4.0, 350)
+    print("Menghasilkan Gambar 3: Analisis Eksperimen Variasi Nilai Hyperparameter...")
+    x_grid = np.linspace(-3.5, 3.5, 300)
     
-    fig, axs = plt.subplots(2, 3, figsize=(12, 6.5), sharex=True)
+    fig, axs = plt.subplots(2, 3, figsize=(14, 7.5))
     
-    # Baris 1: Variasi Lengthscale l (sigma_f = 1.0)
-    l_values = [0.2, 1.0, 3.0]
-    np.random.seed(2024)
-    u_fixed = np.random.randn(len(x_grid), 3) # Gunakan noise baku yang sama untuk perbandingan adil
+    np.random.seed(2026)
+    u_fixed = np.random.randn(len(x_grid), 3) # Noise baku tetap untuk perbandingan konsisten
     
-    for j, l_val in enumerate(l_values):
-        ax = axs[0, j]
+    # 1. Variasi Lengthscale l pada SE (sigma_f = 1.0)
+    ax1 = axs[0, 0]
+    for l_val, col in zip([0.3, 1.0, 2.5], ['#d7191c', '#fdae61', '#2b83ba']):
         K = kernel_squared_exponential(x_grid, x_grid, l=l_val, sigma_f=1.0) + 1e-6 * np.eye(len(x_grid))
         L = np.linalg.cholesky(K)
-        f_s = L @ u_fixed
-        
-        for s in range(3):
-            ax.plot(x_grid, f_s[:, s], alpha=0.85)
-        ax.set_title(f'Lengthscale $l = {l_val}$ (Osilasi {"Tinggi" if l_val < 0.5 else "Sedang" if l_val == 1.0 else "Rendah/Kaku"})', fontsize=10)
-        ax.set_ylim([-3.5, 3.5])
-        ax.grid(True, linestyle=':', alpha=0.6)
-        if j == 0:
-            ax.set_ylabel(r'Variasi $l$ ($\sigma_f=1.0$)' + '\n' + r'$f(x)$')
-            
-    # Baris 2: Variasi Signal Variance sigma_f^2 (l = 1.0)
-    sigma_f_values = [0.25, 1.0, 4.0] # variansi
-    for j, sf_sq in enumerate(sigma_f_values):
-        ax = axs[1, j]
+        f_s = L @ u_fixed[:, 0]
+        ax1.plot(x_grid, f_s, label=f'$l = {l_val}$', color=col, lw=1.8)
+    ax1.set_title(r'(a) SE: Variasi $l$ ($\sigma_f=1.0$)', fontsize=10.5)
+    ax1.set_ylabel(r'$f(x)$')
+    ax1.grid(True, linestyle=':', alpha=0.6)
+    ax1.legend(loc='upper right')
+    
+    # 2. Variasi Signal Variance sigma_f^2 pada SE (l = 1.0)
+    ax2 = axs[0, 1]
+    for sf_sq, col in zip([0.25, 1.0, 4.0], ['#abdda4', '#2b83ba', '#d7191c']):
         sf = np.sqrt(sf_sq)
         K = kernel_squared_exponential(x_grid, x_grid, l=1.0, sigma_f=sf) + 1e-6 * np.eye(len(x_grid))
         L = np.linalg.cholesky(K)
-        f_s = L @ u_fixed
-        
-        for s in range(3):
-            ax.plot(x_grid, f_s[:, s], alpha=0.85)
-        ax.set_title(r'Variansi $\sigma_f^2 = ' + f'{sf_sq}$' + f' (Amplitudo {sf})', fontsize=10)
-        ax.set_ylim([-5.0, 5.0])
-        ax.set_xlabel(r'Domain Input $x$')
-        ax.grid(True, linestyle=':', alpha=0.6)
-        if j == 0:
-            ax.set_ylabel(r'Variasi $\sigma_f^2$ ($l=1.0$)' + '\n' + r'$f(x)$')
-            
-    fig.suptitle(r'Pengaruh Hyperparameter Panjang Karakteristik ($l$) dan Variansi Sinyal ($\sigma_f^2$)', fontsize=12.5)
+        f_s = L @ u_fixed[:, 0]
+        ax2.plot(x_grid, f_s, label=r'$\sigma_f^2 = ' + f'{sf_sq}$', color=col, lw=1.8)
+    ax2.set_title(r'(b) SE: Variasi $\sigma_f^2$ ($l=1.0$)', fontsize=10.5)
+    ax2.grid(True, linestyle=':', alpha=0.6)
+    ax2.legend(loc='upper right')
+    
+    # 3. Variasi Scale Mixture alpha pada Rational Quadratic (l = 1.0, sigma_f = 1.0)
+    ax3 = axs[0, 2]
+    for a_val, col in zip([0.1, 0.5, 2.0, 20.0], ['#e41a1c', '#984ea3', '#4daf4a', '#377eb8']):
+        K = kernel_rational_quadratic(x_grid, x_grid, l=1.0, sigma_f=1.0, alpha=a_val) + 1e-6 * np.eye(len(x_grid))
+        L = np.linalg.cholesky(K)
+        f_s = L @ u_fixed[:, 1]
+        lbl = r'$\alpha = 20 (\approx\mathrm{SE})$' if a_val == 20.0 else f'$\\alpha = {a_val}$'
+        ax3.plot(x_grid, f_s, label=lbl, color=col, lw=1.7)
+    ax3.set_title(r'(c) RQ: Variasi $\alpha$ (Multiskala)', fontsize=10.5)
+    ax3.grid(True, linestyle=':', alpha=0.6)
+    ax3.legend(loc='upper right')
+    
+    # 4. Variasi Periode p pada Periodic Kernel (l = 1.0, sigma_f = 1.0)
+    ax4 = axs[1, 0]
+    for p_val, col in zip([1.0, 2.0, 4.0], ['#e41a1c', '#377eb8', '#4daf4a']):
+        K = kernel_periodic(x_grid, x_grid, l=1.0, sigma_f=1.0, p=p_val) + 1e-5 * np.eye(len(x_grid))
+        L = np.linalg.cholesky(K)
+        f_s = L @ u_fixed[:, 0]
+        ax4.plot(x_grid, f_s, label=f'$p = {p_val}$', color=col, lw=1.8)
+    ax4.set_title(r'(d) Periodic: Variasi Periode $p$', fontsize=10.5)
+    ax4.set_xlabel(r'Domain Input $x$')
+    ax4.set_ylabel(r'$f(x)$')
+    ax4.grid(True, linestyle=':', alpha=0.6)
+    ax4.legend(loc='upper right')
+    
+    # 5. Variasi Offset c & Slope pada Linear Kernel (sigma_b = 0.2)
+    ax5 = axs[1, 1]
+    for c_val, col in zip([-1.5, 0.0, 1.5], ['#e41a1c', '#377eb8', '#4daf4a']):
+        K = kernel_linear(x_grid, x_grid, sigma_b=0.2, sigma_v=1.0, c=c_val) + 1e-5 * np.eye(len(x_grid))
+        L = np.linalg.cholesky(K)
+        f_s = L @ u_fixed[:, 2]
+        ax5.plot(x_grid, f_s, label=f'$c = {c_val}$', color=col, lw=1.8)
+    ax5.set_title(r'(e) Linear: Variasi Titik Tumpu $c$', fontsize=10.5)
+    ax5.set_xlabel(r'Domain Input $x$')
+    ax5.grid(True, linestyle=':', alpha=0.6)
+    ax5.legend(loc='upper right')
+    
+    # 6. Variasi Bobot sigma_v pada Neural Network Kernel (sigma_0 = 1.0)
+    ax6 = axs[1, 2]
+    for sv_val, col in zip([1.0, 5.0, 20.0], ['#4daf4a', '#377eb8', '#e41a1c']):
+        K = kernel_neural_network(x_grid, x_grid, sigma_0=1.0, sigma_v=sv_val, sigma_f=1.0) + 1e-5 * np.eye(len(x_grid))
+        L = np.linalg.cholesky(K)
+        f_s = L @ u_fixed[:, 1]
+        ax6.plot(x_grid, f_s, label=f'$\\sigma_v = {sv_val}$', color=col, lw=1.8)
+    ax6.set_title(r'(f) Neural Network: Variasi Bobot $\sigma_v$', fontsize=10.5)
+    ax6.set_xlabel(r'Domain Input $x$')
+    ax6.grid(True, linestyle=':', alpha=0.6)
+    ax6.legend(loc='upper right')
+    
+    fig.suptitle(r'Eksperimen Komputasi Pengaruh Variasi Nilai Hyperparameter terhadap Perilaku Fungsi Prior', fontsize=12.5)
     
     fig.savefig(os.path.join(OUTPUT_DIR, 'fig3_hyperparameter_effects.pdf'), bbox_inches='tight')
     fig.savefig(os.path.join(OUTPUT_DIR, 'fig3_hyperparameter_effects.png'), bbox_inches='tight')

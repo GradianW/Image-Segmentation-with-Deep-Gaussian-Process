@@ -50,7 +50,7 @@
 \graphicspath{{figures/}}
 
 % =========================================================================
-% INFORMASI DOKUMEN (SEDERHANA SESUAI BIMBINGAN 02)
+% INFORMASI DOKUMEN
 % =========================================================================
 \title{
     \vspace{-1.2cm}
@@ -62,81 +62,132 @@
 \vspace{-0.6cm}
 
 % =========================================================================
-% BAGIAN 1: ANALISIS KETERDIFERENSIALAN MEAN-SQUARE & SPEKTRUM KERNEL
+% BAGIAN 1: KARAKTERISTIK FUNGSI KOVARIANSI & EKSPLORASI HYPERPARAMETER
 % =========================================================================
-\section{Analisis Keterdiferensialan \textit{Mean-Square} dan Spektrum Kehalusan Kernel}
-\label{sec:kernel_smoothness}
+\section{Karakteristik Fungsi Kovariansi (Kernel) dan Eksplorasi Hyperparameter}
+\label{sec:kernel_characteristics}
 
-Melanjutkan fondasi regresi dan inferensi pada dokumen sebelumnya, bagian ini berfokus pada analisis analitik sifat kehalusan ruang fungsi (\textit{mean-square differentiability}) yang ditentukan oleh struktur matematis fungsi kovariansi $k(\mathbf{x}, \mathbf{x}')$.
+Melanjutkan fondasi regresi dan inferensi pada dokumen sebelumnya, bagian ini menyajikan taksonomi komprehensif fungsi kovariansi (\textit{kernel}) berdasarkan buku teks standar \textit{Gaussian Processes for Machine Learning} \citep{rasmussen2006gaussian}, peran fisis dari masing-masing hyperparameter, serta analisis empiris melalui eksperimen komputasi.
 
-\subsection{Perbandingan Analitik Jarak Linier $r$ vs Jarak Kuadratik $r^2$}
+\subsection{Definisi Formal dan Klasifikasi Sifat Kernel}
 
-Diberikan dua titik input $\mathbf{x}, \mathbf{x}' \in \mathbb{R}^{D \times 1}$ dengan jarak Euclidean $r = \|\mathbf{x} - \mathbf{x}'\|_2 = \sqrt{(\mathbf{x} - \mathbf{x}')^T(\mathbf{x} - \mathbf{x}')}$. Perbedaan perlakuan terhadap $r$ menghasilkan sifat keterdiferensialan fungsi stokastik yang sangat kontras:
+\begin{definisi}[Fungsi Kovariansi / Kernel]
+Diberikan domain input $\mathcal{X} \subseteq \mathbb{R}^D$, fungsi kovariansi $k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ adalah fungsi bernilai riil yang memetakan pasangan titik input $(\mathbf{x}, \mathbf{x}')$ menjadi nilai kovariansi antara variabel acak fungsi laten $f(\mathbf{x})$ dan $f(\mathbf{x}')$:
+\begin{equation}
+k(\mathbf{x}, \mathbf{x}') = \operatorname{cov}(f(\mathbf{x}), f(\mathbf{x}')) = \mathbb{E}\big[(f(\mathbf{x}) - m(\mathbf{x}))(f(\mathbf{x}') - m(\mathbf{x}'))\big]
+\end{equation}
+\end{definisi}
+
+\paragraph{Syarat Keabsahan Kernel}: Agar fungsi $k(\mathbf{x}, \mathbf{x}')$ merupakan fungsi kovariansi yang sah, matriks Gram $K \in \mathbb{R}^{N \times N}$ dengan elemen $K_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$ harus bersifat \textbf{Simetris dan Positif Semidefinit} (\textit{Positive Semi-Definite} / PSD), yaitu:
+\begin{equation}
+\mathbf{v}^T K \mathbf{v} \ge 0, \quad \forall \mathbf{v} \in \mathbb{R}^N \setminus \{\mathbf{0}\}
+\end{equation}
+Sifat PSD menjamin bahwa variansi dari kombinasi linear fungsi laten tidak pernah bernilai negatif.
+
+\paragraph{Klasifikasi Sifat Geometris Kernel}:
+\begin{enumerate}
+    \item \textbf{Kernel Stasioner}: Fungsi kovariansi invarian terhadap translasi pada ruang input, yaitu nilai kovariansi hanya bergantung pada vektor selisih $\boldsymbol{\tau} = \mathbf{x} - \mathbf{x}'$:
+    \begin{equation}
+    k(\mathbf{x}, \mathbf{x}') = k(\mathbf{x} - \mathbf{x}') = k(\boldsymbol{\tau})
+    \end{equation}
+    \item \textbf{Kernel Isotropik}: Subkelas dari kernel stasioner di mana kovariansi bersifat invarian terhadap rotasi dan hanya bergantung pada jarak skalar Euclidean $r = \|\mathbf{x} - \mathbf{x}'\|_2$:
+    \begin{equation}
+    k(\mathbf{x}, \mathbf{x}') = k(\|\mathbf{x} - \mathbf{x}'\|_2) = k(r)
+    \end{equation}
+    \item \textbf{Kernel Non-Stasioner}: Nilai kovariansi bergantung secara eksplisit pada lokasi absolut titik $\mathbf{x}$ dan $\mathbf{x}'$ di ruang input (contoh: fungsi berbasis produk titik $\mathbf{x}^T \mathbf{x}'$).
+\end{enumerate}
+
+\subsection{Katalog Fungsi Kovariansi Buku Teks Rasmussen \& Williams}
+
+Berdasarkan \citet{rasmussen2006gaussian} (Bab 4 dan Tabel 4.1), fungsi-fungsi kovariansi standar yang fundamental terangkum dalam Tabel~\ref{tab:kernel_catalogue}.
+
+\begin{table}[h!]
+\centering
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{lp{6.2cm}lX}
+\toprule
+\textbf{Nama Kernel} & \textbf{Formula Matematis $k(r)$ / $k(\mathbf{x},\mathbf{x}')$} & \textbf{Sifat} & \textbf{Hyperparameter} \\
+\midrule
+\textbf{Squared Exponential} & $\sigma_f^2 \exp\left(-\frac{r^2}{2l^2}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
+\textbf{Matérn ($\nu=3/2$)} & $\sigma_f^2 \left(1 + \frac{\sqrt{3}r}{l}\right) \exp\left(-\frac{\sqrt{3}r}{l}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
+\textbf{Matérn ($\nu=5/2$)} & $\sigma_f^2 \left(1 + \frac{\sqrt{5}r}{l} + \frac{5r^2}{3l^2}\right) \exp\left(-\frac{\sqrt{5}r}{l}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
+\textbf{Exponential ($\nu=1/2$)} & $\sigma_f^2 \exp\left(-\frac{r}{l}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
+\textbf{Rational Quadratic} & $\sigma_f^2 \left(1 + \frac{r^2}{2\alpha l^2}\right)^{-\alpha}$ & Stasioner & $l > 0, \sigma_f^2 > 0, \alpha > 0$ \\
+\textbf{$\gamma$-Exponential} & $\sigma_f^2 \exp\left(-\left(\frac{r}{l}\right)^\gamma\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0, \gamma \in (0,2]$ \\
+\textbf{Periodic} & $\sigma_f^2 \exp\left(-\frac{2\sin^2(\pi r / p)}{l^2}\right)$ & Stasioner & $p > 0, l > 0, \sigma_f^2 > 0$ \\
+\textbf{Cosine} & $\sigma_f^2 \cos\left(\frac{2\pi r}{p}\right)$ & Stasioner & $p > 0, \sigma_f^2 > 0$ \\
+\textbf{Linear (Dot Product)} & $\sigma_b^2 + \sigma_v^2 (\mathbf{x}-c)(\mathbf{x}'-c)$ & Non-stasioner & $\sigma_b^2 \ge 0, \sigma_v^2 > 0, c \in \mathbb{R}$ \\
+\textbf{Neural Network (Erf)} & $\sigma_f^2 \frac{2}{\pi} \arcsin\left(\frac{2 \tilde{\mathbf{x}}^T \Sigma \tilde{\mathbf{x}}'}{\sqrt{(1+2\tilde{\mathbf{x}}^T\Sigma\tilde{\mathbf{x}})(1+2\tilde{\mathbf{x}}'^T\Sigma\tilde{\mathbf{x}}')}}\right)$ & Non-stasioner & $\Sigma = \operatorname{diag}(\sigma_0^2, \sigma_v^2), \sigma_f^2 > 0$ \\
+\textbf{White Noise} & $\sigma_n^2 \delta(\mathbf{x} - \mathbf{x}')$ & Stasioner & $\sigma_n^2 > 0$ \\
+\bottomrule
+\end{tabularx}
+\caption{Katalog fungsi kovariansi standar dari buku teks Rasmussen \& Williams (2006).}
+\label{tab:kernel_catalogue}
+\end{table}
+
+\subsection{Analisis Efek Fisis dan Geometri Hyperparameter}
+
+Hyperparameter pada fungsi kovariansi bertindak sebagai pengendali utama ruang fungsi prior $\mathcal{GP}(0, k)$. Karakteristik fisis dari masing-masing parameter diuraikan sebagai berikut:
 
 \begin{enumerate}
-    \item \textbf{Kernel Squared Exponential (Berbasis $r^2$)}:
-    \begin{equation}
-    k_{\text{SE}}(r) = \sigma_f^2 \exp\left(-\frac{r^2}{2l^2}\right)
-    \end{equation}
-    Pada $r = 0$, turunan pertama terhadap jarak bernilai nol:
-    \begin{equation}
-    \left. \frac{d k_{\text{SE}}}{dr} \right|_{r=0^+} = \left. -\frac{\sigma_f^2 r}{l^2} \exp\left(-\frac{r^2}{2l^2}\right) \right|_{r=0^+} = 0
-    \end{equation}
-    Karena fungsi kovariansi analitik pada titik asal ($r=0$) dan memiliki turunan berhingga pada semua orde, proses Gaussian yang dihasilkan bersifat \textbf{terdiferensiasi tak hingga secara mean-square} ($C^\infty$). Realisasi sampel fungsi dari kernel ini sangat mulus (\textit{smooth}).
+    \item \textbf{Lengthscale ($l$)}: Mengatur skala jarak spasial di mana dua titik masukan saling mempertahankan korelasi yang signifikan.
+    \begin{itemize}
+        \item Nilai $l$ kecil: Kovariansi meluruh dengan sangat cepat seiring bertambahnya jarak. Fungsi berfluktuasi dengan frekuensi spasial tinggi.
+        \item Nilai $l$ besar: Titik-titik yang berjauhan tetap berkorelasi kuat, memaksa kurva fungsi menjadi kaku, datar, dan lambat berubah.
+    \end{itemize}
 
-    \item \textbf{Kernel Exponential / Ornstein-Uhlenbeck (Berbasis $r$)}:
+    \item \textbf{Signal Variance ($\sigma_f^2$)}: Mengatur skala variansi vertikal (amplitudo) fungsi di sekitar mean $m(\mathbf{x}) = 0$. Karena $\operatorname{Var}[f(\mathbf{x})] = k(\mathbf{x}, \mathbf{x}) = \sigma_f^2$, parameter ini menentukan lebar rentang simpangan kurva sampel ($\pm 2\sigma_f$ untuk pita kepercayaan 95\%).
+
+    \item \textbf{Scale Mixture ($\alpha$) pada Rational Quadratic}: Kernel RQ merepresentasikan superposisi kontinu dari kernel Squared Exponential dengan berbagai variasi \textit{lengthscale}:
     \begin{equation}
-    k_{\text{Exp}}(r) = \sigma_f^2 \exp\left(-\frac{r}{l}\right)
+    k_{\text{RQ}}(r) = \int_0^\infty \exp\left(-\frac{\tau r^2}{2}\right) p(\tau; \alpha, l) \, d\tau, \quad \tau = l^{-2} \sim \operatorname{Gamma}(\alpha, \alpha l_0^2)
     \end{equation}
-    Pada $r = 0$, turunan satu sisi menghasilkan nilai konstan non-nol:
-    \begin{equation}
-    \left. \frac{d k_{\text{Exp}}}{dr} \right|_{r=0^+} = -\frac{\sigma_f^2}{l} \neq 0
-    \end{equation}
-    Adanya sudut tajam (\textit{cusp}) pada $r = 0$ menyebabkan proses stokastik \textbf{tidak terdiferensiasi secara mean-square} ($C^0$). Sampel fungsi kontinu namun sangat kasar (\textit{jagged}), identik dengan lintasan Gerak Brown (\textit{Brownian motion}) 1D.
+    Nilai $\alpha$ kecil mengizinkan variasi multi-skala (fluktuasi lokal cepat berdampingan dengan tren global lambat). Ketika $\alpha \to \infty$, kernel RQ mereduksi tepat ke kernel Squared Exponential dengan skala tunggal $l_0$.
+
+    \item \textbf{Periode ($p$) pada Periodic \& Cosine}: Menentukan panjang gelombang spasial perulangan siklus ($f(x + p) \approx f(x)$). Parameter $l$ pada kernel periodik mengatur elastisitas kehalusan gelombang di dalam satu siklus.
+
+    \item \textbf{Titik Tumpu ($c$) dan Variansi Kemiringan ($\sigma_v^2$) pada Linear Kernel}: Menghasilkan variansi prior non-stasioner $\operatorname{Var}[f(x)] = \sigma_b^2 + \sigma_v^2(x - c)^2$. Variansi bernilai minimum pada titik $x = c$ dan melebar secara kuadratik membentuk corong ketidakpastian (\textit{fan shape}) seiring menjauh dari $c$.
+
+    \item \textbf{Bobot Parameter $\Sigma = \operatorname{diag}(\sigma_0^2, \sigma_v^2)$ pada Neural Network Kernel}: Williams (1998) membuktikan bahwa kernel ini ekuivalen dengan jaringan saraf tiruan lapis tunggal dengan jumlah unit tersembunyi tak terhingga \citep{neal1995bayesian}. Parameter $\sigma_0^2$ mengontrol variansi bias dan $\sigma_v^2$ mengontrol kecuraman transisi sigmoid antar daerah domain.
 \end{enumerate}
+
+\subsection{Hasil Eksperimen Komputasi dan Visualisasi Ruang Fungsi}
+
+Untuk memvalidasi pemahaman teoretis di atas, dilakukan serangkaian simulasi komputasi numerik.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.75\textwidth]{fig1_kernel_profiles.pdf}
-\caption{Profil kurva kovariansi $k(r)$ terhadap jarak Euclidean $r = \|\mathbf{x}-\mathbf{x}'\|$ ($l=1.0, \sigma_f^2=1.0$).}
+\includegraphics[width=0.95\textwidth]{fig1_kernel_profiles.pdf}
+\caption{Profil kurva kovariansi $k(r)$ terhadap jarak Euclidean $r = \|\mathbf{x}-\mathbf{x}'\|$: (a) Perbandingan peluruhan kovariansi kernel stasioner isotropik; (b) Karakteristik osilasi siklik kernel periodik dan kosinus.}
 \label{fig:kernel_profiles}
 \end{figure}
 
-\subsection{Keluarga Matérn sebagai Spektrum Ruang Fungsi Sobolev}
-
-Keluarga kernel Matérn memfasilitasi parameterisasi eksplisit terhadap derajat keterdiferensialan proses stokastik melalui parameter $\nu > 0$:
-\begin{equation}
-k_{\text{Matérn}}(r) = \sigma_f^2 \frac{2^{1-\nu}}{\Gamma(\nu)} \left(\frac{\sqrt{2\nu}\,r}{l}\right)^\nu K_\nu\left(\frac{\sqrt{2\nu}\,r}{l}\right)
-\end{equation}
-Proses stokastik $f(\mathbf{x})$ dengan kernel Matérn bersifat $k$-kali terdiferensiasi \textit{mean-square} jika dan hanya jika $\nu > k$. Dengan memilih $\nu = p + 1/2$ ($p \in \mathbb{N}$), diperoleh spektrum kehalusan analitik:
-\begin{itemize}
-    \item $\nu = 1/2$ ($C^0$, Kasar): $k_{1/2}(r) = \sigma_f^2 \exp\left(-\frac{r}{l}\right) \equiv k_{\text{Exp}}(r)$
-    \item $\nu = 3/2$ ($C^1$, Sekali Terdiferensiasi): $k_{3/2}(r) = \sigma_f^2 \left(1 + \frac{\sqrt{3}r}{l}\right) \exp\left(-\frac{\sqrt{3}r}{l}\right)$
-    \item $\nu = 5/2$ ($C^2$, Dua Kali Terdiferensiasi): $k_{5/2}(r) = \sigma_f^2 \left(1 + \frac{\sqrt{5}r}{l} + \frac{5r^2}{3l^2}\right) \exp\left(-\frac{\sqrt{5}r}{l}\right)$
-    \item Limit $\nu \to \infty$ ($C^\infty$, Mulus Tak Hingga): $\lim_{\nu \to \infty} k_{\text{Matérn}}(r) = k_{\text{SE}}(r)$
-\end{itemize}
+Gambar~\ref{fig:kernel_profiles} memperlihatkan bagaimana profil $k(r)$ meluruh terhadap jarak Euclidean $r$. Pada kernel Squared Exponential dan Matérn, kurva meluruh monotonik dari nilai puncak $k(0) = \sigma_f^2 = 1.0$ menuju 0, sedangkan kernel periodik mempertahankan korelasi berulang secara periodik pada jarak kelipatan $p$.
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=0.95\textwidth]{fig2_sample_paths_kernels.pdf}
-\caption{Realisasi sampel fungsi prior $\mathbf{f} \sim \mathcal{GP}(0, k)$ memperlihatkan spektrum kehalusan dari $C^0$ hingga $C^\infty$.}
+\caption{Galeri realisasi sampel fungsi prior $\mathbf{f} \sim \mathcal{GP}(0, K)$ yang dibangkitkan dari 6 kelas kernel berbeda dari buku teks Rasmussen \& Williams.}
 \label{fig:sample_paths}
 \end{figure}
 
-\subsection{Analisis Pengaruh Hyperparameter Spasial}
-
-Dua hyperparameter utama mengendalikan geometri realisasi fungsi:
-\begin{enumerate}
-    \item \textbf{Lengthscale ($l$)}: Mengontrol frekuensi spasial fluktuasi fungsi. Nilai $l$ yang kecil menghasilkan fungsi yang berosilasi cepat, sedangkan $l$ yang besar memaksa fungsi menjadi lebih kaku dan lambat berubah.
-    \item \textbf{Signal Variance ($\sigma_f^2$)}: Mengatur rentang amplitudo simpangan vertikal terhadap mean.
-\end{enumerate}
+Gambar~\ref{fig:sample_paths} menampilkan galeri 4 realisasi kurva sampel fungsi prior acak $\mathbf{f} \sim \mathcal{GP}(0, K)$ untuk masing-masing kelas kernel. Terlihat jelas bahwa kernel stasioner (SE, Matérn, RQ, Periodic) menghasilkan variansi yang seragam di seluruh ruang input, sementara kernel non-stasioner (Linear dan Neural Network) memperlihatkan variansi fungsi yang berubah secara dramatis tergantung posisi koordinat $x$.
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=0.95\textwidth]{fig3_hyperparameter_effects.pdf}
-\caption{Simulasi efek hyperparameter: (Atas) Variasi \textit{lengthscale} $l \in \{0.2, 1.0, 3.0\}$; (Bawah) Variasi \textit{signal variance} $\sigma_f^2 \in \{0.25, 1.0, 4.0\}$.}
+\includegraphics[width=0.98\textwidth]{fig3_hyperparameter_effects.pdf}
+\caption{Eksperimen komputasi pengaruh variasi nilai hyperparameter pada fungsi prior: (a) Variasi $l$ pada SE; (b) Variasi $\sigma_f^2$ pada SE; (c) Variasi $\alpha$ pada RQ; (d) Variasi $p$ pada Periodic; (e) Variasi $c$ pada Linear; (f) Variasi $\sigma_v$ pada Neural Network.}
 \label{fig:hyperparameter_effects}
 \end{figure}
+
+Hasil eksperimen variasi nilai hyperparameter pada Gambar~\ref{fig:hyperparameter_effects} menegaskan peran geometris setiap parameter:
+\begin{itemize}
+    \item \textbf{Panel (a) \& (b)}: Variasi $l \in \{0.3, 1.0, 2.5\}$ mengubah frekuensi osilasi horizontal secara drastis, sementara variasi $\sigma_f^2 \in \{0.25, 1.0, 4.0\}$ mengubah skala vertikal kurva.
+    \item \textbf{Panel (c)}: Nilai $\alpha = 0.1$ pada RQ menghasilkan fungsi yang memuat variasi detail lokal mikro di atas gelombang makro, sementara $\alpha = 20.0$ menghasilkan kurva yang identik dengan SE skala tunggal.
+    \item \textbf{Panel (d)}: Variasi $p \in \{1.0, 2.0, 4.0\}$ mengubah jarak spasial antar puncak gelombang periodik.
+    \item \textbf{Panel (e) \& (f)}: Pergeseran nilai $c \in \{-1.5, 0.0, 1.5\}$ menggeser titik tumpu variansi minimum garis linear, sedangkan pembesaran $\sigma_v$ pada Neural Network kernel mempertegas daerah transisi non-linear.
+\end{itemize}
 
 % =========================================================================
 % BAGIAN 2: MEKANISME SAMPLING CHOLESKY
@@ -240,7 +291,7 @@ Secara komputasional, proses pengambilan sampel dari distribusi Gaussian Process
     \item \textbf{Langkah 5: Transformasi Linear ($\mathbf{f} = \mathbf{m} + L \mathbf{u}$)}
     \begin{itemize}
         \item \textit{Tindakan}: Mengalikan matriks segitiga bawah $L$ dengan vektor acak $\mathbf{u}$ dan menambahkan vektor mean $\mathbf{m}$.
-        \item \textit{Alasan}: Operasi perkalian matriks $L\mathbf{u}$ berfungsi mengikat (*mixing*) variabel-variabel acak independen tadi dengan bobot-bobot kovariansi pada baris matriks $L$, sehingga menghasilkan realisasi kurva yang kontinu dan mulus.
+        \item \textit{Alasan}: Operasi perkalian matriks $L\mathbf{u}$ berfungsi mengikat (\textit{mixing}) variabel-variabel acak independen tadi dengan bobot-bobot kovariansi pada baris matriks $L$, sehingga menghasilkan realisasi kurva yang kontinu dan mulus.
     \end{itemize}
 \end{enumerate}
 
@@ -273,13 +324,13 @@ Mekanisme sampling di atas berlaku identik baik untuk distribusi sebelum observa
 
 \subsection{Analisis Kestabilan Numerik dan Penanganan \textit{Jitter}}
 
-Pada kernel stasioner dengan kehalusan tinggi ($C^\infty$) atau evaluasi grid padat, jarak antar titik evaluasi tetangga sangat kecil ($|x_i - x_{i+1}| \to 0$). Akibatnya, baris-baris pada matriks $K$ menjadi hampir linier dependen (\textit{nearly collinear}), menyebabkan rasio nilai eigen ekstrim ($\kappa(K) = \lambda_{\max}/\lambda_{\min} \gg 10^{12}$).
+Pada evaluasi grid padat, jarak antar titik evaluasi tetangga sangat kecil ($|x_i - x_{i+1}| \to 0$). Akibatnya, baris-baris pada matriks $K$ menjadi hampir linier dependen (\textit{nearly collinear}), menyebabkan rasio nilai eigen ekstrim ($\kappa(K) = \lambda_{\max}/\lambda_{\min} \gg 10^{12}$).
 
 Galat pembulatan floating-point IEEE 754 dapat memicu nilai eigen terkecil secara semu menjadi nol atau negatif ($\lambda_{\min} \le 0$). Penambahan suku regularisasi diagonal (\textit{jitter}) $\epsilon_{\text{jitter}} I$ secara matematis menggeser seluruh spektrum nilai eigen:
 \begin{equation}
 \lambda_i(\tilde{K}) = \lambda_i(K) + \epsilon_{\text{jitter}} > 0
 \end{equation}
-Hal ini menjamin matriks tetap berstatus definit positif secara numerik tanpa mengubah korelasi spasial antar titik yang berbeda. Nilai $\epsilon_{\text{jitter}} \in [10^{-6}, 10^{-4}]$ terbukti optimal dalam menjaga stabilitas komputasi.
+Hal ini menjamin matriks tetap berstatus definit positif secara numerik tanpa merusak integritas korelasi spasial antar titik yang berbeda. Nilai $\epsilon_{\text{jitter}} \in [10^{-6}, 10^{-4}]$ terbukti optimal dalam menjaga stabilitas komputasi.
 
 % =========================================================================
 % BAGIAN 3: JEMBATAN MENUJU DEEP GAUSSIAN PROCESS & SEGMENTASI CITRA
@@ -308,6 +359,12 @@ Analisis pada bagian sebelumnya menunjukkan bahwa kernel stasioner standar memak
 \begin{thebibliography}{99}
 \bibitem{rasmussen2006gaussian}
 Rasmussen, C. E., \& Williams, C. K. (2006). \textit{Gaussian Processes for Machine Learning}. MIT Press, Cambridge, MA.
+
+\bibitem{neal1995bayesian}
+Neal, R. M. (1995). \textit{Bayesian Learning for Neural Networks}. Ph.D. thesis, University of Toronto.
+
+\bibitem{williams1998computation}
+Williams, C. K. (1998). Computation with infinite neural networks. \textit{Neural Computation}, 10(5), 1203-1216.
 
 \bibitem{damianou2013deep}
 Damianou, A., \& Lawrence, N. D. (2013). Deep Gaussian Processes. \textit{Proceedings of the 16th International Conference on Artificial Intelligence and Statistics (AISTATS)}, PMLR 31:207-215.
