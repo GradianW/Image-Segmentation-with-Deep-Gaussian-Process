@@ -15,12 +15,11 @@
 \usepackage{booktabs}        % Tabel profesional
 \usepackage{tabularx}
 \usepackage{microtype}
-\usepackage{tikz}            % Diagram skematis
-\usetikzlibrary{matrix,decorations.pathreplacing,calc,positioning,arrows.meta}
 \usepackage{xcolor}
-\usepackage{mdframed}        % Kotak highlight untuk pembuktian/definisi
+\usepackage{mdframed}        % Kotak highlight untuk definisi
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{float}
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
@@ -36,14 +35,29 @@
   \def\mathbf#1{#1}%
 }
 
-% Makro sitasi standar
-\newcommand{\citep}[2][]{(Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
-\newcommand{\citet}[2][]{Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+% Makro sitasi fleksibel
+\newcommand{\citep}[2][]{%
+  \def\key{#2}%
+  \def\hoggkey{hogg2013introduction}%
+  \ifx\key\hoggkey
+    (Hogg, McKean, \& Craig, 2013\if\relax\detokenize{#1}\relax\else, #1\fi)%
+  \else
+    (Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)%
+  \fi
+}
+\newcommand{\citet}[2][]{%
+  \def\key{#2}%
+  \def\hoggkey{hogg2013introduction}%
+  \ifx\key\hoggkey
+    Hogg, McKean, \& Craig (2013\if\relax\detokenize{#1}\relax\else, #1\fi)%
+  \else
+    Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)%
+  \fi
+}
 
 % Pengaturan lingkungan matematika
 \newtheorem{definisi}{Definisi}[section]
 \newtheorem{teorema}{Teorema}[section]
-\newtheorem{proposisi}{Proposisi}[section]
 \newtheorem{catatan}{Catatan}[section]
 
 % Path direktori gambar
@@ -62,315 +76,153 @@
 \vspace{-0.6cm}
 
 % =========================================================================
-% BAGIAN 1: KARAKTERISTIK FUNGSI KOVARIANSI & EKSPLORASI HYPERPARAMETER
+% BAGIAN 1: MENCARI SAMPLE DARI DISTRIBUSI GAUSSIAN PROCESS
 % =========================================================================
-\section{Karakteristik Fungsi Kovariansi (Kernel) dan Eksplorasi Hyperparameter}
-\label{sec:kernel_characteristics}
+\section{Mencari Sample dari Distribusi Gaussian Process}
+\label{sec:mekanisme_sampling}
 
-Melanjutkan fondasi regresi dan inferensi pada dokumen sebelumnya, bagian ini menyajikan taksonomi komprehensif fungsi kovariansi (\textit{kernel}) berdasarkan buku teks standar \textit{Gaussian Processes for Machine Learning} \citep{rasmussen2006gaussian}, peran fisis dari masing-masing hyperparameter, serta analisis empiris melalui eksperimen komputasi.
+Sampel fungsi berkorelasi dapat dibangkitkan dari \textit{random noise} independen berkat sifat distribusi Gaussian multivariat yang tetap berdistribusi Gaussian saat dikenai \textit{affine transformation}:
 
-\subsection{Definisi Formal dan Klasifikasi Sifat Kernel}
-
-\begin{definisi}[Fungsi Kovariansi / Kernel]
-Diberikan domain input $\mathcal{X} \subseteq \mathbb{R}^D$, fungsi kovariansi $k: \mathcal{X} \times \mathcal{X} \to \mathbb{R}$ adalah fungsi bernilai riil yang memetakan pasangan titik input $(\mathbf{x}, \mathbf{x}')$ menjadi nilai kovariansi antara variabel acak fungsi laten $f(\mathbf{x})$ dan $f(\mathbf{x}')$:
+\begin{teorema}[Transformasi Affine Vektor Acak Gaussian \citep{hogg2013introduction}]
+\label{thm:affine_trans}
+Jika $\mathbf{u} \sim \mathcal{N}(\mathbf{\mu}_u, \Sigma_u)$ adalah vektor acak Gaussian berdimensi $n$, dan diberikan matriks transformasi konstan $A \in \mathbb{R}^{m \times n}$ serta vektor translasi konstan $\mathbf{b} \in \mathbb{R}^m$, maka vektor hasil transformasi affine $\mathbf{f} = A \mathbf{u} + \mathbf{b}$ terdistribusi secara Gaussian multivariat berdimensi $m$:
 \begin{equation}
-k(\mathbf{x}, \mathbf{x}') = \operatorname{cov}(f(\mathbf{x}), f(\mathbf{x}')) = \mathbb{E}\big[(f(\mathbf{x}) - m(\mathbf{x}))(f(\mathbf{x}') - m(\mathbf{x}'))\big]
+\mathbf{f} = A \mathbf{u} + \mathbf{b} \sim \mathcal{N}\left(A \mathbf{\mu}_u + \mathbf{b}, \; A \Sigma_u A^T\right)
 \end{equation}
-\end{definisi}
+\end{teorema}
 
-\paragraph{Syarat Keabsahan Kernel}: Agar fungsi $k(\mathbf{x}, \mathbf{x}')$ merupakan fungsi kovariansi yang sah, matriks Gram $K \in \mathbb{R}^{N \times N}$ dengan elemen $K_{ij} = k(\mathbf{x}_i, \mathbf{x}_j)$ harus bersifat \textbf{Simetris dan Positif Semidefinit} (\textit{Positive Semi-Definite} / PSD), yaitu:
-\begin{equation}
-\mathbf{v}^T K \mathbf{v} \ge 0, \quad \forall \mathbf{v} \in \mathbb{R}^N \setminus \{\mathbf{0}\}
-\end{equation}
-Sifat PSD menjamin bahwa variansi dari kombinasi linear fungsi laten tidak pernah bernilai negatif.
+Karena komputer hanya mampu membangkitkan \textit{noise} independen $\mathbf{u} \sim \mathcal{N}(\mathbf{0}, I_{N_*})$, kita memerlukan transformasi affine untuk membentuk korelasi antar-titik. Berdasarkan Teorema~\ref{thm:affine_trans}, kita mengalikan \textit{noise} tersebut dengan faktor Cholesky $L$ (di mana $\tilde{K} = L L^T$) dan menambahkan nilai rata-rata $\mathbf{m}_*$. Vektor sampel $\mathbf{f}_* = \mathbf{m}_* + L\mathbf{u}$ yang terbentuk secara eksak memenuhi:
+\begin{align}
+\mathbb{E}[\mathbf{f}_*] &= \mathbf{m}_* + L \mathbb{E}[\mathbf{u}] = \mathbf{m}_* + L(\mathbf{0}) = \mathbf{m}_* \\
+\operatorname{cov}(\mathbf{f}_*) &= \mathbb{E}\left[(L\mathbf{u})(L\mathbf{u})^T\right] = L \, \mathbb{E}[\mathbf{u}\mathbf{u}^T] L^T = L I_{N_*} L^T = L L^T = \tilde{K} \approx K(X_*, X_*)
+\end{align}
+sehingga $\mathbf{f}_* \sim \mathcal{N}(\mathbf{m}_*, K)$.
 
-\paragraph{Klasifikasi Sifat Geometris Kernel}:
+\subsection{Algoritma Komputasi Sampling GP}
+
+Sampling GP diimplementasikan melalui tahapan berikut:
 \begin{enumerate}
-    \item \textbf{Kernel Stasioner}: Fungsi kovariansi invarian terhadap translasi pada ruang input, yaitu nilai kovariansi hanya bergantung pada vektor selisih $\boldsymbol{\tau} = \mathbf{x} - \mathbf{x}'$:
+    \item \textbf{Evaluasi \& Regularisasi Matriks Kovariansi}: Hitung matriks $K = K(X_*, X_*)$ dan tambahkan nilai \textit{jitter} diagonal $\epsilon \approx 10^{-6}$ untuk menjamin sifat definit positif terhadap galat numerik:
     \begin{equation}
-    k(\mathbf{x}, \mathbf{x}') = k(\mathbf{x} - \mathbf{x}') = k(\boldsymbol{\tau})
+    \tilde{K} = K + \epsilon I_{N_*}
     \end{equation}
-    \item \textbf{Kernel Isotropik}: Subkelas dari kernel stasioner di mana kovariansi bersifat invarian terhadap rotasi dan hanya bergantung pada jarak skalar Euclidean $r = \|\mathbf{x} - \mathbf{x}'\|_2$:
+    \item \textbf{Faktorisasi Cholesky}: Dekomposisi $\tilde{K}$ menjadi matriks segitiga bawah unik $L \in \mathbb{R}^{N_* \times N_*}$:
     \begin{equation}
-    k(\mathbf{x}, \mathbf{x}') = k(\|\mathbf{x} - \mathbf{x}'\|_2) = k(r)
+    \tilde{K} = L L^T
     \end{equation}
-    \item \textbf{Kernel Non-Stasioner}: Nilai kovariansi bergantung secara eksplisit pada lokasi absolut titik $\mathbf{x}$ dan $\mathbf{x}'$ di ruang input (contoh: fungsi berbasis produk titik $\mathbf{x}^T \mathbf{x}'$).
+    \item \textbf{Generating Random Noise}: Bangkitkan vektor \textit{noise} baku $\mathbf{u} \sim \mathcal{N}(\mathbf{0}, I_{N_*})$. Untuk $S$ kurva sekaligus, gunakan matriks $U \in \mathbb{R}^{N_* \times S}$ dengan $U_{ij} \sim \mathcal{N}(0, 1)$.
+    \item \textbf{Transformasi Affine}: Hitung sampel fungsi melalui:
+    \begin{equation}
+    \mathbf{f}_* = \mathbf{m}_* + L \mathbf{u} \quad \left(\text{atau } F = \mathbf{m}_* \mathbf{1}_S^T + L U \text{ untuk } S \text{ sampel}\right)
+    \end{equation}
 \end{enumerate}
 
-\subsection{Katalog Fungsi Kovariansi Buku Teks Rasmussen \& Williams}
+\subsection{Sampling Prior versus Posterior}
 
-Berdasarkan \citet{rasmussen2006gaussian} (Bab 4 dan Tabel 4.1), fungsi-fungsi kovariansi standar yang fundamental terangkum dalam Tabel~\ref{tab:kernel_catalogue}.
+Mekanisme transformasi Cholesky berlaku serupa baik sebelum maupun sesudah mengamati data observasi $(X, \mathbf{y})$:
+\begin{itemize}
+    \item \textbf{Prior Sampling}: Menggunakan mean $\mathbf{m}_*$ dan matriks kovariansi $K(X_*, X_*)$:
+    \begin{equation}
+    \mathbf{f}_* \sim \mathcal{N}\big(\mathbf{\mathbf{m}_*}, K(X_*, X_*)\big) \implies \mathbf{f}_* = \mathbf{m}_* + L \mathbf{u}, \quad \text{dengan } L = \operatorname{cholesky}\big(K(X_*, X_*) + \epsilon I_{N_*}\big)
+    \end{equation}
+    \item \textbf{Posterior Sampling}: Menggunakan distribusi posterior Gaussian Process Regression \citep{rasmussen2006gaussian}:
+    \begin{equation}
+    \mathbf{f}_* \mid X, \mathbf{y}, X_* \sim \mathcal{N}\big( \bar{\mathbf{f}}_*, \operatorname{cov}(\mathbf{f}_*) \big)
+    \end{equation}
+    dengan parameter analitik:
+    \begin{align}
+    \bar{\mathbf{f}}_* &= K(X_*, X) \left[ K(X, X) + \sigma_n^2 I_N \right]^{-1} \mathbf{y} \\
+    \operatorname{cov}(\mathbf{f}_*) &= K(X_*, X_*) - K(X_*, X) \left[ K(X, X) + \sigma_n^2 I_N \right]^{-1} K(X, X_*)
+    \end{align}
+    Sampel fungsi posterior dihitung melalui:
+    \begin{equation}
+    \mathbf{f}_{*,\text{post}} = \bar{\mathbf{f}}_* + L_{\text{post}} \mathbf{u}, \quad \text{dengan } L_{\text{post}} = \operatorname{cholesky}\big(\operatorname{cov}(\mathbf{f}_*) + \epsilon I_{N_*}\big)
+    \end{equation}
+\end{itemize}
 
-\begin{table}[h!]
+% =========================================================================
+% BAGIAN 2: EKSPLORASI FUNGSI KOVARIANSI (KERNEL)
+% =========================================================================
+\section{Eksplorasi Fungsi Kovariansi (Kernel)}
+\label{sec:eksplorasi_kernel}
+
+\subsection{Katalog dan Karakteristik Kernel Baku}
+
+\begin{table}[H]
 \centering
 \small
-\renewcommand{\arraystretch}{1.3}
-\begin{tabularx}{\textwidth}{lp{6.2cm}lX}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{p{3.5cm}p{5.8cm}p{2.2cm}X}
 \toprule
-\textbf{Nama Kernel} & \textbf{Formula Matematis $k(r)$ / $k(\mathbf{x},\mathbf{x}')$} & \textbf{Sifat} & \textbf{Hyperparameter} \\
+\textbf{Nama Kernel} & \textbf{Formula $k(r)$ / $k(\mathbf{x},\mathbf{x}')$} & \textbf{Sifat} & \textbf{Hyperparameter} \\
 \midrule
 \textbf{Squared Exponential} & $\sigma_f^2 \exp\left(-\frac{r^2}{2l^2}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
+\textbf{Exponential ($\nu=1/2$)} & $\sigma_f^2 \exp\left(-\frac{r}{l}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
 \textbf{Matérn ($\nu=3/2$)} & $\sigma_f^2 \left(1 + \frac{\sqrt{3}r}{l}\right) \exp\left(-\frac{\sqrt{3}r}{l}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
 \textbf{Matérn ($\nu=5/2$)} & $\sigma_f^2 \left(1 + \frac{\sqrt{5}r}{l} + \frac{5r^2}{3l^2}\right) \exp\left(-\frac{\sqrt{5}r}{l}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
-\textbf{Exponential ($\nu=1/2$)} & $\sigma_f^2 \exp\left(-\frac{r}{l}\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0$ \\
 \textbf{Rational Quadratic} & $\sigma_f^2 \left(1 + \frac{r^2}{2\alpha l^2}\right)^{-\alpha}$ & Stasioner & $l > 0, \sigma_f^2 > 0, \alpha > 0$ \\
-\textbf{$\gamma$-Exponential} & $\sigma_f^2 \exp\left(-\left(\frac{r}{l}\right)^\gamma\right)$ & Stasioner & $l > 0, \sigma_f^2 > 0, \gamma \in (0,2]$ \\
-\textbf{Periodic} & $\sigma_f^2 \exp\left(-\frac{2\sin^2(\pi r / p)}{l^2}\right)$ & Stasioner & $p > 0, l > 0, \sigma_f^2 > 0$ \\
-\textbf{Cosine} & $\sigma_f^2 \cos\left(\frac{2\pi r}{p}\right)$ & Stasioner & $p > 0, \sigma_f^2 > 0$ \\
 \textbf{Linear (Dot Product)} & $\sigma_b^2 + \sigma_v^2 (\mathbf{x}-c)(\mathbf{x}'-c)$ & Non-stasioner & $\sigma_b^2 \ge 0, \sigma_v^2 > 0, c \in \mathbb{R}$ \\
-\textbf{Neural Network (Erf)} & $\sigma_f^2 \frac{2}{\pi} \arcsin\left(\frac{2 \tilde{\mathbf{x}}^T \Sigma \tilde{\mathbf{x}}'}{\sqrt{(1+2\tilde{\mathbf{x}}^T\Sigma\tilde{\mathbf{x}})(1+2\tilde{\mathbf{x}}'^T\Sigma\tilde{\mathbf{x}}')}}\right)$ & Non-stasioner & $\Sigma = \operatorname{diag}(\sigma_0^2, \sigma_v^2), \sigma_f^2 > 0$ \\
-\textbf{White Noise} & $\sigma_n^2 \delta(\mathbf{x} - \mathbf{x}')$ & Stasioner & $\sigma_n^2 > 0$ \\
 \bottomrule
 \end{tabularx}
 \caption{Katalog fungsi kovariansi standar dari buku teks Rasmussen \& Williams (2006).}
-\label{tab:kernel_catalogue}
+\label{tab:katalog_kernel}
 \end{table}
 
-\subsection{Analisis Efek Fisis dan Geometri Hyperparameter}
+Karakteristik kelas kernel baku dirangkum pada Tabel~\ref{tab:katalog_kernel}. Peluruhan nilai kovariansi dan sampel fungsi prior $\mathbf{f} \sim \mathcal{GP}(\mathbf{0}, K)$ disajikan pada Gambar~\ref{fig:kernel_profiles} dan Gambar~\ref{fig:sample_paths}. Visualisasi memperlihatkan variasi karakteristik kurva sampel: mulai dari lintasan kasar bergerigi ($\nu=1/2$), berfluktuasi teratur ($\nu=3/2, 5/2$), sangat mulus ($\text{SE}$), hingga perilaku non-stasioner ($\text{Linear}$).
 
-Hyperparameter pada fungsi kovariansi bertindak sebagai pengendali utama ruang fungsi prior $\mathcal{GP}(0, k)$. Karakteristik fisis dari masing-masing parameter diuraikan sebagai berikut:
-
-\begin{enumerate}
-    \item \textbf{Lengthscale ($l$)}: Mengatur skala jarak spasial di mana dua titik masukan saling mempertahankan korelasi yang signifikan.
-    \begin{itemize}
-        \item Nilai $l$ kecil: Kovariansi meluruh dengan sangat cepat seiring bertambahnya jarak. Fungsi berfluktuasi dengan frekuensi spasial tinggi.
-        \item Nilai $l$ besar: Titik-titik yang berjauhan tetap berkorelasi kuat, memaksa kurva fungsi menjadi kaku, datar, dan lambat berubah.
-    \end{itemize}
-
-    \item \textbf{Signal Variance ($\sigma_f^2$)}: Mengatur skala variansi vertikal (amplitudo) fungsi di sekitar mean $m(\mathbf{x}) = 0$. Karena $\operatorname{Var}[f(\mathbf{x})] = k(\mathbf{x}, \mathbf{x}) = \sigma_f^2$, parameter ini menentukan lebar rentang simpangan kurva sampel ($\pm 2\sigma_f$ untuk pita kepercayaan 95\%).
-
-    \item \textbf{Scale Mixture ($\alpha$) pada Rational Quadratic}: Kernel RQ merepresentasikan superposisi kontinu dari kernel Squared Exponential dengan berbagai variasi \textit{lengthscale}:
-    \begin{equation}
-    k_{\text{RQ}}(r) = \int_0^\infty \exp\left(-\frac{\tau r^2}{2}\right) p(\tau; \alpha, l) \, d\tau, \quad \tau = l^{-2} \sim \operatorname{Gamma}(\alpha, \alpha l_0^2)
-    \end{equation}
-    Nilai $\alpha$ kecil mengizinkan variasi multi-skala (fluktuasi lokal cepat berdampingan dengan tren global lambat). Ketika $\alpha \to \infty$, kernel RQ mereduksi tepat ke kernel Squared Exponential dengan skala tunggal $l_0$.
-
-    \item \textbf{Periode ($p$) pada Periodic \& Cosine}: Menentukan panjang gelombang spasial perulangan siklus ($f(x + p) \approx f(x)$). Parameter $l$ pada kernel periodik mengatur elastisitas kehalusan gelombang di dalam satu siklus.
-
-    \item \textbf{Titik Tumpu ($c$) dan Variansi Kemiringan ($\sigma_v^2$) pada Linear Kernel}: Menghasilkan variansi prior non-stasioner $\operatorname{Var}[f(x)] = \sigma_b^2 + \sigma_v^2(x - c)^2$. Variansi bernilai minimum pada titik $x = c$ dan melebar secara kuadratik membentuk corong ketidakpastian (\textit{fan shape}) seiring menjauh dari $c$.
-
-    \item \textbf{Bobot Parameter $\Sigma = \operatorname{diag}(\sigma_0^2, \sigma_v^2)$ pada Neural Network Kernel}: Williams (1998) membuktikan bahwa kernel ini ekuivalen dengan jaringan saraf tiruan lapis tunggal dengan jumlah unit tersembunyi tak terhingga \citep{neal1995bayesian}. Parameter $\sigma_0^2$ mengontrol variansi bias dan $\sigma_v^2$ mengontrol kecuraman transisi sigmoid antar daerah domain.
-\end{enumerate}
-
-\subsection{Hasil Eksperimen Komputasi dan Visualisasi Ruang Fungsi}
-
-Untuk memvalidasi pemahaman teoretis di atas, dilakukan serangkaian simulasi komputasi numerik.
-
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{fig1_kernel_profiles.pdf}
-\caption{Profil kurva kovariansi $k(r)$ terhadap jarak Euclidean $r = \|\mathbf{x}-\mathbf{x}'\|$: (a) Perbandingan peluruhan kovariansi kernel stasioner isotropik; (b) Karakteristik osilasi siklik kernel periodik dan kosinus.}
+\includegraphics[width=0.98\textwidth]{fig1_kernel_profiles.pdf}
+\caption{Karakteristik fungsi kovariansi dan sampel fungsi prior untuk kernel Mat\'ern serta Rational Quadratic.}
 \label{fig:kernel_profiles}
 \end{figure}
 
-Gambar~\ref{fig:kernel_profiles} memperlihatkan bagaimana profil $k(r)$ meluruh terhadap jarak Euclidean $r$. Pada kernel Squared Exponential dan Matérn, kurva meluruh monotonik dari nilai puncak $k(0) = \sigma_f^2 = 1.0$ menuju 0, sedangkan kernel periodik mempertahankan korelasi berulang secara periodik pada jarak kelipatan $p$.
-
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{fig2_sample_paths_kernels.pdf}
-\caption{Galeri realisasi sampel fungsi prior $\mathbf{f} \sim \mathcal{GP}(0, K)$ yang dibangkitkan dari 6 kelas kernel berbeda dari buku teks Rasmussen \& Williams.}
+\caption{Sampel fungsi prior $\mathbf{f} \sim \mathcal{GP}(\mathbf{0}, K)$ untuk enam kelas kernel baku.}
 \label{fig:sample_paths}
 \end{figure}
 
-Gambar~\ref{fig:sample_paths} menampilkan galeri 4 realisasi kurva sampel fungsi prior acak $\mathbf{f} \sim \mathcal{GP}(0, K)$ untuk masing-masing kelas kernel. Terlihat jelas bahwa kernel stasioner (SE, Matérn, RQ, Periodic) menghasilkan variansi yang seragam di seluruh ruang input, sementara kernel non-stasioner (Linear dan Neural Network) memperlihatkan variansi fungsi yang berubah secara dramatis tergantung posisi koordinat $x$.
+Pengaruh fisis dan geometris variasi hyperparameter (Gambar~\ref{fig:hyperparameter_effects}) dirangkum sebagai berikut \citep{rasmussen2006gaussian}:
+\begin{itemize}
+    \item \textbf{Lengthscale ($l$)} (Gambar~\ref{fig:hyperparameter_effects}a): Mengatur jangkauan korelasi horizontal; $l$ kecil menghasilkan fluktuasi cepat, sedangkan $l$ besar menghasilkan kurva yang lambat bervariasi.
+    \item \textbf{Signal Variance ($\sigma_f^2$)} (Gambar~\ref{fig:hyperparameter_effects}b): Mengatur skala amplitudo vertikal.
+    \item \textbf{Parameter $\nu$}: Mengontrol tingkat kehalusan kurva pada kelas Mat\'ern.
+    \item \textbf{Scale Mixture ($\alpha$)} (Gambar~\ref{fig:hyperparameter_effects}c): Mengatur variasi multi-skala pada Rational Quadratic.
+    \item \textbf{Parameter Linear ($c, \sigma_v^2, \sigma_b^2$)} (Gambar~\ref{fig:hyperparameter_effects}d): Mengatur titik tumpu $c$ dan variansi non-stasioner $\operatorname{Var}[f(x)] = \sigma_b^2 + \sigma_v^2(x - c)^2$.
+\end{itemize}
 
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.98\textwidth]{fig3_hyperparameter_effects.pdf}
-\caption{Eksperimen komputasi pengaruh variasi nilai hyperparameter pada fungsi prior: (a) Variasi $l$ pada SE; (b) Variasi $\sigma_f^2$ pada SE; (c) Variasi $\alpha$ pada RQ; (d) Variasi $p$ pada Periodic; (e) Variasi $c$ pada Linear; (f) Variasi $\sigma_v$ pada Neural Network.}
+\includegraphics[width=0.95\textwidth]{fig3_hyperparameter_effects.pdf}
+\caption{Pengaruh variasi hyperparameter terhadap karakteristik sampel fungsi prior GP.}
 \label{fig:hyperparameter_effects}
 \end{figure}
 
-Hasil eksperimen variasi nilai hyperparameter pada Gambar~\ref{fig:hyperparameter_effects} menegaskan peran geometris setiap parameter:
+\subsection{Operasi Aljabar Kernel}
+\label{subsec:operasi_kernel}
+
+Kombinasi kernel dasar menghasilkan fungsi kovariansi baru yang tetap valid dan definit positif \citep{rasmussen2006gaussian}:
 \begin{itemize}
-    \item \textbf{Panel (a) \& (b)}: Variasi $l \in \{0.3, 1.0, 2.5\}$ mengubah frekuensi osilasi horizontal secara drastis, sementara variasi $\sigma_f^2 \in \{0.25, 1.0, 4.0\}$ mengubah skala vertikal kurva.
-    \item \textbf{Panel (c)}: Nilai $\alpha = 0.1$ pada RQ menghasilkan fungsi yang memuat variasi detail lokal mikro di atas gelombang makro, sementara $\alpha = 20.0$ menghasilkan kurva yang identik dengan SE skala tunggal.
-    \item \textbf{Panel (d)}: Variasi $p \in \{1.0, 2.0, 4.0\}$ mengubah jarak spasial antar puncak gelombang periodik.
-    \item \textbf{Panel (e) \& (f)}: Pergeseran nilai $c \in \{-1.5, 0.0, 1.5\}$ menggeser titik tumpu variansi minimum garis linear, sedangkan pembesaran $\sigma_v$ pada Neural Network kernel mempertegas daerah transisi non-linear.
+    \item \textbf{Penjumlahan}: $k(\mathbf{x}, \mathbf{x}') = k_1(\mathbf{x}, \mathbf{x}') + k_2(\mathbf{x}, \mathbf{x}')$ \\
+    Merepresentasikan superposisi proses independen $f(\mathbf{x}) = f_1(\mathbf{x}) + f_2(\mathbf{x})$.
+    
+    \item \textbf{Perkalian}: $k(\mathbf{x}, \mathbf{x}') = k_1(\mathbf{x}, \mathbf{x}') \cdot k_2(\mathbf{x}, \mathbf{x}')$ \\
+    Merepresentasikan interaksi atau modulasi proses $f(\mathbf{x}) = f_1(\mathbf{x}) \cdot f_2(\mathbf{x})$.
 \end{itemize}
-
-% =========================================================================
-% BAGIAN 2: MEKANISME SAMPLING CHOLESKY
-% =========================================================================
-\section{Mekanisme Generatif dan Sampling Fungsi via Dekomposisi Cholesky}
-\label{sec:cholesky_sampling}
-
-Salah satu keunggulan utama dari perumusan \textit{Gaussian Process} adalah kemampuannya untuk membangkitkan realisasi fungsi konkret (\textit{function sampling}) dari distribusi ruang fungsi. Bagian ini menguraikan konsep fundamental, intuisi matematis, serta tahapan komputasi langkah demi langkah dari proses sampling tersebut.
-
-\subsection{Motivasi Fundamental dan Masalah Generatif}
-
-Secara fisik dan komputasional, sebuah komputer digital tidak dapat langsung membangkitkan ``fungsi kontinu berdimensi tak hingga'' secara utuh. Generator bilangan acak standar pada pustaka komputasi modern hanya mampu menghasilkan deret variabel acak Gaussian baku yang saling bebas (\textit{independent standard normal random variables}):
-\begin{equation}
-u_i \sim \mathcal{N}(0, 1) \quad \implies \quad \mathbf{u} = [u_1, \dots, u_{N_*}]^T \sim \mathcal{N}(\mathbf{0}, I_{N_*})
-\end{equation}
-Jika vektor $\mathbf{u}$ ini di-plot secara langsung terhadap sumbu koordinat input, hasilnya hanyalah derau acak putih (\textit{white noise}) yang terputus-putus dan tidak memiliki keterkaitan spasial sama sekali.
-
-\paragraph{Tantangan Generatif}: Bagaimana mentransformasikan vektor keacakan murni $\mathbf{u}$ yang tidak berkorelasi tersebut menjadi sebuah kurva kontinu $\mathbf{f}$ yang halus, bergelombang secara elegan, dan mematuhi struktur korelasi matriks kovariansi $K = k(X_*, X_*)$?
-
-\subsection{Jembatan Konseptual: Dari Skalar 1D Menuju Ruang Multivariat}
-
-Untuk memahami ide dasar penyelesaiannya, kita tinjau analogi transformasi variabel acak Gaussian satu dimensi (skalar) menuju multivariat:
-
-\begin{enumerate}
-    \item \textbf{Kasus 1 Dimensi (Skalar)}:  
-    Jika kita memiliki variabel acak baku $u \sim \mathcal{N}(0, 1)$, kita dapat mengubahnya menjadi variabel acak target $x \sim \mathcal{N}(\mu, \sigma^2)$ melalui perkalian dengan \textit{akar variansi} (standar deviasi $\sigma$) lalu digeser sebesar mean $\mu$:
-    \begin{equation}
-    x = \mu + \sigma \cdot u \quad \implies \quad \mathbb{V}[x] = \mathbb{V}[\sigma u] = \sigma^2 \mathbb{V}[u] = \sigma^2 (1) = \sigma^2
-    \end{equation}
-
-    \item \textbf{Kasus Multidimensi (Vektor Titik Fungsi)}:  
-    Pada ruang fungsi yang dievaluasi pada $N_*$ titik, target kita adalah membangkitkan vektor $\mathbf{f} \sim \mathcal{N}(\mathbf{m}, K)$, di mana $K \in \mathbb{R}^{N_* \times N_*}$ adalah matriks kovariansi penuh. Analog dengan kasus 1D, kita membutuhkan sebuah \textbf{``matriks akar kuadrat''} $L$ sedemikian sehingga:
-    \begin{equation}
-    K = L L^T
-    \end{equation}
-    Persamaan faktorisasi ini diselesaikan secara unik melalui \textbf{Dekomposisi Cholesky}, di mana $L \in \mathbb{R}^{N_* \times N_*}$ adalah matriks segitiga bawah (\textit{lower triangular matrix}) dengan entri diagonal positif ($L_{ii} > 0$). Vektor fungsi sampel kemudian dibangkitkan melalui transformasi linear:
-    \begin{equation}
-    \mathbf{f} = \mathbf{m} + L \mathbf{u}
-    \end{equation}
-\end{enumerate}
-
-\subsection{Pembuktian Teoretis Transformasi Linear}
-
-\begin{teorema}[Transformasi Linear Vektor Acak Gaussian]
-Misalkan $\mathbf{u} \sim \mathcal{N}(\mathbf{0}, I_{N_*})$ adalah vektor acak Gaussian baku, dan $L \in \mathbb{R}^{N_* \times N_*}$ adalah matriks segitiga bawah hasil faktorisasi Cholesky dari matriks kovariansi simetris positif definit $K = L L^T$. Maka kombinasi afinitas $\mathbf{f} = \mathbf{m} + L \mathbf{u}$ berdistribusi eksak menurut Gaussian multivariat $\mathcal{N}(\mathbf{m}, K)$.
-\end{teorema}
-
-\begin{proof}
-Distribusi Gaussian tertutup (\textit{closed}) di bawah transformasi affine. Karakteristik distribusi $\mathbf{f}$ dibuktikan melalui momen pertama dan kedua terpusat:
-\begin{enumerate}
-    \item \textbf{Nilai Harapan (Mean)}:
-    \begin{equation}
-    \mathbb{E}[\mathbf{f}] = \mathbb{E}[\mathbf{m} + L \mathbf{u}] = \mathbf{m} + L \, \mathbb{E}[\mathbf{u}] = \mathbf{m} + L (\mathbf{0}) = \mathbf{m}
-    \end{equation}
-    \item \textbf{Matriks Kovariansi}:
-    \begin{align}
-    \operatorname{cov}(\mathbf{f}) &= \mathbb{E}\left[ (\mathbf{f} - \mathbb{E}[\mathbf{f}])(\mathbf{f} - \mathbb{E}[\mathbf{f}])^T \right] \nonumber \\
-    &= \mathbb{E}\left[ (L \mathbf{u})(L \mathbf{u})^T \right] = \mathbb{E}\left[ L \mathbf{u} \mathbf{u}^T L^T \right] \nonumber \\
-    &= L \, \mathbb{E}\left[ \mathbf{u} \mathbf{u}^T \right] L^T = L \, I_{N_*} L^T = L L^T = K
-    \end{align}
-\end{enumerate}
-Terbukti secara matematis bahwa $\mathbf{f} \sim \mathcal{N}(\mathbf{m}, K)$.
-\end{proof}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\textwidth]{fig4_cholesky_sampling_workflow.pdf}
-\caption{Visualisasi alur kerja komputasi sampling fungsi: (a) Matriks kovariansi Gram $K$; (b) Faktor segitiga bawah Cholesky $L$; (c) Pembangkitan derau acak independen $\mathbf{u} \sim \mathcal{N}(\mathbf{0}, I)$; (d) Realisasi kurva fungsi halus hasil transformasi linear $\mathbf{f} = L\mathbf{u}$.}
-\label{fig:cholesky_workflow}
-\end{figure}
-
-\subsection{Prosedur Sampling Langkah demi Langkah Beserta Alasannya}
-
-Secara komputasional, proses pengambilan sampel dari distribusi Gaussian Process dieksekusi melalui lima tahapan berikut:
-
-\begin{enumerate}
-    \item \textbf{Langkah 1: Diskritisasi Domain Input ($X_*$)}
-    \begin{itemize}
-        \item \textit{Tindakan}: Menentukan $N_*$ titik koordinat evaluasi pada domain input yang tersusun rapat, $X_* = [\mathbf{x}_{*1}, \dots, \mathbf{x}_{*N_*}]^T \in \mathbb{R}^{N_* \times D}$.
-        \item \textit{Alasan}: Komputer tidak dapat mengevaluasi domain kontinu secara tak hingga titik, sehingga fungsi diwakili oleh sampel titik diskret berkepadatan tinggi.
-    \end{itemize}
-
-    \item \textbf{Langkah 2: Evaluasi Matriks Kovariansi ($K = k(X_*, X_*)$)}
-    \begin{itemize}
-        \item \textit{Tindakan}: Menghitung nilai kernel $K_{ij} = k(\mathbf{x}_{*i}, \mathbf{x}_{*j})$ untuk setiap pasangan titik uji.
-        \item \textit{Alasan}: Matriks $K$ bertindak sebagai ``pemberi aturan korelasi''. Pasangan titik yang berjarak sangat dekat memiliki nilai kovariansi mendekati $\sigma_f^2$ (dipaksa bernilai mirip), sedangkan titik yang berjauhan memiliki kovariansi mendekati 0.
-    \end{itemize}
-
-    \item \textbf{Langkah 3: Stabilisasi Numerik dan Dekomposisi Cholesky}
-    \begin{itemize}
-        \item \textit{Tindakan}: Menambahkan konstanta kestabilan (\textit{jitter}) $\tilde{K} = K + \epsilon_{\text{jitter}} I_{N_*}$ ($\epsilon_{\text{jitter}} = 10^{-6}$), kemudian menghitung matriks segitiga bawah $L = \operatorname{cholesky}(\tilde{K})$.
-        \item \textit{Alasan}: Dekomposisi Cholesky memiliki kompleksitas komputasi yang sangat efisien ($\frac{1}{3}N_*^3$ FLOPs) dan hanya terdefinisi pada matriks definit positif. Penambahan \textit{jitter} mencegah kegagalan dekomposisi akibat galat pembulatan floating-point pada matriks dengan kondisi buruk (\textit{ill-conditioned}).
-    \end{itemize}
-
-    \item \textbf{Langkah 4: Pembangkitan Vektor Keacakan Murni ($\mathbf{u}$)}
-    \begin{itemize}
-        \item \textit{Tindakan}: Mengambil $N_*$ bilangan acak independen $\mathbf{u} \sim \mathcal{N}(\mathbf{0}, I_{N_*})$.
-        \item \textit{Alasan}: Vektor $\mathbf{u}$ menyediakan variasi stokastik murni. Setiap sampel kurva baru yang ingin dibuat cukup dibangkitkan dari vektor $\mathbf{u}$ acak yang baru.
-    \end{itemize}
-
-    \item \textbf{Langkah 5: Transformasi Linear ($\mathbf{f} = \mathbf{m} + L \mathbf{u}$)}
-    \begin{itemize}
-        \item \textit{Tindakan}: Mengalikan matriks segitiga bawah $L$ dengan vektor acak $\mathbf{u}$ dan menambahkan vektor mean $\mathbf{m}$.
-        \item \textit{Alasan}: Operasi perkalian matriks $L\mathbf{u}$ berfungsi mengikat (\textit{mixing}) variabel-variabel acak independen tadi dengan bobot-bobot kovariansi pada baris matriks $L$, sehingga menghasilkan realisasi kurva yang kontinu dan mulus.
-    \end{itemize}
-\end{enumerate}
-
-\subsection{Sampling Prior versus Sampling Posterior}
-
-Mekanisme sampling di atas berlaku identik baik untuk distribusi sebelum observasi data (\textbf{Prior}) maupun sesudah observasi data (\textbf{Posterior}):
-
-\begin{itemize}
-    \item \textbf{Sampling Prior}:
-    Menggunakan $\mathbf{m}_* = \mathbf{0}$ dan matriks kovariansi $K_* = K(X_*, X_*)$. Seluruh sampel fungsi berfluktuasi bebas di dalam pita ketidakpastian seragam $\pm 2\sigma_f$.
-    \item \textbf{Sampling Posterior} (Terkondisi pada data training $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^N$):
-    Menggunakan mean prediktif $\bar{\mathbf{f}}_*$ dan matriks kovariansi prediktif $\Sigma_*$:
-    \begin{align}
-    \bar{\mathbf{f}}_* &= K(X_*, X) \left[ K(X, X) + \sigma_n^2 I_N \right]^{-1} \mathbf{y} \\
-    \Sigma_* &= K(X_*, X_*) - K(X_*, X) \left[ K(X, X) + \sigma_n^2 I_N \right]^{-1} K(X, X_*)
-    \end{align}
-    Faktorisasi Cholesky diterapkan pada kovariansi prediktif: $L_{\text{post}} = \operatorname{cholesky}(\Sigma_* + \epsilon I)$. Sampel posterior dihitung melalui:
-    \begin{equation}
-    \mathbf{f}_{*,\text{post}}^{(s)} = \bar{\mathbf{f}}_* + L_{\text{post}} \mathbf{u}^{(s)}
-    \end{equation}
-    Pada lokasi titik di dekat training data, variansi pada $\Sigma_*$ bernilai mendekati nol ($L_{\text{post}} \approx \mathbf{0}$), sehingga seluruh realisasi sampel fungsi terkunci rapat dan dipaksa melewati nilai target observasi $y_i$.
-\end{itemize}
-
-\begin{figure}[h!]
-\centering
-\includegraphics[width=0.95\textwidth]{fig5_prior_vs_posterior_samples.pdf}
-\caption{Evolusi realisasi sampel fungsi: (Kiri) Sampel prior berosilasi bebas dengan ketidakpastian merata; (Kanan) Sampel posterior terkonsentrasi rapat mengikuti data observasi training.}
-\label{fig:prior_posterior_samples}
-\end{figure}
-
-\subsection{Analisis Kestabilan Numerik dan Penanganan \textit{Jitter}}
-
-Pada evaluasi grid padat, jarak antar titik evaluasi tetangga sangat kecil ($|x_i - x_{i+1}| \to 0$). Akibatnya, baris-baris pada matriks $K$ menjadi hampir linier dependen (\textit{nearly collinear}), menyebabkan rasio nilai eigen ekstrim ($\kappa(K) = \lambda_{\max}/\lambda_{\min} \gg 10^{12}$).
-
-Galat pembulatan floating-point IEEE 754 dapat memicu nilai eigen terkecil secara semu menjadi nol atau negatif ($\lambda_{\min} \le 0$). Penambahan suku regularisasi diagonal (\textit{jitter}) $\epsilon_{\text{jitter}} I$ secara matematis menggeser seluruh spektrum nilai eigen:
-\begin{equation}
-\lambda_i(\tilde{K}) = \lambda_i(K) + \epsilon_{\text{jitter}} > 0
-\end{equation}
-Hal ini menjamin matriks tetap berstatus definit positif secara numerik tanpa merusak integritas korelasi spasial antar titik yang berbeda. Nilai $\epsilon_{\text{jitter}} \in [10^{-6}, 10^{-4}]$ terbukti optimal dalam menjaga stabilitas komputasi.
-
-% =========================================================================
-% BAGIAN 3: JEMBATAN MENUJU DEEP GAUSSIAN PROCESS & SEGMENTASI CITRA
-% =========================================================================
-\section{Keterbatasan Kernel Stasioner dan Motivasi Deep Gaussian Process}
-\label{sec:dgp_motivation}
-
-Analisis pada bagian sebelumnya menunjukkan bahwa kernel stasioner standar memaksakan asumsi ketergantungan spasial yang seragam di seluruh ruang input. Pada tugas segmentasi citra (\textit{Image Segmentation}), karakteristik ini menghadapi tantangan fundamental:
-
-\begin{enumerate}
-    \item \textbf{Ketidakseragaman Spasial (\textit{Spatial Non-Stationarity})}:
-    Citra terdiri dari wilayah latar homogen berdampingan dengan tepi objek tajam (\textit{sharp object edges}). Kernel stasioner tunggal memicu fenomena \textit{over-smoothing}, di mana batas segmen piksel menjadi kabur.
-    \item \textbf{Arsitektur Deep Gaussian Process (DGP)}:
-    Untuk memodelkan fungsi non-stasioner tanpa merancang kernel manual yang rumit, DGP menyusun hirarki komposisi proses stokastik laten:
-    \begin{equation}
-    \mathbf{y} = f_L\big(f_{L-1}(\dots f_1(\mathbf{x})\dots)\big), \quad \text{dengan } f_\ell \sim \mathcal{GP}(m_\ell, k_\ell)
-    \end{equation}
-    Lapisan-lapisan GP laten awal bertindak sebagai transformasi non-linear ruang input (\textit{input space warping}), mentranslasikan koordinat spasial piksel menjadi representasi manifold laten non-stasioner sebelum dievaluasi pada lapisan klasifikasi segmentasi.
-    \item \textbf{Propagasi Ketidakpastian via Sampling}:
-    Inferensi pada DGP mengandalkan propagasi sampel fungsi antar lapisan laten via faktorisasi Cholesky dan aproksimasi variasional (\textit{Variational Inference}), menjadikan pemahaman sampling fungsi sebagai kunci utama implementasi sistem.
-\end{enumerate}
 
 % =========================================================================
 % DAFTAR PUSTAKA
 % =========================================================================
 \begin{thebibliography}{99}
+
 \bibitem{rasmussen2006gaussian}
-Rasmussen, C. E., \& Williams, C. K. (2006). \textit{Gaussian Processes for Machine Learning}. MIT Press, Cambridge, MA.
+Rasmussen, C.~E., \& Williams, C.~K. (2006). \textit{Gaussian Processes for Machine Learning}. MIT Press, Cambridge, MA.
 
-\bibitem{neal1995bayesian}
-Neal, R. M. (1995). \textit{Bayesian Learning for Neural Networks}. Ph.D. thesis, University of Toronto.
+\bibitem{hogg2013introduction}
+Hogg, R.~V., McKean, J.~W., \& Craig, A.~T. (2013). \textit{Introduction to Mathematical Statistics} (7th ed.). Pearson, Boston.
 
-\bibitem{williams1998computation}
-Williams, C. K. (1998). Computation with infinite neural networks. \textit{Neural Computation}, 10(5), 1203-1216.
-
-\bibitem{damianou2013deep}
-Damianou, A., \& Lawrence, N. D. (2013). Deep Gaussian Processes. \textit{Proceedings of the 16th International Conference on Artificial Intelligence and Statistics (AISTATS)}, PMLR 31:207-215.
-
-\bibitem{salimbeni2017doubly}
-Salimbeni, H., \& Deisenroth, M. (2017). Doubly Stochastic Variational Inference for Deep Gaussian Processes. \textit{Advances in Neural Information Processing Systems (NeurIPS)}, 30.
 \end{thebibliography}
 
 \end{document}
