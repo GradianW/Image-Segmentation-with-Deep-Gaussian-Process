@@ -1,0 +1,144 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}              % Notasi tebal untuk vektor & matriks
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+\usepackage{graphicx}
+\usepackage{booktabs}        % Tabel profesional
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{mdframed}        % Kotak highlight untuk definisi
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+\pdfstringdefDisableCommands{%
+  \def\boldsymbol#1{#1}%
+  \def\bm#1{#1}%
+  \def\mathbf#1{#1}%
+}
+
+% Makro sitasi fleksibel
+\newcommand{\citep}[2][]{(Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+\newcommand{\citet}[2][]{Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+
+% Path direktori gambar
+\graphicspath{{figures/}}
+
+% =========================================================================
+% INFORMASI DOKUMEN
+% =========================================================================
+\title{
+    \vspace{-1.2cm}
+    \textbf{\Large BIMBINGAN TUGAS AKHIR \#4} \\[0.2em]
+}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+\vspace{-1.2cm}
+
+% =========================================================================
+% 1. MARGINAL LIKELIHOOD (TYPE II MAXIMUM LIKELIHOOD / ML-II)
+% =========================================================================
+\section{Marginal Likelihood (Type II Maximum Likelihood / ML-II)}
+\label{sec:marginal_likelihood}
+\noindent \textit{\citep[Bab~5.4.1, hlm.~112--113, Persamaan~(5.7)--(5.8)]{rasmussen2006gaussian}}
+
+\begin{equation}
+p(\mathbf{y} \mid X, \boldsymbol{\theta}) = \int p(\mathbf{y} \mid \mathbf{f}) \, p(\mathbf{f} \mid X, \boldsymbol{\theta}) \, d\mathbf{f}
+\end{equation}
+
+\begin{equation}
+\mathbf{y} \mid X, \boldsymbol{\theta} \sim \mathcal{N}\big(\mathbf{0}, K_y\big), \quad K_y = K + \sigma_n^2 I_N
+\end{equation}
+
+\begin{equation}
+\log p(\mathbf{y} \mid X, \boldsymbol{\theta}) = -\frac{1}{2} \mathbf{y}^T K_y^{-1} \mathbf{y} - \frac{1}{2} \log |K_y| - \frac{N}{2} \log(2\pi)
+\end{equation}
+
+\begin{equation}
+\operatorname{NLML}(\boldsymbol{\theta}) = \frac{1}{2} \mathbf{y}^T K_y^{-1} \mathbf{y} + \frac{1}{2} \log |K_y| + \frac{N}{2} \log(2\pi)
+\end{equation}
+
+% =========================================================================
+% 2. MAXIMUM A POSTERIORI (MAP)
+% =========================================================================
+\section{Maximum A Posteriori (MAP)}
+\label{sec:map}
+\noindent \textit{\citep[Bab~5.2, hlm.~108--109, Persamaan~(5.2)]{rasmussen2006gaussian}}
+
+\begin{equation}
+p(\boldsymbol{\theta} \mid \mathbf{y}, X) = \frac{p(\mathbf{y} \mid X, \boldsymbol{\theta}) \, p(\boldsymbol{\theta})}{p(\mathbf{y} \mid X)}
+\end{equation}
+
+\begin{equation}
+\mathcal{L}_{\text{MAP}}(\boldsymbol{\theta}) = \log p(\mathbf{y} \mid X, \boldsymbol{\theta}) + \log p(\boldsymbol{\theta})
+\end{equation}
+
+\begin{equation}
+\boldsymbol{\theta}_{\text{MAP}} = \arg\max_{\boldsymbol{\theta}} \left[ -\frac{1}{2} \mathbf{y}^T K_y^{-1} \mathbf{y} - \frac{1}{2} \log |K_y| + \log p(\boldsymbol{\theta}) \right]
+\end{equation}
+
+% =========================================================================
+% 3. CROSS-VALIDATION: LEAVE-ONE-OUT SQUARED ERROR (LOO-SE)
+% =========================================================================
+\section{Leave-One-Out Cross-Validation: Squared Error}
+\label{sec:loo_se}
+\noindent \textit{\citep[Bab~5.3 \& Bab~5.4.2, hlm.~111 \& hlm.~116--117, Persamaan~(5.5) \& (5.12)]{rasmussen2006gaussian}}
+
+\begin{equation}
+\mu_{-i} = y_i - \frac{[K_y^{-1}\mathbf{y}]_i}{[K_y^{-1}]_{ii}}
+\end{equation}
+
+\begin{equation}
+L_{\text{LOO-SE}}(\boldsymbol{\theta}) = \sum_{i=1}^N (y_i - \mu_{-i})^2 = \sum_{i=1}^N \left( \frac{[K_y^{-1}\mathbf{y}]_i}{[K_y^{-1}]_{ii}} \right)^2
+\end{equation}
+
+% =========================================================================
+% 4. CROSS-VALIDATION: LEAVE-ONE-OUT NEGATIVE LOG PSEUDO-LIKELIHOOD (LOO-NLPL)
+% =========================================================================
+\section{LOO Cross-Validation: Negative Log Pseudo-Likelihood}
+\label{sec:loo_nlpl}
+\noindent \textit{\citep[Bab~5.3 \& Bab~5.4.2, hlm.~111 \& hlm.~116--118, Persamaan~(5.6), (5.11) \& (5.13)]{rasmussen2006gaussian}}
+
+\begin{equation}
+\sigma_{-i}^2 = \frac{1}{[K_y^{-1}]_{ii}}
+\end{equation}
+
+\begin{align}
+L_{\text{LOO-NLPL}}(\boldsymbol{\theta}) &= -\sum_{i=1}^N \log p(y_i \mid X, \mathbf{y}_{-i}, \boldsymbol{\theta}) \nonumber \\
+&= \frac{1}{2} \sum_{i=1}^N \left( \log(2\pi \sigma_{-i}^2) + \frac{(y_i - \mu_{-i})^2}{\sigma_{-i}^2} \right) \nonumber \\
+&= \frac{1}{2} \sum_{i=1}^N \left( -\log [K_y^{-1}]_{ii} + \frac{([K_y^{-1}\mathbf{y}]_i)^2}{[K_y^{-1}]_{ii}} + \log(2\pi) \right)
+\end{align}
+
+% =========================================================================
+% DAFTAR PUSTAKA
+% =========================================================================
+\begin{thebibliography}{99}
+
+\bibitem{rasmussen2006gaussian}
+Rasmussen, C.~E., \& Williams, C.~K. (2006). \textit{Gaussian Processes for Machine Learning}. MIT Press, Cambridge, MA.
+
+\end{thebibliography}
+
+\end{document}

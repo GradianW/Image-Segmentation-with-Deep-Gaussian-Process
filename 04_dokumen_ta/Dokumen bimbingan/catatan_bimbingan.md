@@ -79,5 +79,20 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
 * **Tindak Lanjut (To-Do)**:
   - [ ] [Tugas / revisi untuk pertemuan berikutnya]
 
+---
+
+### Pertemuan #4 - Rabu, 30 September 2026 (Offline)
+* **Agenda**: Pembahasan Dokumen Kredit #4: Optimasi Parameter (Hyperparameter Adaptation) pada Gaussian Process Berdasarkan Rasmussen & Williams (2006) Chapter 5
+* **Poin Pembahasan**:
+  - Menyampaikan draf landasan teori mengenai metodologi optimasi hyperparameter GP via Marginal Likelihood (Evidence).
+  - Pembahasan prinsip Occam's Razor otomatis yang menyeimbangkan antara suku kesesuaian data (*data-fit*) dan penalti kompleksitas (*complexity penalty*).
+  - Pembahasan penurunan analitik gradien Log Marginal Likelihood (LML) dan efisiensi algoritma komputasi berbasis Dekomposisi Cholesky (Algoritma 5.1).
+  - Pembahasan strategi optimasi dalam ruang parameter tak-terkendala (*log-space*), penanganan lokal optima/multimodalitas via *multi-restart*, serta komparasi dengan Leave-One-Out Cross-Validation (LOO-CV).
+* **Saran & Masukan Dosen Pembimbing**:
+  1. [Masukan / koreksi dari dosen saat sesi bimbingan]
+* **Tindak Lanjut (To-Do)**:
+  - [ ] [Tugas / revisi untuk pertemuan berikutnya]
+
+
 
 
