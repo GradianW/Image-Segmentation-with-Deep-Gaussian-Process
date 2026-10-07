@@ -60,16 +60,16 @@
 % =========================================================================
 % 1. MARGINAL LIKELIHOOD (TYPE II MAXIMUM LIKELIHOOD / ML-II)
 % =========================================================================
-\section{Marginal Likelihood (Type II Maximum Likelihood / ML-II)}
+\section{Marginal Likelihood}
 \label{sec:marginal_likelihood}
-\noindent \textit{\citep[Bab~5.4.1, hlm.~112--113, Persamaan~(5.7)--(5.8)]{rasmussen2006gaussian}}
+\noindent \textit{\citep[Bab~5.4.1, hlm.~112--113, Persamaan~(5.7) \& (5.8)]{rasmussen2006gaussian}}
+
+% \begin{equation}
+% p(\mathbf{y} \mid X, \boldsymbol{\theta}) = \int p(\mathbf{y} \mid \mathbf{f}) \, p(\mathbf{f} \mid X, \boldsymbol{\theta}) \, d\mathbf{f}
+% \end{equation}
 
 \begin{equation}
-p(\mathbf{y} \mid X, \boldsymbol{\theta}) = \int p(\mathbf{y} \mid \mathbf{f}) \, p(\mathbf{f} \mid X, \boldsymbol{\theta}) \, d\mathbf{f}
-\end{equation}
-
-\begin{equation}
-\mathbf{y} \mid X, \boldsymbol{\theta} \sim \mathcal{N}\big(\mathbf{0}, K_y\big), \quad K_y = K + \sigma_n^2 I_N
+\quad K_y = K + \sigma_n^2 I_N
 \end{equation}
 
 \begin{equation}
@@ -77,58 +77,45 @@ p(\mathbf{y} \mid X, \boldsymbol{\theta}) = \int p(\mathbf{y} \mid \mathbf{f}) \
 \end{equation}
 
 \begin{equation}
-\operatorname{NLML}(\boldsymbol{\theta}) = \frac{1}{2} \mathbf{y}^T K_y^{-1} \mathbf{y} + \frac{1}{2} \log |K_y| + \frac{N}{2} \log(2\pi)
+\frac{\partial \log p(\mathbf{y} \mid X, \boldsymbol{\theta})}{\partial \theta_j} = \frac{1}{2} \operatorname{tr}\left( \left(\boldsymbol{\alpha}\boldsymbol{\alpha}^T - K_y^{-1}\right) \frac{\partial K_y}{\partial \theta_j} \right), \quad \boldsymbol{\alpha} = K_y^{-1}\mathbf{y}
 \end{equation}
 
-% =========================================================================
-% 2. MAXIMUM A POSTERIORI (MAP)
-% =========================================================================
-\section{Maximum A Posteriori (MAP)}
-\label{sec:map}
-\noindent \textit{\citep[Bab~5.2, hlm.~108--109, Persamaan~(5.2)]{rasmussen2006gaussian}}
+% \begin{equation}
+% \operatorname{NLML}(\boldsymbol{\theta}) = \frac{1}{2} \mathbf{y}^T K_y^{-1} \mathbf{y} + \frac{1}{2} \log |K_y| + \frac{N}{2} \log(2\pi)
+% \end{equation}
 
-\begin{equation}
-p(\boldsymbol{\theta} \mid \mathbf{y}, X) = \frac{p(\mathbf{y} \mid X, \boldsymbol{\theta}) \, p(\boldsymbol{\theta})}{p(\mathbf{y} \mid X)}
-\end{equation}
+% % =========================================================================
+% % 2. MAXIMUM A POSTERIORI (MAP)
+% % =========================================================================
+% \section{Maximum A Posteriori (MAP)}
+% \label{sec:map}
+% \noindent \textit{\citep[Bab~5.2, hlm.~108--109, Persamaan~(5.2)]{rasmussen2006gaussian}}
 
-\begin{equation}
-\mathcal{L}_{\text{MAP}}(\boldsymbol{\theta}) = \log p(\mathbf{y} \mid X, \boldsymbol{\theta}) + \log p(\boldsymbol{\theta})
-\end{equation}
+% \begin{equation}
+% p(\boldsymbol{\theta} \mid \mathbf{y}, X) = \frac{p(\mathbf{y} \mid X, \boldsymbol{\theta}) \, p(\boldsymbol{\theta})}{p(\mathbf{y} \mid X)}
+% \end{equation}
 
-\begin{equation}
-\boldsymbol{\theta}_{\text{MAP}} = \arg\max_{\boldsymbol{\theta}} \left[ -\frac{1}{2} \mathbf{y}^T K_y^{-1} \mathbf{y} - \frac{1}{2} \log |K_y| + \log p(\boldsymbol{\theta}) \right]
-\end{equation}
+% \begin{equation}
+% \mathcal{L}_{\text{MAP}}(\boldsymbol{\theta}) = \log p(\mathbf{y} \mid X, \boldsymbol{\theta}) + \log p(\boldsymbol{\theta})
+% \end{equation}
 
-% =========================================================================
-% 3. CROSS-VALIDATION: LEAVE-ONE-OUT SQUARED ERROR (LOO-SE)
-% =========================================================================
-\section{Leave-One-Out Cross-Validation: Squared Error}
-\label{sec:loo_se}
-\noindent \textit{\citep[Bab~5.3 \& Bab~5.4.2, hlm.~111 \& hlm.~116--117, Persamaan~(5.5) \& (5.12)]{rasmussen2006gaussian}}
-
-\begin{equation}
-\mu_{-i} = y_i - \frac{[K_y^{-1}\mathbf{y}]_i}{[K_y^{-1}]_{ii}}
-\end{equation}
-
-\begin{equation}
-L_{\text{LOO-SE}}(\boldsymbol{\theta}) = \sum_{i=1}^N (y_i - \mu_{-i})^2 = \sum_{i=1}^N \left( \frac{[K_y^{-1}\mathbf{y}]_i}{[K_y^{-1}]_{ii}} \right)^2
-\end{equation}
+% \begin{equation}
+% \boldsymbol{\theta}_{\text{MAP}} = \arg\max_{\boldsymbol{\theta}} \left[ -\frac{1}{2} \mathbf{y}^T K_y^{-1} \mathbf{y} - \frac{1}{2} \log |K_y| + \log p(\boldsymbol{\theta}) \right]
+% \end{equation}
 
 % =========================================================================
-% 4. CROSS-VALIDATION: LEAVE-ONE-OUT NEGATIVE LOG PSEUDO-LIKELIHOOD (LOO-NLPL)
+% 2. CROSS-VALIDATION: LEAVE-ONE-OUT NEGATIVE LOG PSEUDO-LIKELIHOOD (LOO-NLPL)
 % =========================================================================
-\section{LOO Cross-Validation: Negative Log Pseudo-Likelihood}
+\section{Leave-One-Out Cross-Validation}
 \label{sec:loo_nlpl}
-\noindent \textit{\citep[Bab~5.3 \& Bab~5.4.2, hlm.~111 \& hlm.~116--118, Persamaan~(5.6), (5.11) \& (5.13)]{rasmussen2006gaussian}}
+\noindent \textit{\citep[Bab~5.3 \& Bab~5.4.2, hlm.~111 \& hlm.~116--118, Persamaan~(5.6) \& (5.11) ]{rasmussen2006gaussian}}
 
 \begin{equation}
-\sigma_{-i}^2 = \frac{1}{[K_y^{-1}]_{ii}}
+L_{\text{LOO}}(\boldsymbol{\theta}) = -\sum_{i=1}^N \log p(y_i \mid X, \mathbf{y}_{-i}, \boldsymbol{\theta}) = \frac{1}{2} \sum_{i=1}^N \left( -\log [K_y^{-1}]_{ii} + \frac{([K_y^{-1}\mathbf{y}]_i)^2}{[K_y^{-1}]_{ii}} + \log(2\pi) \right)
 \end{equation}
 
 \begin{align}
-L_{\text{LOO-NLPL}}(\boldsymbol{\theta}) &= -\sum_{i=1}^N \log p(y_i \mid X, \mathbf{y}_{-i}, \boldsymbol{\theta}) \nonumber \\
-&= \frac{1}{2} \sum_{i=1}^N \left( \log(2\pi \sigma_{-i}^2) + \frac{(y_i - \mu_{-i})^2}{\sigma_{-i}^2} \right) \nonumber \\
-&= \frac{1}{2} \sum_{i=1}^N \left( -\log [K_y^{-1}]_{ii} + \frac{([K_y^{-1}\mathbf{y}]_i)^2}{[K_y^{-1}]_{ii}} + \log(2\pi) \right)
+\frac{\partial L_{\text{LOO}}(\boldsymbol{\theta})}{\partial \theta_j} &= \sum_{i=1}^{n} \left( \alpha_i [Z_j \boldsymbol{\alpha}]_i - \frac{1}{2} \left( 1 + \frac{\alpha_i^2}{[K^{-1}]_{ii}} \right) [Z_j K^{-1}]_{ii} \right) / [K^{-1}]_{ii}.
 \end{align}
 
 % =========================================================================

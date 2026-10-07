@@ -196,10 +196,10 @@ INPUT .\kredit_bimbingan_04.out
 INPUT .\kredit_bimbingan_04.out
 INPUT kredit_bimbingan_04.out
 INPUT kredit_bimbingan_04.out
+OUTPUT kredit_bimbingan_04.pdf
 INPUT .\kredit_bimbingan_04.out
 INPUT .\kredit_bimbingan_04.out
 OUTPUT kredit_bimbingan_04.out
-OUTPUT kredit_bimbingan_04.pdf
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmr17.tfm
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmbx12.tfm
@@ -254,18 +254,48 @@ INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmbsy10.tfm
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmbsy7.tfm
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmr12.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex\generic\stringenc\se-pdfdoc.def
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex\generic\stringenc\se-pdfdoc.def
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex\generic\stringenc\se-pdfdoc.def
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmri10.tfm
-INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex\generic\stringenc\se-pdfdoc.def
-INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex\generic\stringenc\se-pdfdoc.def
-INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex\generic\stringenc\se-pdfdoc.def
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\rm-lmr10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmmi10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmsy10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msam10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\amsfonts\symbols\msbm10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\rm-lmbx10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmmib10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\lmbsy10.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmr8.tfm
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\tfm\public\lm\ec-lmr6.tfm
 INPUT C:\Users\MyBook Z Series\AppData\Local\MiKTeX\fonts\map\pdftex\pdftex.map
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-ec.enc
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-mathit.enc
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-rm.enc
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-mathsy.enc
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\enc\dvips\lm\lm-mathex.enc
 INPUT kredit_bimbingan_04.aux
 INPUT .\kredit_bimbingan_04.out
 INPUT .\kredit_bimbingan_04.out
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx10.pfb
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx12.pfb
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmbx12.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmex10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmex10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmi10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmi10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmi8.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmi8.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmib10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmmib10.pfb
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr10.pfb
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr8.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmr8.pfb
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri10.pfb
 INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmri10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy10.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy8.pfb
+INPUT C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\fonts\type1\public\lm\lmsy8.pfb

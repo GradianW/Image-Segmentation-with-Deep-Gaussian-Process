@@ -69,29 +69,39 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
 
 ---
 
-### Pertemuan #3 - Rabu, 23 September 2026 (Offline)
-* **Agenda**: Pembahasan Dokumen Kredit #3: Karakteristik Fungsi Kernel, Efek Hyperparameter, dan Mekanisme Sampling Fungsi GP via Dekomposisi Cholesky
-* **Poin Pembahasan**:
-  - [Menyampaikan draf landasan teori skripsi mengenai eksplorasi kernel dan sampling fungsi GP]
-  - [Mendiskusikan hasil visualisasi komparasi kernel r vs r^2, Matérn, serta kestabilan numerik dekomposisi Cholesky]
-* **Saran & Masukan Dosen Pembimbing**:
-  1. [Masukan / koreksi dari dosen]
-* **Tindak Lanjut (To-Do)**:
-  - [ ] [Tugas / revisi untuk pertemuan berikutnya]
+### Pertemuan #3 - Rabu, 23 September 2026 (Dibatalkan)
+* **Agenda**: Bimbingan Rutin Mingguan (Tidak Terlaksana)
+* **Keterangan Kejadian**:
+  Pada tanggal 23 September 2026, seharusnya diadakan bimbingan rutin. Tapi, saat saya sudah sampai di kampus, Bapak pembimbing tidak kunjung datang. Teman bimbingan saya, Nabila Azizah Andien, akhirnya mengirimkan pesan ke dosen pembimbing untuk melakukan konfirmasi apakah pada hari itu (23 September 2026) ada bimbingan atau tidak. Beliau pun menjawab dan mengonfirmasi bahwa tidak jadi ada bimbingan karena sedang pergi untuk menghadiri konferensi, dan jadwal bimbingan di-*reschedule* menjadi hari Senin minggu selanjutnya, yaitu 28 September 2026. Sayangnya, karena jadwal saya bentrok, saya tidak dapat menghadiri bimbingan pengganti pada hari Senin tersebut. Selain itu, jadwal bimbingan yang biasanya dilakukan pada hari Rabu, untuk beberapa minggu ke depan akan dilaksanakan pada hari Jumat.
 
 ---
 
-### Pertemuan #4 - Rabu, 30 September 2026 (Offline)
-* **Agenda**: Pembahasan Dokumen Kredit #4: Optimasi Parameter (Hyperparameter Adaptation) pada Gaussian Process Berdasarkan Rasmussen & Williams (2006) Chapter 5
+### Pertemuan #4 - Jumat, 02 Oktober 2026 (Offline)
+* **Agenda**: Pembahasan Dokumen Kredit #4: Optimasi Hyperparameter GP via Marginal Likelihood & Cross-Validation serta Turunannya
 * **Poin Pembahasan**:
-  - Menyampaikan draf landasan teori mengenai metodologi optimasi hyperparameter GP via Marginal Likelihood (Evidence).
-  - Pembahasan prinsip Occam's Razor otomatis yang menyeimbangkan antara suku kesesuaian data (*data-fit*) dan penalti kompleksitas (*complexity penalty*).
-  - Pembahasan penurunan analitik gradien Log Marginal Likelihood (LML) dan efisiensi algoritma komputasi berbasis Dekomposisi Cholesky (Algoritma 5.1).
-  - Pembahasan strategi optimasi dalam ruang parameter tak-terkendala (*log-space*), penanganan lokal optima/multimodalitas via *multi-restart*, serta komparasi dengan Leave-One-Out Cross-Validation (LOO-CV).
+  - Mempresentasikan dokumen kredit bimbingan #4 mengenai fungsi objektif *Marginal Likelihood*, *Leave-One-Out Cross-Validation* (LOO-CV), serta turunan matematis dari kedua fungsi objektif tersebut berdasarkan Rasmussen & Williams (2006) Bab 5.
+  - Memaparkan secara garis besar konsep minimisasi atau maksimisasi fungsi objektif untuk mencari hyperparameter optimal.
+  - Diskusi metode penyelesaian analitik vs numerik: Sempat mengira bahwa penentuan parameter optimal mungkin dapat diselesaikan secara analitik dengan menurunkan fungsi objektif dan menyamakannya dengan nol ($\frac{\partial \mathcal{L}}{\partial \boldsymbol{\theta}} = 0$). Namun, Bapak dosen pembimbing meluruskan bahwa fungsi tersebut tidak bisa diselesaikan secara analitik tertutup (*closed-form*) dan harus dikerjakan secara numerik menggunakan *Gradient Descent*.
+  - Bapak dosen pembimbing kemudian memberikan penjelasan dan penjabaran konsep *Gradient Descent* secara langsung di papan tulis.
+  - Evaluasi pemahaman: Ketika masuk ke pembahasan bagian *Cross-Validation* pada dokumen, Bapak dosen pembimbing bertanya mengenai apa itu konsep dasar *Cross-Validation*, namun saya belum dapat menjawabnya karena kurang membaca dan belum mempelajari materi tersebut secara mendalam.
+  - Menunjukkan implementasi kode optimasi hyperparameter dengan memanfaatkan pustaka/package Python (`scipy.optimize.minimize`), namun diakui masih terlalu bergantung pada *package* (*heavily lean on package*) tanpa melakukan eksperimen mendalam pada mekanisme internalnya.
 * **Saran & Masukan Dosen Pembimbing**:
-  1. [Masukan / koreksi dari dosen saat sesi bimbingan]
+  1. **Eksplorasi Penurunan Turunan Fungsi Objektif**:
+     - Melakukan eksplorasi lebih lanjut pada turunan fungsi objektif dengan menjabarkannya secara aljabar langkah demi langkah.
+     - Menyertakan contoh simulasi perhitungan turunan menggunakan angka konkret agar konsep matematisnya lebih terbayang dan teruji.
+  2. **Bedah Mekanisme dan Parameter Fungsi pada Package Optimasi**:
+     - Mengulik secara detail fungsi-fungsi optimasi pada *package* yang digunakan (seperti parameter pada fungsi `scipy.optimize.minimize`).
+     - Memahami kondisi apa yang membuat iterasi fungsi tersebut berhenti (*stopping criteria*), apakah karena sudah konvergen (selisih nilai/gradien lebih kecil dari batas toleransi `tol`) atau karena telah mencapai batas maksimum iterasi (`maxiter`).
+  3. **Penguatan Fondasi Konseptual**:
+     - Memperdalam kembali pemahaman konsep dasar mengenai *Cross-Validation* dan metode optimasi berbasis gradien (*Gradient Descent*).
+  4. **Eksplorasi Fitting Grafik dengan Komposisi / Gabungan Beberapa Kernel**:
+     - Melakukan eksplorasi *curve fitting* pada grafik/data menggunakan kombinasi atau gabungan beberapa fungsi kernel (misalnya penjumlahan $k = k_1 + k_2$ atau perkalian $k = k_1 \times k_2$, seperti kombinasi RBF/SE dengan Periodic kernel, Linear kernel, atau White Noise kernel) untuk memodelkan struktur data yang lebih kompleks (misalnya perpaduan tren linier/halus dengan osilasi periodik).
 * **Tindak Lanjut (To-Do)**:
-  - [ ] [Tugas / revisi untuk pertemuan berikutnya]
+  - [ ] Membuat eksplorasi dan penjabaran penurunan turunan fungsi objektif secara aljabar serta dilengkapi contoh perhitungan dengan angka konkret.
+  - [ ] Membedah dokumentasi dan parameter fungsi pada *package* optimasi (`scipy.optimize.minimize`), khususnya mekanisme kriteria berhentinya iterasi (toleransi konvergensi vs batas maksimum iterasi).
+  - [ ] Mempelajari kembali konsep dasar *Cross-Validation* dan algoritma *Gradient Descent*.
+  - [ ] Melakukan eksperimen dan visualisasi *fitting* grafik GP dengan komposisi/gabungan beberapa kernel (penjumlahan dan perkalian kernel).
+  
 
 
 
