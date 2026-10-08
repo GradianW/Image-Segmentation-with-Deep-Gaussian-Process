@@ -262,12 +262,78 @@ f_2(x) = 0{,}2 x \sin\left(\frac{2\pi x}{2{,}0}\right) \label{eq:true_function_2
 \end{figure}
 
 % =========================================================================
+% 3. EKSPLORASI PACKAGE PYTHON
+% =========================================================================
+\section{Eksplorasi Package Python}
+\label{sec:package_python}
+
+\subsection{\texttt{scipy.optimize.minimize}}
+\label{subsec:scipy_optimize}
+
+\noindent Fungsi \texttt{scipy.optimize.minimize} digunakan untuk mencari nilai parameter atau vektor variabel $\mathbf{x}^*$ yang meminimumkan suatu fungsi objektif skalar $f(\mathbf{x})$:
+\begin{center}
+\texttt{scipy.optimize.minimize(fun, x0, args=(), method=None, jac=None, bounds=None, tol=None, options=None)}
+\end{center}
+\noindent Parameter-parameter utamanya:
+\begin{itemize}
+    \item \texttt{fun}: Fungsi objektif skalar $f(\mathbf{x})$ yang akan diminimumkan.
+    \item \texttt{x0}: Nilai tebakan awal variabel parameter dalam bentuk array 1D ($\mathbf{x}_0$).
+    \item \texttt{args}: Tuple argumen tambahan yang diteruskan ke fungsi objektif \texttt{fun} (dan \texttt{jac}).
+    \item \texttt{method}: Algoritma optimasi yang digunakan, antara lain:
+    \begin{itemize}
+        \item \textit{Unconstrained}: \texttt{'Nelder-Mead'}, \texttt{'Powell'}, \texttt{'CG'}, \texttt{'BFGS'}, \texttt{'Newton-CG'}.
+        \item \textit{Bound-Constrained}: \texttt{'L-BFGS-B'}, \texttt{'TNC'}.
+        \item \textit{Constrained}: \texttt{'SLSQP'}, \texttt{'COBYLA'}, \texttt{'trust-constr'}.
+        \item \textit{Trust-Region}: \texttt{'dogleg'}, \texttt{'trust-ncg'}, \texttt{'trust-exact'}, \texttt{'trust-krylov'}.
+    \end{itemize}
+    \item \texttt{jac}: Metode/fungsi untuk menghitung gradien atau vektor Jacobian $\nabla f(\mathbf{x})$. Jika bernilai \texttt{None} atau boolean \texttt{False}, gradien diestimasi secara numerik (\textit{finite difference}).
+    \item \texttt{bounds}: Batasan rentang nilai untuk setiap variabel parameter $(x_{\min}, x_{\max})$.
+    \item \texttt{tol}: Batas toleransi konvergensi iterasi.
+    \item \texttt{options}: \textit{Dictionary} konfigurasi tambahan (seperti batas iterasi maksimum \texttt{'maxiter'} atau penayangan proses \texttt{'disp'}).
+\end{itemize}
+
+\subsection{GPyTorch}
+\label{subsec:gpytorch}
+
+\subsubsection{Fungsi Kovariansi / Kernel (\texttt{gpytorch.kernels})}
+\begin{itemize}
+    \item \texttt{RBFKernel(ard\_num\_dims=None, batch\_shape=torch.Size([]),} \\
+    \texttt{active\_dims=None, lengthscale\_prior=None,} \\
+    \texttt{lengthscale\_constraint=None, eps=1e-06)}
+    
+    \item \texttt{MaternKernel(nu=2.5, ard\_num\_dims=None,} \\
+    \texttt{batch\_shape=torch.Size([]), active\_dims=None,} \\
+    \texttt{lengthscale\_prior=None, lengthscale\_constraint=None, eps=1e-06)}
+    
+    \item \texttt{LinearKernel(num\_dimensions=None, offset\_prior=None,} \\
+    \texttt{offset\_constraint=None, variance\_prior=None,} \\
+    \texttt{variance\_constraint=None, batch\_shape=torch.Size([]),} \\
+    \texttt{active\_dims=None)}
+    
+    \item \texttt{PeriodicKernel(ard\_num\_dims=None, batch\_shape=torch.Size([]),} \\
+    \texttt{active\_dims=None, period\_length\_prior=None,} \\
+    \texttt{period\_length\_constraint=None, lengthscale\_prior=None,} \\
+    \texttt{lengthscale\_constraint=None, eps=1e-06)}
+\end{itemize}
+
+\subsubsection{Fungsi Objektif Marginal Likelihood (\texttt{gpytorch.mlls})}
+\begin{itemize}
+    \item \texttt{ExactMarginalLogLikelihood(likelihood, model)}
+\end{itemize}
+
+% =========================================================================
 % DAFTAR PUSTAKA
 % =========================================================================
 \begin{thebibliography}{99}
 
 \bibitem{rasmussen2006gaussian}
 Rasmussen, C.~E., \& Williams, C.~K. (2006). \textit{Gaussian Processes for Machine Learning}. MIT Press, Cambridge, MA.
+
+\bibitem{scipy_minimize}
+SciPy Developers. \textit{minimize --- SciPy v1.18.0 Manual}. Diakses dari: \url{https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html}
+
+\bibitem{gpytorch_doc}
+GPyTorch Developers. \textit{GPyTorch's documentation --- GPyTorch 1.15.2 documentation}. Diakses dari: \url{https://docs.gpytorch.ai/en/stable/}
 
 \end{thebibliography}
 

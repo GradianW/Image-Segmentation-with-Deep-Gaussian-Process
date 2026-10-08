@@ -4,3 +4,8 @@
 \BOOKMARK [1][-]{section.2}{Eksplorasi\040Operasi\040Kombinasi\040Kernel}{}% 4
 \BOOKMARK [2][-]{subsection.2.1}{Eksperimen\0401}{section.2}% 5
 \BOOKMARK [2][-]{subsection.2.2}{Eksperimen\0402}{section.2}% 6
+\BOOKMARK [1][-]{section.3}{Eksplorasi\040Package\040Python}{}% 7
+\BOOKMARK [2][-]{subsection.3.1}{scipy.optimize.minimize}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.2}{GPyTorch}{section.3}% 9
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Fungsi\040Kovariansi\040/\040Kernel\040\(gpytorch.kernels\)}{subsection.3.2}% 10
+\BOOKMARK [3][-]{subsubsection.3.2.2}{Fungsi\040Objektif\040Marginal\040Likelihood\040\(gpytorch.mlls\)}{subsection.3.2}% 11

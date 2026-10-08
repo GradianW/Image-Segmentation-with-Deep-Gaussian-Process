@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  8 OCT 2026 00:59
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  8 OCT 2026 21:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1249,35 +1249,50 @@ c}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm
 /enc/dvips/lm/lm-mathit.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/Mi
 KTeX/fonts/enc/dvips/lm/lm-mathex.enc}] [2{C:/Users/MyBook Z Series/AppData/Loc
 al/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ts1.enc}] [3] [4]
-<figures/kernel_fitting_f1.pdf, id=121, 1005.93443pt x 573.05339pt>
+<figures/kernel_fitting_f1.pdf, id=141, 1005.93443pt x 573.05339pt>
 File: figures/kernel_fitting_f1.pdf Graphic file (type pdf)
 <use figures/kernel_fitting_f1.pdf>
 Package pdftex.def Info: figures/kernel_fitting_f1.pdf  used on input line 243.
 
 (pdftex.def)             Requested size: 455.24411pt x 259.34064pt.
-<figures/kernel_fitting_f2.pdf, id=124, 1005.93443pt x 573.05339pt>
+<figures/kernel_fitting_f2.pdf, id=144, 1005.93443pt x 573.05339pt>
 File: figures/kernel_fitting_f2.pdf Graphic file (type pdf)
 <use figures/kernel_fitting_f2.pdf>
 Package pdftex.def Info: figures/kernel_fitting_f2.pdf  used on input line 259.
 
 (pdftex.def)             Requested size: 455.24411pt x 259.34064pt.
- [5 <./figures/kernel_fitting_f1.pdf>] [6 <./figures/kernel_fitting_f2.pdf>]
-(kredit_bimbingan_05.aux)
+ [5 <./figures/kernel_fitting_f1.pdf>]
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 2
+70.
+
+(C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <12> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 270.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `lmtt' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+[6 <./figures/kernel_fitting_f2.pdf>]
+LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
+(Font)              Font shape `T1/lmtt/b/n' tried instead on input line 298.
+ [7] (kredit_bimbingan_05.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `kredit_bimbingan_05.out' has not changed.
-(rerunfilecheck)             Checksum: 231D5537EF36BFCC7E4CBE246AB01953;448.
+(rerunfilecheck)             Checksum: 5B0D370B5084B0079838DC42DC80F66F;887.
  ) 
 Here is how much of TeX's memory you used:
- 29250 strings out of 467871
- 545767 string characters out of 5413501
- 1005167 words of memory out of 5000000
- 57411 multiletter control sequences out of 15000+600000
- 750427 words of font info for 203 fonts, out of 8000000 for 9000
+ 29332 strings out of 467871
+ 547103 string characters out of 5413501
+ 1005301 words of memory out of 5000000
+ 57470 multiletter control sequences out of 15000+600000
+ 751853 words of font info for 211 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,16n,94p,1018b,2134s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,16n,94p,1018b,2158s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm
 /lmbx10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1
 /public/lm/lmbx12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/f
@@ -1307,10 +1322,12 @@ grams/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/MyBook Z Series/AppData
 s/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users/MyBoo
 k Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Us
 ers/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy9.p
-fb>
-Output written on kredit_bimbingan_05.pdf (6 pages, 622743 bytes).
+fb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/l
+m/lmtk10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type
+1/public/lm/lmtt10.pfb>
+Output written on kredit_bimbingan_05.pdf (7 pages, 692093 bytes).
 PDF statistics:
- 449 PDF objects out of 1000 (max. 8388607)
- 66 named destinations out of 1000 (max. 500000)
- 69703 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 493 PDF objects out of 1000 (max. 8388607)
+ 74 named destinations out of 1000 (max. 500000)
+ 71279 words of extra memory for PDF output out of 74296 (max. 10000000)
 
