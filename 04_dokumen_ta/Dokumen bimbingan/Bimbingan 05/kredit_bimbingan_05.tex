@@ -128,20 +128,20 @@
     \item Data Input: $X = \begin{bmatrix} x_1 \\ x_2 \end{bmatrix} = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$, \quad Target: $\mathbf{y} = \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$
     \item Jarak: $r_{12} = |x_1 - x_2| = 1 \implies r_{12}^2 = (x_1 - x_2)^2 = 1$
     \item Kernel RBF: $k(x_p, x_q) = \sigma_f^2 \exp\left(-\frac{r_{pq}^2}{2\ell^2}\right)$
-    \item Inisialisasi: $\boldsymbol{\theta}^{(0)} = \begin{bmatrix} (\sigma_f^2)^{(0)} \\ \ell^{(0)} \\ (\sigma_n^2)^{(0)} \end{bmatrix} = \begin{bmatrix} 1{,}0 \\ 1{,}0 \\ 0{,}1 \end{bmatrix}$, \quad Learning Rate: $\eta = 0{,}1$
+    \item Inisialisasi: $\boldsymbol{\theta}^{(0)} = \begin{bmatrix} (\sigma_f^2)^{(0)} \\ \ell^{(0)} \\ (\sigma_n^2)^{(0)} \end{bmatrix} = \begin{bmatrix} 1 \\ 1 \\ 0{,}1 \end{bmatrix}$, \quad Learning Rate: $\eta = 0{,}1$
 \end{itemize}
 
 \subsubsection*{2. Matriks Kovariansi \texorpdfstring{$K_y$}{Ky}}
 \begin{align}
-k_{11} &= k_{22} = \sigma_f^2 = 1{,}0 \\
-k_{12} &= k_{21} = 1{,}0 \cdot \exp\left(-\frac{1}{2(1{,}0)^2}\right) = e^{-0{,}5} \approx 0{,}6065 \\
-K_y &= \begin{bmatrix} \sigma_f^2 + \sigma_n^2 & k_{12} \\ k_{21} & \sigma_f^2 + \sigma_n^2 \end{bmatrix} = \begin{bmatrix} 1{,}0 + 0{,}1 & 0{,}6065 \\ 0{,}6065 & 1{,}0 + 0{,}1 \end{bmatrix} = \begin{bmatrix} 1{,}1000 & 0{,}6065 \\ 0{,}6065 & 1{,}1000 \end{bmatrix}
+k_{11} &= k_{22} = \sigma_f^2 = 1 \\
+k_{12} &= k_{21} = 1 \cdot \exp\left(-\frac{1}{2(1)^2}\right) = e^{-0{,}5} \approx 0{,}6065 \\
+K_y &= \begin{bmatrix} \sigma_f^2 + \sigma_n^2 & k_{12} \\ k_{21} & \sigma_f^2 + \sigma_n^2 \end{bmatrix} = \begin{bmatrix} 1 + 0{,}1 & 0{,}6065 \\ 0{,}6065 & 1 + 0{,}1 \end{bmatrix} = \begin{bmatrix} 1{,}1 & 0{,}6065 \\ 0{,}6065 & 1{,}1 \end{bmatrix}
 \end{align}
 
 \subsubsection*{3. Determinan, Invers \texorpdfstring{$K_y^{-1}$}{Ky^(-1)}, dan Vektor \texorpdfstring{$\boldsymbol{\alpha}$}{alpha}}
 \begin{align}
-|K_y| &= (1{,}1000)^2 - (0{,}6065)^2 = 1{,}2100 - 0{,}3678 = 0{,}8422 \\
-K_y^{-1} &= \frac{1}{0{,}8422} \begin{bmatrix} 1{,}1000 & -0{,}6065 \\ -0{,}6065 & 1{,}1000 \end{bmatrix} = \begin{bmatrix} 1{,}3062 & -0{,}7202 \\ -0{,}7202 & 1{,}3062 \end{bmatrix} \\
+|K_y| &= (1{,}1)^2 - (0{,}6065)^2 = 1{,}21 - 0{,}3678 = 0{,}8422 \\
+K_y^{-1} &= \frac{1}{0{,}8422} \begin{bmatrix} 1{,}1 & -0{,}6065 \\ -0{,}6065 & 1{,}1 \end{bmatrix} = \begin{bmatrix} 1{,}3062 & -0{,}7202 \\ -0{,}7202 & 1{,}3062 \end{bmatrix} \\
 \boldsymbol{\alpha} &= K_y^{-1} \mathbf{y} = \begin{bmatrix} 1{,}3062 & -0{,}7202 \\ -0{,}7202 & 1{,}3062 \end{bmatrix} \begin{bmatrix} 1 \\ 2 \end{bmatrix} = \begin{bmatrix} (1{,}3062)(1) + (-0{,}7202)(2) \\ (-0{,}7202)(1) + (1{,}3062)(2) \end{bmatrix} = \begin{bmatrix} -0{,}1342 \\ 1{,}8922 \end{bmatrix}
 \end{align}
 
@@ -153,6 +153,10 @@ K_y^{-1} &= \frac{1}{0{,}8422} \begin{bmatrix} 1{,}1000 & -0{,}6065 \\ -0{,}6065
 \end{align}
 
 \subsubsection*{5. Perhitungan Gradien}
+\noindent Bentuk umum matriks kovariansi $K_y$ sebagai fungsi dari hyperparameter $(\sigma_f^2, \ell, \sigma_n^2)$ dengan $r_{12}^2 = 1$:
+\begin{equation}
+K_y = \begin{bmatrix} \sigma_f^2 + \sigma_n^2 & \sigma_f^2 \exp\left(-\frac{1}{2\ell^2}\right) \\[0.4em] \sigma_f^2 \exp\left(-\frac{1}{2\ell^2}\right) & \sigma_f^2 + \sigma_n^2 \end{bmatrix}
+\end{equation}
 
 \paragraph*{a. Terhadap \texorpdfstring{$\sigma_f^2$}{sigma_f^2}:}
 \begin{align}
@@ -182,7 +186,7 @@ K_y^{-1} &= \frac{1}{0{,}8422} \begin{bmatrix} 1{,}1000 & -0{,}6065 \\ -0{,}6065
 \begin{align}
 \nabla_{\boldsymbol{\theta}} \left( -\log p(\mathbf{y}|X, \boldsymbol{\theta}) \right) &= \begin{bmatrix} -\frac{\partial \log p(\mathbf{y}|X, \boldsymbol{\theta})}{\partial \sigma_f^2} \\[0.4em] -\frac{\partial \log p(\mathbf{y}|X, \boldsymbol{\theta})}{\partial \ell} \\[0.4em] -\frac{\partial \log p(\mathbf{y}|X, \boldsymbol{\theta})}{\partial \sigma_n^2} \end{bmatrix} = \begin{bmatrix} -0{,}7758 \\ -0{,}2828 \\ -0{,}4930 \end{bmatrix} \\
 \boldsymbol{\theta}^{(1)} &= \boldsymbol{\theta}^{(0)} - \eta \, \nabla_{\boldsymbol{\theta}} \left( -\log p(\mathbf{y}|X, \boldsymbol{\theta}) \right) \\
-\begin{bmatrix} (\sigma_f^2)^{(1)} \\[0.4em] \ell^{(1)} \\[0.4em] (\sigma_n^2)^{(1)} \end{bmatrix} &= \begin{bmatrix} 1{,}0000 \\ 1{,}0000 \\ 0{,}1000 \end{bmatrix} - 0{,}1 \begin{bmatrix} -0{,}7758 \\ -0{,}2828 \\ -0{,}4930 \end{bmatrix} = \begin{bmatrix} 1{,}0776 \\ 1{,}0283 \\ 0{,}1493 \end{bmatrix}
+\begin{bmatrix} (\sigma_f^2)^{(1)} \\[0.4em] \ell^{(1)} \\[0.4em] (\sigma_n^2)^{(1)} \end{bmatrix} &= \begin{bmatrix} 1 \\ 1 \\ 0{,}1 \end{bmatrix} - 0{,}1 \begin{bmatrix} -0{,}7758 \\ -0{,}2828 \\ -0{,}4930 \end{bmatrix} = \begin{bmatrix} 1{,}0776 \\ 1{,}0283 \\ 0{,}1493 \end{bmatrix}
 \end{align}
 
 \subsection{Adam}
@@ -197,19 +201,19 @@ $$-\nabla_{\boldsymbol{\theta}} \left( \log p(\mathbf{y}|X, \boldsymbol{\theta})
 \mathbf{m}^{(1)} &= \beta_1 \mathbf{m}^{(0)} + (1 - \beta_1)\left( -\nabla_{\boldsymbol{\theta}} \log p(\mathbf{y}|X, \boldsymbol{\theta}) \right) \nonumber \\
 &= 0{,}9 \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix} + 0{,}1 \begin{bmatrix} -0{,}7758 \\ -0{,}2828 \\ -0{,}4930 \end{bmatrix} = \begin{bmatrix} -0{,}0776 \\ -0{,}0283 \\ -0{,}0493 \end{bmatrix} \\
 \mathbf{v}^{(1)} &= \beta_2 \mathbf{v}^{(0)} + (1 - \beta_2)\left( -\nabla_{\boldsymbol{\theta}} \log p(\mathbf{y}|X, \boldsymbol{\theta}) \right)^2 \nonumber \\
-&= 0{,}999 \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix} + 0{,}001 \begin{bmatrix} (-0{,}7758)^2 \\ (-0{,}2828)^2 \\ (-0{,}4930)^2 \end{bmatrix} = \begin{bmatrix} 0{,}000602 \\ 0{,}000080 \\ 0{,}000243 \end{bmatrix}
+&= 0{,}999 \begin{bmatrix} 0 \\ 0 \\ 0 \end{bmatrix} + 0{,}001 \begin{bmatrix} (-0{,}7758)^2 \\ (-0{,}2828)^2 \\ (-0{,}4930)^2 \end{bmatrix} = \begin{bmatrix} 0{,}000602 \\ 0{,}00008 \\ 0{,}000243 \end{bmatrix}
 \end{align}
 
 \subsubsection*{2. Koreksi Bias}
 \begin{align}
 \hat{\mathbf{m}}^{(1)} &= \frac{\mathbf{m}^{(1)}}{1 - \beta_1^1} = \frac{1}{0{,}1} \begin{bmatrix} -0{,}0776 \\ -0{,}0283 \\ -0{,}0493 \end{bmatrix} = \begin{bmatrix} -0{,}7758 \\ -0{,}2828 \\ -0{,}4930 \end{bmatrix} \\
-\hat{\mathbf{v}}^{(1)} &= \frac{\mathbf{v}^{(1)}}{1 - \beta_2^1} = \frac{1}{0{,}001} \begin{bmatrix} 0{,}000602 \\ 0{,}000080 \\ 0{,}000243 \end{bmatrix} = \begin{bmatrix} 0{,}6019 \\ 0{,}0800 \\ 0{,}2430 \end{bmatrix}
+\hat{\mathbf{v}}^{(1)} &= \frac{\mathbf{v}^{(1)}}{1 - \beta_2^1} = \frac{1}{0{,}001} \begin{bmatrix} 0{,}000602 \\ 0{,}00008 \\ 0{,}000243 \end{bmatrix} = \begin{bmatrix} 0{,}6019 \\ 0{,}08 \\ 0{,}243 \end{bmatrix}
 \end{align}
 
 \subsubsection*{3. Update Parameter}
 \begin{align}
 \boldsymbol{\theta}^{(1)} &= \boldsymbol{\theta}^{(0)} - \eta \, \frac{\hat{\mathbf{m}}^{(1)}}{\sqrt{\hat{\mathbf{v}}^{(1)}} + \epsilon} \nonumber \\
-\begin{bmatrix} (\sigma_f^2)^{(1)} \\[0.4em] \ell^{(1)} \\[0.4em] (\sigma_n^2)^{(1)} \end{bmatrix} &= \begin{bmatrix} 1{,}0000 \\ 1{,}0000 \\ 0{,}1000 \end{bmatrix} - 0{,}1 \begin{bmatrix} \frac{-0{,}7758}{\sqrt{0{,}6019} + 10^{-8}} \\[0.4em] \frac{-0{,}2828}{\sqrt{0{,}0800} + 10^{-8}} \\[0.4em] \frac{-0{,}4930}{\sqrt{0{,}2430} + 10^{-8}} \end{bmatrix} = \begin{bmatrix} 1{,}0000 \\ 1{,}0000 \\ 0{,}1000 \end{bmatrix} - 0{,}1 \begin{bmatrix} -1{,}0000 \\ -1{,}0000 \\ -1{,}0000 \end{bmatrix} = \begin{bmatrix} 1{,}1000 \\ 1{,}1000 \\ 0{,}2000 \end{bmatrix}
+\begin{bmatrix} (\sigma_f^2)^{(1)} \\[0.4em] \ell^{(1)} \\[0.4em] (\sigma_n^2)^{(1)} \end{bmatrix} &= \begin{bmatrix} 1 \\ 1 \\ 0{,}1 \end{bmatrix} - 0{,}1 \begin{bmatrix} \frac{-0{,}7758}{\sqrt{0{,}6019} + 10^{-8}} \\[0.4em] \frac{-0{,}2828}{\sqrt{0{,}08} + 10^{-8}} \\[0.4em] \frac{-0{,}4930}{\sqrt{0{,}243} + 10^{-8}} \end{bmatrix} = \begin{bmatrix} 1 \\ 1 \\ 0{,}1 \end{bmatrix} - 0{,}1 \begin{bmatrix} -1 \\ -1 \\ -1 \end{bmatrix} = \begin{bmatrix} 1{,}1 \\ 1{,}1 \\ 0{,}2 \end{bmatrix}
 \end{align}
 
 
@@ -234,7 +238,7 @@ k_{\mathrm{Lin \times Per}}(x, x') &= \left[ \sigma_b^2 + \sigma_v^2 (x - c)(x' 
 
 \noindent Fungsi asli yang digunakan:
 \begin{equation}
-f_1(x) = \sin(0{,}6 x) + 1{,}2 \sin\left(\frac{2\pi x}{2{,}0}\right) \label{eq:true_function_1}
+f_1(x) = \sin(0{,}6 x) + 1{,}2 \sin(\pi x) \label{eq:true_function_1}
 \end{equation}
 \noindent dengan $N = 67$ titik data observasi $y_i = f_1(x_i) + \varepsilon_i, \; \varepsilon_i \sim \mathcal{N}(0, 0{,}15^2)$ pada rentang $x \in [-10, 10]$.
 
@@ -250,7 +254,7 @@ f_1(x) = \sin(0{,}6 x) + 1{,}2 \sin\left(\frac{2\pi x}{2{,}0}\right) \label{eq:t
 
 \noindent Fungsi asli yang digunakan:
 \begin{equation}
-f_2(x) = 0{,}2 x \sin\left(\frac{2\pi x}{2{,}0}\right) \label{eq:true_function_2}
+f_2(x) = 0{,}2 x \sin(\pi x) \label{eq:true_function_2}
 \end{equation}
 \noindent dengan $N = 67$ titik data observasi $y_i = f_2(x_i) + \varepsilon_i, \; \varepsilon_i \sim \mathcal{N}(0, 0{,}15^2)$ pada rentang $x \in [-10, 10]$.
 
@@ -279,13 +283,7 @@ f_2(x) = 0{,}2 x \sin\left(\frac{2\pi x}{2{,}0}\right) \label{eq:true_function_2
     \item \texttt{fun}: Fungsi objektif skalar $f(\mathbf{x})$ yang akan diminimumkan.
     \item \texttt{x0}: Nilai tebakan awal variabel parameter dalam bentuk array 1D ($\mathbf{x}_0$).
     \item \texttt{args}: Tuple argumen tambahan yang diteruskan ke fungsi objektif \texttt{fun} (dan \texttt{jac}).
-    \item \texttt{method}: Algoritma optimasi yang digunakan, antara lain:
-    \begin{itemize}
-        \item \textit{Unconstrained}: \texttt{'Nelder-Mead'}, \texttt{'Powell'}, \texttt{'CG'}, \texttt{'BFGS'}, \texttt{'Newton-CG'}.
-        \item \textit{Bound-Constrained}: \texttt{'L-BFGS-B'}, \texttt{'TNC'}.
-        \item \textit{Constrained}: \texttt{'SLSQP'}, \texttt{'COBYLA'}, \texttt{'trust-constr'}.
-        \item \textit{Trust-Region}: \texttt{'dogleg'}, \texttt{'trust-ncg'}, \texttt{'trust-exact'}, \texttt{'trust-krylov'}.
-    \end{itemize}
+    \item \texttt{method}: Algoritma optimasi yang digunakan, antara lain: \texttt{'Nelder-Mead'}, \texttt{'Powell'}, \texttt{'CG'}, \texttt{'BFGS'}, \texttt{'Newton-CG'}, \texttt{'L-BFGS-B'}, \texttt{'TNC'}, \texttt{'COBYLA'}, \texttt{'SLSQP'}, \texttt{'trust-constr'}, \texttt{'dogleg'}, \texttt{'trust-ncg'}, \texttt{'trust-exact'}, \texttt{'trust-krylov'}.
     \item \texttt{jac}: Metode/fungsi untuk menghitung gradien atau vektor Jacobian $\nabla f(\mathbf{x})$. Jika bernilai \texttt{None} atau boolean \texttt{False}, gradien diestimasi secara numerik (\textit{finite difference}).
     \item \texttt{bounds}: Batasan rentang nilai untuk setiap variabel parameter $(x_{\min}, x_{\max})$.
     \item \texttt{tol}: Batas toleransi konvergensi iterasi.
