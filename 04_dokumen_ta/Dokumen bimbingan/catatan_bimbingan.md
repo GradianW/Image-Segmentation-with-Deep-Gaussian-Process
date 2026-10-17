@@ -97,12 +97,44 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
   4. **Eksplorasi Fitting Grafik dengan Komposisi / Gabungan Beberapa Kernel**:
      - Melakukan eksplorasi *curve fitting* pada grafik/data menggunakan kombinasi atau gabungan beberapa fungsi kernel (misalnya penjumlahan $k = k_1 + k_2$ atau perkalian $k = k_1 \times k_2$, seperti kombinasi RBF/SE dengan Periodic kernel, Linear kernel, atau White Noise kernel) untuk memodelkan struktur data yang lebih kompleks (misalnya perpaduan tren linier/halus dengan osilasi periodik).
 * **Tindak Lanjut (To-Do)**:
-  - [ ] Membuat eksplorasi dan penjabaran penurunan turunan fungsi objektif secara aljabar serta dilengkapi contoh perhitungan dengan angka konkret.
-  - [ ] Membedah dokumentasi dan parameter fungsi pada *package* optimasi (`scipy.optimize.minimize`), khususnya mekanisme kriteria berhentinya iterasi (toleransi konvergensi vs batas maksimum iterasi).
-  - [ ] Mempelajari kembali konsep dasar *Cross-Validation* dan algoritma *Gradient Descent*.
-  - [ ] Melakukan eksperimen dan visualisasi *fitting* grafik GP dengan komposisi/gabungan beberapa kernel (penjumlahan dan perkalian kernel).
-  
+  - [x] Membuat eksplorasi dan penjabaran penurunan turunan fungsi objektif secara aljabar serta dilengkapi contoh perhitungan dengan angka konkret (dimasukkan ke Kredit #5).
+  - [x] Membedah dokumentasi dan parameter fungsi pada *package* optimasi (`scipy.optimize.minimize` dan `gpytorch`).
+  - [x] Mempelajari kembali konsep dasar algoritma *Gradient Descent* dan *Adam*.
+  - [x] Melakukan eksperimen dan visualisasi *fitting* grafik GP dengan komposisi/gabungan beberapa kernel (penjumlahan dan perkalian kernel).
 
+---
 
-
+### Pertemuan #5 - Jumat, 09 Oktober 2026 (Offline)
+* **Anggota Kelompok Topik**: Saya & Nabila Azizah Andien (*Topik: Image Segmentation with Deep Gaussian Process*)
+* **Agenda**: Presentasi Dokumen Kredit #5, Diskusi Optimasi (Gradient Descent vs Adam & Metaheuristik), Evaluasi Pemahaman Deep Neural Network (DNN), serta Transisi Menuju *Weight-Space View* & *Deep Gaussian Process* (DGP)
+* **Poin Pembahasan**:
+  - **Presentasi Dokumen Kredit Bimbingan #5**:
+    - Dokumen kredit bimbingan yang dibawa memuat contoh perhitungan numerik turunan *log marginal likelihood* ukuran $2 \times 2$, eksperimen *fitting* fungsi dengan kombinasi kernel (penjumlahan dan perkalian RBF, Periodik, Linier), serta eksplorasi parameter library (`scipy.optimize.minimize` dan `gpytorch`).
+    - Konten kredit antara saya dan Nabila Azizah Andien secara umum serupa, dengan pembeda utama pada algoritma optimasi numerik: saya menambahkan implementasi simulasi langkah algoritma **Adam** (*Adaptive Moment Estimation*), sedangkan Nabila hanya menyajikan **Gradient Descent** (GD) konvensional.
+  - **Evaluasi Pemahaman Arsitektur Deep Neural Network (DNN)**:
+    - Karena pembahasan teknis kredit telah dipaparkan pada sesi Nabila, dosen pembimbing meminta saya secara spontan (tanpa persiapan khusus) untuk menjelaskan konsep dasar arsitektur *Deep Neural Network* (DNN).
+    - Berhasil memaparkan konsep dasar DNN (arsitektur multi-layer, fungsi aktivasi, propagasi maju/balik) secara intuitif dan konseptual dengan baik.
+    - Terdapat beberapa ketidaktepatan minor saat menyebutkan keselarasan dimensi matriks bobot/bias dan operasi aljabar linier antar-layer (menjadi catatan evaluasi untuk lebih presisi dalam notasi aljabar linier dan representasi tensor).
+  - **Transisi Menuju Deep Gaussian Process (DGP)**:
+    - Sesi bimbingan 09 Oktober dan sesi lanjutan (21 Oktober) diarahkan sebagai jembatan transisi teoretis dari *Gaussian Process* (GP) standar menuju *Deep Gaussian Process* (DGP).
+    - Dosen pembimbing memberikan intermezzo konseptual mendasar: Pada regresi linier klasik (*deterministic linear regression*), parameter bobot bersifat pasti (*fixed/deterministic values*). Sebaliknya, pada kerangka Bayesian dan GP/DGP, bobot serta pemetaan fungsi diperlakukan sebagai variabel acak yang memiliki distribusi probabilitas (*stochastic/probabilistic distributions*).
+  - **Diskusi Pendalaman Metode Optimasi (GD vs Adam vs Metaheuristik)**:
+    - Dosen pembimbing menyoroti rasionalisasi pemilihan algoritma optimasi: Mengapa menggunakan Adam dibandingkan GD biasa? Apa keunggulan adaptifnya?
+    - Ditegaskan bahwa algoritma seperti GD dan Adam bergantung mutlak pada ketersediaan turunan/gradien fungsi objektif (*gradient-based methods*). Apabila fungsi objektif tidak memiliki turunan (*non-differentiable*), berupa *black-box*, atau terputus-putus (*discontinuous*), maka pendekatan yang harus digunakan adalah algoritma **Metaheuristik** (*derivative-free optimization* seperti Genetic Algorithm, PSO, Simulated Annealing, atau Nelder-Mead).
+* **Saran & Masukan Dosen Pembimbing**:
+  1. **Kajian Teoretis Subbab 2.1 Rasmussen & Williams (Weight-Space View)**:
+     - Mempelajari secara mendalam Subbab 2.1 dari buku *Gaussian Processes for Machine Learning* (Rasmussen & Williams, 2006) mengenai sudut pandang ruang bobot (*weight-space view*) pada regresi linier Bayesian.
+  2. **Pembuktian Distribusi Menggunakan Moment Generating Function (MGF)**:
+     - Menurunkan pembuktian analitis menggunakan *Moment Generating Function* (MGF) untuk membuktikan distribusi dari fungsi linier $f(\mathbf{x}) = \mathbf{x}^T \mathbf{w}$ dan nilai observasi berderau $y = f(\mathbf{x}) + \varepsilon$ ketika prior bobot berdistribusi Gaussian ($\mathbf{w} \sim \mathcal{N}(\mathbf{0}, \Sigma_p)$) dan noise Gaussian ($\varepsilon \sim \mathcal{N}(0, \sigma_n^2)$), serta melihat bagaimana matriks kovariansi $K = X \Sigma_p X^T$ muncul secara natural sebagai jembatan menuju *function-space view*.
+  3. **Rasionalisasi Komparasi Adam vs Gradient Descent & Konsep Metaheuristik**:
+     - Memasukkan penjelasan komparasi yang komprehensif ke dalam dokumen kredit mengenai alasan pemilihan Adam dibanding GD (mekanisme momentum momen pertama, adaptasi *learning rate* momen kedua/RMSProp, peredaman osilasi, serta penanganan *sparse gradient* & *saddle points*).
+     - Menjelaskan batasan metode berbasis gradien dan kapan metode metaheuristik diperlukan.
+  4. **Eksperimen Pemodelan GP pada Dataset $\text{CO}_2$ (Mauna Loa)**:
+     - Mencoba mengimplementasikan Gaussian Process Regression pada dataset konsentrasi $\text{CO}_2$ atmosfer Mauna Loa (*Keeling Curve*) sebagaimana dibahas pada buku Rasmussen & Williams Bab 5 Subbab 5.4.3 untuk membuktikan keandalan kombinasi berbagai kernel (tren jangka panjang, variasi musiman periodik, ketidakteraturan jangka menengah, dan noise putih).
+* **Tindak Lanjut (To-Do)**:
+  - [ ] Membaca dan membedah Subbab 2.1 (*Weight-space View*) dari buku Rasmussen & Williams (2006).
+  - [ ] Menyusun penurunan analitis lengkap pembuktian distribusi Gaussian untuk $f(\mathbf{x}) = \mathbf{x}^T \mathbf{w}$ dan $y = f(\mathbf{x}) + \varepsilon$ menggunakan MGF (*Moment Generating Function*).
+  - [ ] Menuliskan tinjauan perbandingan teoretis antara Gradient Descent dan Adam, serta penjelasan kapan optimasi metaheuristik digunakan dalam konteks machine learning/GP.
+  - [ ] Menyiapkan skrip Python eksperimen GPR pada dataset deret waktu Mauna Loa $\text{CO}_2$ dengan rancangan komposisi kernel sesuai Bab 5.4.3 Rasmussen.
+  - [ ] Menyusun dokumen Kredit Bimbingan #6 (format LaTeX) untuk dibawa pada bimbingan berikutnya (Rabu, 21 Oktober 2026).
 

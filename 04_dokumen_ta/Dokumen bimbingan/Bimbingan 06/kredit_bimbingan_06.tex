@@ -1,0 +1,366 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}              % Notasi tebal untuk vektor & matriks
+\usepackage{geometry}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+\usepackage{graphicx}
+\usepackage{booktabs}        % Tabel profesional
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{mdframed}        % Kotak highlight untuk definisi
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+\pdfstringdefDisableCommands{%
+  \def\boldsymbol#1{#1}%
+  \def\bm#1{#1}%
+  \def\mathbf#1{#1}%
+}
+
+% Makro sitasi fleksibel
+\newcommand{\citep}[2][]{(Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+\newcommand{\citet}[2][]{Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+
+% Lingkungan Teorema & Definisi
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{claim}{Claim}[section]
+
+\theoremstyle{definition}
+\newtheorem{definisi}{Definisi}[section]
+
+\theoremstyle{remark}
+\newtheorem{catatan}{Catatan}[section]
+
+% Format nama pembuktian
+\addto\captionsindonesian{\renewcommand{\proofname}{Proof}}
+\renewcommand{\proofname}{Proof}
+
+% Path direktori gambar
+\graphicspath{{figures/}}
+
+% =========================================================================
+% INFORMASI DOKUMEN
+% =========================================================================
+\title{
+    \vspace{-1.2cm}
+    \textbf{\Large BIMBINGAN TUGAS AKHIR \#6} \\[0.2em]
+}
+\author{}
+\date{Rabu, 21 Oktober 2026}
+
+\begin{document}
+
+\maketitle
+\vspace{-0.8cm}
+
+% =========================================================================
+% KONTEN DOKUMEN BIMBINGAN 06
+% =========================================================================
+
+% =========================================================================
+% 1. PEMBUKTIAN DISTRIBUSI NORMAL y: DUA KASUS BOBOT w
+% =========================================================================
+\section{Pembuktian Distribusi Normal \texorpdfstring{$y = f(x) + \varepsilon$}{y = f(x) + epsilon}}
+\label{sec:pembuktian_mgf}
+
+\noindent Diberikan model observasi linier:
+\begin{equation}
+y = f(x) + \varepsilon = wx + \varepsilon \label{eq:model_dasar}
+\end{equation}
+dengan galat $\varepsilon \sim \mathcal{N}(0, \sigma_n^2)$. 
+
+\vspace{0.2cm}
+\noindent \textbf{MGF Distribusi Normal}:
+\begin{itemize}
+    \item \textbf{Univariat}: Untuk peubah acak $Z \sim \mathcal{N}(\mu, \sigma^2)$, MGF didefinisikan sebagai:
+    \begin{equation}
+    M_Z(t) = \mathbb{E}\left[e^{tZ}\right] = \exp\left( \mu t + \frac{1}{2}\sigma^2 t^2 \right) \label{eq:mgf_normal_univariat}
+    \end{equation}
+    \item \textbf{Multivariat}: Untuk vektor acak $\mathbf{Z} \sim \mathcal{N}(\boldsymbol{\mu}, \Sigma)$ dengan $\mathbf{Z} \in \mathbb{R}^k$, MGF didefinisikan sebagai:
+    \begin{equation}
+    M_{\mathbf{Z}}(\mathbf{t}) = \mathbb{E}\left[\exp(\mathbf{t}^T \mathbf{Z})\right] = \exp\left( \mathbf{t}^T \boldsymbol{\mu} + \frac{1}{2}\mathbf{t}^T \Sigma \mathbf{t} \right) \label{eq:mgf_normal_multivariat}
+    \end{equation}
+\end{itemize}
+Untuk galat $\varepsilon \sim \mathcal{N}(0, \sigma_n^2)$, MGF-nya adalah $M_\varepsilon(t) = \exp\left( \frac{1}{2}\sigma_n^2 t^2 \right)$.
+
+Pembuktian distribusi observasi ditinjau dalam dua kasus nilai bobot:
+\begin{enumerate}
+    \item \textbf{Kasus 1}: Bobot bernilai konstan ($w \in \mathbb{R}$ atau $\mathbf{w} \in \mathbb{R}^d$).
+    \item \textbf{Kasus 2}: Bobot berdistribusi normal ($w \sim \mathcal{N}(0, \sigma_w^2)$ atau $\mathbf{w} \sim \mathcal{N}(\mathbf{0}, \Sigma_p)$).
+\end{enumerate}
+
+% -------------------------------------------------------------------------
+\subsection{Kasus 1: Bobot Bernilai Konstan}
+\label{subsec:kasus_1}
+
+\begin{claim}[Bentuk Skalar Univariat]
+Jika $w \in \mathbb{R}$ berupa skalar konstan dan galat $\varepsilon \sim \mathcal{N}(0, \sigma_n^2)$, maka variabel observasi $y = wx + \varepsilon$ berdistribusi normal:
+\begin{equation}
+y \sim \mathcal{N}\left( wx, \; \sigma_n^2 \right)
+\end{equation}
+\end{claim}
+
+\begin{proof}
+MGF dari $y$:
+\begin{align}
+M_y(t) &= \mathbb{E}\left[ e^{t(wx + \varepsilon)} \right] \nonumber \\
+&= \mathbb{E}\left[ e^{twx} e^{t\varepsilon} \right] \nonumber \\
+&= e^{twx} \, \mathbb{E}\left[ e^{t\varepsilon} \right] \nonumber \\
+&= e^{twx} M_\varepsilon(t) \nonumber \\
+&= e^{twx} \exp\left( \frac{1}{2}\sigma_n^2 t^2 \right) \nonumber \\
+&= \exp\left( (wx)t + \frac{1}{2}\sigma_n^2 t^2 \right) \label{eq:mgf_y_kasus1}
+\end{align}
+Berdasarkan bentuk MGF normal univariat pada Persamaan \eqref{eq:mgf_normal_univariat} dengan $\mu = wx$ dan $\sigma^2 = \sigma_n^2$, terbukti bahwa:
+\begin{equation}
+y \sim \mathcal{N}\left( wx, \; \sigma_n^2 \right) \qedhere
+\end{equation}
+\end{proof}
+
+\begin{claim}[Bentuk Vektor Multivariat: Persamaan (2.3) GPML]
+\label{claim:likelihood_gpml}
+Untuk sekumpulan input $X = [\mathbf{x}_1, \dots, \mathbf{x}_n] \in \mathbb{R}^{d \times n}$, bobot $\mathbf{w} \in \mathbb{R}^d$ bernilai konstan, dan galat $\boldsymbol{\varepsilon} \sim \mathcal{N}(\mathbf{0}, \sigma_n^2 I_n)$ \citep[hlm.~9]{rasmussen2006gaussian}, distribusi bersyarat observasi $\mathbf{y}$ berdistribusi normal multivariat:
+\begin{equation}
+\mathbf{y} \mid X, \mathbf{w} \sim \mathcal{N}\left( X^T \mathbf{w}, \; \sigma_n^2 I_n \right)
+\end{equation}
+dengan fungsi kepadatan probabilitas (likelihood) yang terfaktorisasi:
+\begin{equation}
+p(\mathbf{y} \mid X, \mathbf{w}) = \prod_{i=1}^n p(y_i \mid \mathbf{x}_i, \mathbf{w}) = \frac{1}{(2\pi \sigma_n^2)^{n/2}} \exp\left( -\frac{1}{2\sigma_n^2} |\mathbf{y} - X^T \mathbf{w}|^2 \right) \label{eq:gpml_eq_2_3}
+\end{equation}
+\end{claim}
+
+\begin{proof}
+MGF bersyarat dari $\mathbf{y} \mid X, \mathbf{w}$ didefinisikan sebagai:
+\begin{align}
+M_{\mathbf{y} \mid X, \mathbf{w}}(\mathbf{t}) &= \mathbb{E}\left[ \exp\left( \mathbf{t}^T (X^T \mathbf{w} + \boldsymbol{\varepsilon}) \right) \mid X, \mathbf{w} \right] \nonumber \\
+&= \exp\left( \mathbf{t}^T (X^T \mathbf{w}) \right) \cdot \mathbb{E}\left[ \exp\left( \mathbf{t}^T \boldsymbol{\varepsilon} \right) \right] \nonumber \\
+&= \exp\left( \mathbf{t}^T (X^T \mathbf{w}) \right) \cdot M_{\boldsymbol{\varepsilon}}(\mathbf{t}) \nonumber \\
+&= \exp\left( \mathbf{t}^T (X^T \mathbf{w}) + \frac{1}{2}\mathbf{t}^T \left( \sigma_n^2 I_n \right) \mathbf{t} \right) \label{eq:mgf_likelihood_multivariat}
+\end{align}
+Berdasarkan MGF normal multivariat pada Persamaan \eqref{eq:mgf_normal_multivariat} dengan $\boldsymbol{\mu} = X^T \mathbf{w}$ dan $\Sigma = \sigma_n^2 I_n$, terbukti bahwa $\mathbf{y} \mid X, \mathbf{w} \sim \mathcal{N}\left( X^T \mathbf{w}, \; \sigma_n^2 I_n \right)$.
+
+Karena $\Sigma = \sigma_n^2 I_n$ diagonal, suku eksponen pada MGF \eqref{eq:mgf_likelihood_multivariat} dapat diuraikan:
+\begin{equation}
+M_{\mathbf{y} \mid X, \mathbf{w}}(\mathbf{t}) = \prod_{i=1}^n \exp\left( t_i (\mathbf{x}_i^T \mathbf{w}) + \frac{1}{2}\sigma_n^2 t_i^2 \right) = \prod_{i=1}^n M_{y_i \mid \mathbf{x}_i, \mathbf{w}}(t_i)
+\end{equation}
+Karena MGF gabungan bersyarat sama dengan hasil kali MGF masing-masing variabel, maka setiap $y_1, \dots, y_n$ saling bebas dengan $y_i \mid \mathbf{x}_i, \mathbf{w} \sim \mathcal{N}(\mathbf{x}_i^T \mathbf{w}, \sigma_n^2)$. Oleh karena itu, fungsi kepadatan bersama terfaktorisasi menjadi:
+\begin{equation}
+p(\mathbf{y} \mid X, \mathbf{w}) = \prod_{i=1}^n p(y_i \mid \mathbf{x}_i, \mathbf{w}) = \frac{1}{(2\pi \sigma_n^2)^{n/2}} \exp\left( -\frac{1}{2\sigma_n^2} |\mathbf{y} - X^T \mathbf{w}|^2 \right) \qedhere
+\end{equation}
+\end{proof}
+
+% -------------------------------------------------------------------------
+\subsection{Kasus 2: Bobot \texorpdfstring{$w$}{w} Berdistribusi Normal (\texorpdfstring{$w \sim \mathcal{N}(0, \sigma_w^2)$}{w Gaussian})}
+\label{subsec:kasus_2}
+
+Diberikan $w \sim \mathcal{N}(0, \sigma_w^2)$ dan diasumsikan $w$ dan $\varepsilon$ saling bebas.
+
+\begin{claim}
+Fungsi $f(x) = wx$ berdistribusi normal:
+\begin{equation}
+f(x) \sim \mathcal{N}\left( 0, \; x^2 \sigma_w^2 \right)
+\end{equation}
+\end{claim}
+
+\begin{proof}
+MGF dari $w$ adalah $M_w(t) = \exp\left( \frac{1}{2}\sigma_w^2 t^2 \right)$. MGF dari $f(x) = wx$:
+\begin{align}
+M_{f(x)}(t) &= \mathbb{E}_w\left[ e^{t(wx)} \right] = \mathbb{E}_w\left[ e^{(tx)w} \right] = M_w(tx) \nonumber \\
+&= \exp\left( \frac{1}{2}\sigma_w^2 (tx)^2 \right) \nonumber \\
+&= \exp\left( \frac{1}{2} t^2 \left( x^2 \sigma_w^2 \right) \right) \label{eq:mgf_fx_kasus2}
+\end{align}
+Sesuai bentuk MGF normal univariat pada Persamaan \eqref{eq:mgf_normal_univariat} dengan $\mu = 0$ dan variansi $\sigma^2 = x^2 \sigma_w^2$, terbukti bahwa:
+\begin{equation}
+f(x) \sim \mathcal{N}\left( 0, \; x^2 \sigma_w^2 \right) \qedhere
+\end{equation}
+\end{proof}
+
+\begin{claim}
+Variabel observasi $y = f(x) + \varepsilon$ berdistribusi normal:
+\begin{equation}
+y \sim \mathcal{N}\left( 0, \; x^2 \sigma_w^2 + \sigma_n^2 \right)
+\end{equation}
+\end{claim}
+
+\begin{proof}
+Karena $w$ dan $\varepsilon$ saling bebas, maka $f(x)$ dan $\varepsilon$ saling bebas. MGF dari $y = f(x) + \varepsilon$:
+\begin{align}
+M_y(t) &= \mathbb{E}_{w, \varepsilon}\left[ e^{t(f(x) + \varepsilon)} \right] \nonumber \\
+&= \mathbb{E}\left[ e^{t f(x)} \right] \cdot \mathbb{E}\left[ e^{t\varepsilon} \right] \nonumber \\
+&= M_{f(x)}(t) \cdot M_\varepsilon(t) \nonumber \\
+&= \exp\left( \frac{1}{2} t^2 \left( x^2 \sigma_w^2 \right) \right) \cdot \exp\left( \frac{1}{2} \sigma_n^2 t^2 \right) \nonumber \\
+&= \exp\left( \frac{1}{2} t^2 \left( x^2 \sigma_w^2 + \sigma_n^2 \right) \right) \label{eq:mgf_y_kasus2}
+\end{align}
+Sesuai bentuk MGF normal univariat pada Persamaan \eqref{eq:mgf_normal_univariat} dengan $\mu = 0$ dan variansi $\sigma^2 = x^2 \sigma_w^2 + \sigma_n^2$, terbukti bahwa:
+\begin{equation}
+y \sim \mathcal{N}\left( 0, \; x^2 \sigma_w^2 + \sigma_n^2 \right) \qedhere
+\end{equation}
+\end{proof}
+
+\begin{claim}[Bentuk Vektor Multivariat]
+Untuk sekumpulan input $X = [\mathbf{x}_1, \dots, \mathbf{x}_n]^T \in \mathbb{R}^{n \times d}$, bobot $\mathbf{w} \sim \mathcal{N}(\mathbf{0}, \Sigma_p)$, dan galat $\boldsymbol{\varepsilon} \sim \mathcal{N}(\mathbf{0}, \sigma_n^2 I_n)$ dengan $\mathbf{w}$ dan $\boldsymbol{\varepsilon}$ saling bebas:
+\begin{equation}
+\mathbf{f} \sim \mathcal{N}\left(\mathbf{0}, \; X\Sigma_p X^T\right) \quad \text{dan} \quad \mathbf{y} \sim \mathcal{N}\left(\mathbf{0}, \; X\Sigma_p X^T + \sigma_n^2 I_n\right)
+\end{equation}
+\end{claim}
+
+\begin{proof}
+Berdasarkan MGF normal multivariat pada Persamaan \eqref{eq:mgf_normal_multivariat}:
+\begin{equation}
+M_{\mathbf{f}}(\mathbf{t}) = \mathbb{E}\left[ \exp(\mathbf{t}^T X \mathbf{w}) \right] = \exp\left( \frac{1}{2}\mathbf{t}^T \left( X\Sigma_p X^T \right) \mathbf{t} \right) \implies \mathbf{f} \sim \mathcal{N}\left(\mathbf{0}, \; X\Sigma_p X^T\right)
+\end{equation}
+Karena $\mathbf{w}$ dan $\boldsymbol{\varepsilon}$ saling bebas:
+\begin{align}
+M_{\mathbf{y}}(\mathbf{t}) &= M_{\mathbf{f}}(\mathbf{t}) \cdot M_{\boldsymbol{\varepsilon}}(\mathbf{t}) \nonumber \\
+&= \exp\left( \frac{1}{2}\mathbf{t}^T \left( X\Sigma_p X^T + \sigma_n^2 I_n \right) \mathbf{t} \right) \implies \mathbf{y} \sim \mathcal{N}\left(\mathbf{0}, \; X\Sigma_p X^T + \sigma_n^2 I_n\right) \qedhere
+\end{align}
+\end{proof}
+
+% =========================================================================
+% 2. KONSEP DEEP NEURAL NETWORK (DNN) SEBAGAI TRANSISI MENUJU DGP
+% =========================================================================
+\section{Konsep Deep Neural Network (DNN) dan Transisi Menuju Deep Gaussian Process (DGP)}
+\label{sec:dnn_to_dgp}
+
+\subsection{Formulasi Aljabar Linier Arsitektur Deep Neural Network (DNN)}
+\label{subsec:dnn_formulation}
+
+\noindent Diberikan vektor masukan $\mathbf{x} \in \mathbb{R}^{d_0}$. Jaringan saraf tiruan mendalam (\textit{Deep Neural Network} / DNN) dengan $L$ lapisan tersembunyi (\textit{hidden layers}) memetakan masukan $\mathbf{x}$ menuju estimasi keluaran $\hat{\mathbf{y}} \in \mathbb{R}^{d_{L+1}}$ melalui komposisi berulang dari pemetaan linier berbobot dan fungsi aktivasi non-linier.
+
+Untuk setiap lapisan $\ell \in \{1, 2, \dots, L\}$:
+\begin{align}
+\mathbf{z}^{(\ell)} &= W^{(\ell)} \mathbf{h}^{(\ell-1)} + \mathbf{b}^{(\ell)} \label{eq:dnn_preactivation} \\
+\mathbf{h}^{(\ell)} &= \sigma\left( \mathbf{z}^{(\ell)} \right) \label{eq:dnn_activation}
+\end{align}
+dengan keselarasan dimensi operasi aljabar linier didefinisikan secara presisi sebagai berikut:
+\begin{itemize}
+    \item $\mathbf{h}^{(0)} = \mathbf{x} \in \mathbb{R}^{d_0}$ adalah representasi awal pada lapisan masukan (\textit{input layer}).
+    \item $W^{(\ell)} \in \mathbb{R}^{d_\ell \times d_{\ell-1}}$ adalah matriks bobot pada lapisan ke-$\ell$, di mana indeks baris menyatakan jumlah neuron pada lapisan saat ini ($d_\ell$) dan indeks kolom menyatakan dimensi fitur dari lapisan sebelumnya ($d_{\ell-1}$).
+    \item $\mathbf{b}^{(\ell)} \in \mathbb{R}^{d_\ell}$ adalah vektor bias pada lapisan ke-$\ell$.
+    \item $\mathbf{z}^{(\ell)} \in \mathbb{R}^{d_\ell}$ adalah vektor aktivasi pra-nonlinier (\textit{pre-activation}).
+    \item $\sigma(\cdot) : \mathbb{R} \to \mathbb{R}$ adalah fungsi aktivasi non-linier (seperti ReLU, Sigmoid, atau GELU) yang diaplikasikan secara elemen-demi-elemen (\textit{element-wise}).
+    \item $\mathbf{h}^{(\ell)} \in \mathbb{R}^{d_\ell}$ adalah vektor representasi fitur tersembunyi (\textit{hidden representation}) pada lapisan ke-$\ell$.
+\end{itemize}
+Pada lapisan keluaran akhir ($\ell = L+1$):
+\begin{equation}
+\hat{\mathbf{y}} = \mathbf{h}^{(L+1)} = W^{(L+1)} \mathbf{h}^{(L)} + \mathbf{b}^{(L+1)} \label{eq:dnn_output}
+\end{equation}
+dengan $W^{(L+1)} \in \mathbb{R}^{d_{L+1} \times d_L}$ dan $\mathbf{b}^{(L+1)} \in \mathbb{R}^{d_{L+1}}$. Secara keseluruhan, model DNN mengekspresikan fungsi komposit hierarkis:
+\begin{equation}
+\hat{\mathbf{y}} = \left( f_{L+1} \circ f_L \circ \dots \circ f_1 \right)(\mathbf{x}) \label{eq:komposisi_dnn}
+\end{equation}
+
+\subsection{Keterbatasan Gaussian Process Standar vs Keunggulan Komposisi Hierarkis}
+\label{subsec:gp_limitation}
+
+\noindent Model \textit{Gaussian Process} (GP) standar pada Seksi \ref{sec:pembuktian_mgf} memodelkan sebaran atas fungsi non-parametrik melalui fungsi rata-rata $m(\mathbf{x})$ dan fungsi kernel kovariansi $k(\mathbf{x}, \mathbf{x}')$:
+\begin{equation}
+f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \; k(\mathbf{x}, \mathbf{x}') \right), \quad y = f(\mathbf{x}) + \varepsilon
+\end{equation}
+Meskipun GP memiliki keunggulan utama dalam memberikan kuantifikasi ketidakpastian yang terukur secara analitik, GP standar memiliki karakteristik arsitektur ``dangkal'' (\textit{shallow architecture}):
+\begin{enumerate}
+    \item \textbf{Transformasi Fitur Tunggal}: Hubungan masukan-keluaran ditentukan langsung oleh satu fungsi kernel $k(\mathbf{x}, \mathbf{x}')$. Hal ini membatasi kemampuan GP standar dalam memodelkan fungsi yang sangat non-stasioner, memiliki variasi skala spasial yang drastis (\textit{varying lengthscales}), atau memiliki diskontinuitas lokal.
+    \item \textbf{Ketiadaan Pembelajaran Representasi Bertingkat}: GP standar tidak mengekstraksi fitur representasi secara bertingkat (\textit{hierarchical representation learning}) dari data masukan berdimensi tinggi, seperti susunan piksel mentah pada data citra.
+\end{enumerate}
+
+Sebaliknya, keunggulan mendasar dari DNN terletak pada arsitektur komposit bertingkat pada Persamaan \eqref{eq:komposisi_dnn}, di mana setiap lapisan mempelajari abstraksi fitur yang semakin tinggi secara otomatis dari representasi lapisan sebelumnya.
+
+\subsection{Transisi Menuju Deep Gaussian Process (DGP)}
+\label{subsec:dgp_transition}
+
+\noindent Keterkaitan konseptual antara jaringan saraf tiruan dan Gaussian Process diawali oleh Teorema Neal (1995): jaringan saraf tiruan satu lapis dengan lebar neuron menuju tak terhingga ($d_1 \to \infty$) yang parameter bobotnya berdistribusi independen identik berkonvergen secara eksak menuju Gaussian Process (\textit{Neural Network Gaussian Process} / NNGP).
+
+Berdasarkan fondasi ini, Damianou \& Lawrence (2013) memperluas konsep komposisi hierarkis pada DNN ke dalam model Gaussian Process, menghasilkan arsitektur \textbf{Deep Gaussian Process (DGP)}. Pada DGP, setiap transformasi parametrik tetap $\mathbf{h}^{(\ell)} = \sigma(W^{(\ell)} \mathbf{h}^{(\ell-1)} + \mathbf{b}^{(\ell)})$ pada DNN digantikan oleh pemetaan fungsi acak Gaussian Process:
+\begin{align}
+\mathbf{f}^{(\ell)} &\sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)}(\mathbf{h}^{(\ell-1)}, \mathbf{h}^{(\ell-1)}) \right) \label{eq:dgp_layer} \\
+\mathbf{h}^{(\ell)} &= \mathbf{f}^{(\ell)}(\mathbf{h}^{(\ell-1)}) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right)
+\end{align}
+dengan masukan awal $\mathbf{h}^{(0)} = \mathbf{x}$ dan keluaran akhir observasi $\mathbf{y} = \mathbf{h}^{(L)} + \boldsymbol{\varepsilon}$.
+
+Struktur pemetaan DGP merupakan komposisi bertingkat dari fungsi-fungsi acak Gaussian:
+\begin{equation}
+\mathbf{y} = \mathbf{f}^{(L)}\left( \mathbf{f}^{(L-1)}\left( \dots \mathbf{f}^{(1)}(\mathbf{x}) \dots \right) \right) + \boldsymbol{\varepsilon} \label{eq:dgp_composition}
+\end{equation}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.3cm,
+    layer/.style={rectangle, draw=blue!70!black, fill=blue!5, rounded corners, minimum width=2.4cm, minimum height=0.75cm, font=\footnotesize\bfseries, align=center},
+    dgp_layer/.style={rectangle, draw=teal!70!black, fill=teal!5, rounded corners, minimum width=2.4cm, minimum height=0.75cm, font=\footnotesize\bfseries, align=center},
+    arrow/.style={-Latex, thick, draw=blue!70!black},
+    dgp_arrow/.style={-Latex, thick, draw=teal!70!black}
+]
+    % DNN
+    \node (x1) {$\mathbf{x}$};
+    \node[layer, right=of x1] (h1) {$\sigma(W^{(1)}\mathbf{x} + \mathbf{b}^{(1)})$};
+    \node[right=of h1] (dots1) {$\cdots$};
+    \node[layer, right=of dots1] (hL) {$\sigma(W^{(L)}\mathbf{h}^{(L-1)} + \mathbf{b}^{(L)})$};
+    \node[right=of hL] (y1) {$\hat{\mathbf{y}}$};
+    
+    \draw[arrow] (x1) -- (h1);
+    \draw[arrow] (h1) -- (dots1);
+    \draw[arrow] (dots1) -- (hL);
+    \draw[arrow] (hL) -- (y1);
+    
+    \node[above=0.25cm of h1, anchor=south, font=\footnotesize\bfseries, color=blue!80!black] {Deep Neural Network (DNN): Komposisi Parametrik};
+
+    % DGP
+    \node[below=1.5cm of x1] (x2) {$\mathbf{x}$};
+    \node[dgp_layer, right=of x2] (f1) {$\mathbf{f}^{(1)} \sim \mathcal{GP}_1$};
+    \node[right=of f1] (dots2) {$\cdots$};
+    \node[dgp_layer, right=of dots2] (fL) {$\mathbf{f}^{(L)} \sim \mathcal{GP}_L$};
+    \node[right=of fL] (y2) {$\mathbf{y}$};
+    
+    \draw[dgp_arrow] (x2) -- node[above, font=\scriptsize] {$\mathbf{h}^{(0)}$} (f1);
+    \draw[dgp_arrow] (f1) -- node[above, font=\scriptsize] {$\mathbf{h}^{(1)}$} (dots2);
+    \draw[dgp_arrow] (dots2) -- node[above, font=\scriptsize] {$\mathbf{h}^{(L-1)}$} (fL);
+    \draw[dgp_arrow] (fL) -- node[above, font=\scriptsize] {$\mathbf{h}^{(L)}$} (y2);
+    
+    \node[above=0.25cm of f1, anchor=south, font=\footnotesize\bfseries, color=teal!80!black] {Deep Gaussian Process (DGP): Komposisi Non-Parametrik};
+\end{tikzpicture}
+\caption{Transisi arsitektur dari komposisi parametrik (DNN) menuju komposisi hierarkis fungsi acak (DGP).}
+\label{fig:dnn_to_dgp}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Perbandingan Karakteristik Arsitektur DNN, GP Standar, dan DGP.}
+\label{tab:komparasi_dnn_gp_dgp}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Karakteristik} & \textbf{Deep Neural Network} & \textbf{Gaussian Process Standar} & \textbf{Deep Gaussian Process} \\
+\midrule
+\textbf{Struktur Pemetaan} & Komposisi bertingkat ($L$ lapis) & Tunggal / dangkal (1 lapis) & Komposisi bertingkat ($L$ lapis) \\
+\textbf{Sifat Transformasi} & Parametrik berbobot tetap & Non-parametrik via Kernel tunggal & Non-parametrik via GP hierarkis \\
+\textbf{Representasi Fitur} & Hierarki fitur mendalam & Terbatas pada ruang fitur kernel & Hierarki kernel mendalam \\
+\textbf{Kuantifikasi Ketidakpastian} & Tidak tersedia (titik pasti $\hat{\mathbf{y}}$) & Analitik pada seluruh ruang masukan & Inheren di setiap lapisan \\
+\textbf{Fleksibilitas Non-Stasioner} & Sangat fleksibel (via aktivasi) & Terbatas asumsi stasioneritas kernel & Sangat fleksibel (\textit{input-warping}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Dengan demikian, arsitektur DGP menjadi jembatan ideal bagi topik segmentasi citra: ia mewarisi kemampuan representasi hierarkis DNN untuk mengekstrak fitur spasial kompleks dari data citra, sekaligus mempertahankan kepastian estimasi ketidakpastian berbasis prinsip distribusi Gaussian.
+
+\end{document}

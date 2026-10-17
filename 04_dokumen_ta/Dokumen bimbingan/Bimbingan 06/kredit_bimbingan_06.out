@@ -1,0 +1,7 @@
+\BOOKMARK [1][-]{section.1}{Pembuktian\040Distribusi\040Normal\040y\040=\040f\(x\)\040+\040epsilon}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Kasus\0401:\040Bobot\040Bernilai\040Konstan}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Kasus\0402:\040Bobot\040w\040Berdistribusi\040Normal\040\(w\040Gaussian\)}{section.1}% 3
+\BOOKMARK [1][-]{section.2}{Konsep\040Deep\040Neural\040Network\040\(DNN\)\040dan\040Transisi\040Menuju\040Deep\040Gaussian\040Process\040\(DGP\)}{}% 4
+\BOOKMARK [2][-]{subsection.2.1}{Formulasi\040Aljabar\040Linier\040Arsitektur\040Deep\040Neural\040Network\040\(DNN\)}{section.2}% 5
+\BOOKMARK [2][-]{subsection.2.2}{Keterbatasan\040Gaussian\040Process\040Standar\040vs\040Keunggulan\040Komposisi\040Hierarkis}{section.2}% 6
+\BOOKMARK [2][-]{subsection.2.3}{Transisi\040Menuju\040Deep\040Gaussian\040Process\040\(DGP\)}{section.2}% 7
