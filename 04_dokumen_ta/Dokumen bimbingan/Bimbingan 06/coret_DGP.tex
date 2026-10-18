@@ -1,0 +1,355 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA & PENGATURAN TATA LETAK
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}
+\usepackage{geometry}
+\geometry{top=2.0cm, bottom=2.0cm, left=2.0cm, right=2.0cm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{tikz}
+\usetikzlibrary{matrix,decorations.pathreplacing,calc,positioning,arrows.meta,shapes.geometric}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=teal!70!black,
+    citecolor=teal!70!black,
+    urlcolor=teal!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+
+% Reduksi spasi vertikal persamaan secara proporsional
+\setlength{\abovedisplayskip}{5pt}
+\setlength{\belowdisplayskip}{5pt}
+\setlength{\abovedisplayshortskip}{3pt}
+\setlength{\belowdisplayshortskip}{3pt}
+
+% Pengaturan warna dan kotak mdframed
+\definecolor{dgpblue}{RGB}{26, 82, 118}
+\definecolor{dgpgreen}{RGB}{30, 132, 73}
+\definecolor{dgppurple}{RGB}{108, 52, 131}
+\definecolor{dgpred}{RGB}{148, 49, 38}
+
+\newmdenv[
+    linecolor=dgpblue,
+    outerlinewidth=1.2pt,
+    roundcorner=5pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=blue!2
+]{mathbox}
+
+\graphicspath{{figures/}}
+
+% =========================================================================
+% JUDUL DOKUMEN
+% =========================================================================
+\title{
+    \vspace{-1.2cm}
+    \textbf{\Large SUPLEMEN TEKNIS: DEEP GAUSSIAN PROCESS (DGP)} \\[0.3em]
+    \textbf{\large Konsep "Neuron", Arsitektur Hierarkis, dan Contoh Perhitungan Manual ($N = 3$)}
+}
+\author{
+    \textbf{Topik Tugas Akhir}: \textit{Image Segmentation with Deep Gaussian Process} \\
+    Catatan Diskusi \& Panduan Teoretis Bimbingan 06
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\vspace{-0.5cm}
+
+\begin{abstract}
+\noindent Dokumen ringkas ini merangkum esensi komputasi dan pemodelan \textit{Deep Gaussian Process} (DGP). Pembahasan difokuskan pada tiga pilar utama: (1) interpretasi konsep ``banyak neuron'' pada DGP (teorema Neal lebar tak terhingga vs dimensi representasi laten terhitung), (2) diagram alur arsitektur propagasi hierarkis dua lapisan ($L = 2$) dengan trik reparameterisasi, serta (3) simulasi perhitungan matriks manual menggunakan angka \textit{dummy} konkret ($N = 3$) pada titik interpolasi baru ($x_* = 3.0$). Ditunjukkan secara analitik bagaimana ketidakpastian lapisan tersembunyi merambat melalui \textit{Law of Total Variance} menuju luaran akhir.
+\end{abstract}
+
+\vspace{0.1cm}
+\hrule
+\vspace{0.2cm}
+
+% =========================================================================
+% SEKSI 1: KONSEP "NEURON" PADA DEEP GAUSSIAN PROCESS
+% =========================================================================
+\section{Konsep ``Banyak Neuron'' pada Deep Gaussian Process}
+\label{sec:konsep_neuron}
+
+\noindent Dalam \textit{Deep Neural Network} (DNN), neuron adalah unit komputasi skalar berbobot: $h_j = \sigma(\sum_i W_{ji} x_i + b_j)$. Ketika beralih ke \textit{Deep Gaussian Process} (DGP), konsep ``neuron'' dipahami melalui \textbf{dua sudut pandang}:
+
+\begin{enumerate}
+    \item \textbf{Sudut Pandang Teoretis (Teorema Neal, 1995) $\to$ Neuron Tak Terhingga ($\infty$)}: \\
+    Jika bobot dan bias neural network berprior Gaussian independen $W_{ji} \sim \mathcal{N}(0, \sigma_w^2)$ diekspansi lebarnya menuju tak berhingga ($M \to \infty$), distribusi fungsi jaringan tersebut berkonvergensi eksak ke proses Gaussian:
+    \begin{equation}
+        \lim_{M \to \infty} f_{\mathrm{NN}}(\mathbf{x}) \equiv \mathcal{GP}\left( 0, \; k(\mathbf{x}, \mathbf{x}') \right)
+    \end{equation}
+    Artinya, \textbf{setiap satu fungsi GP secara inheren memuat kapasitas representasi $\infty$ neuron berbobot acak} di ruang bobot (\textit{weight space}).
+    
+    \item \textbf{Sudut Pandang Arsitektural Praktis $\to$ Dimensi Laten Terhitung ($D_\ell$)}: \\
+    Yang diatur oleh arsitek DGP pada setiap lapisan tersembunyi adalah \textbf{dimensi representasi laten} $D_\ell$ (jumlah kanal laten). Jika $D_\ell = 1$, terdapat 1 fungsi laten $h \in \mathbb{R}$. Jika $D_\ell = 2$ atau $D_\ell = 16$, terdapat beberapa kanal laten independen:
+    \begin{equation}
+        \mathbf{h}^{(\ell)} = \begin{bmatrix} h_1^{(\ell)} \\ \vdots \\ h_{D_\ell}^{(\ell)} \end{bmatrix}, \quad h_d^{(\ell)} \sim \mathcal{GP}\left(0, \; k_d^{(\ell)}\right), \quad d = 1, \dots, D_\ell
+    \end{equation}
+    Keunggulan \textit{kernel trick}: berapapun jumlah kanal laten $D_\ell$, \textbf{dimensi matriks kovariansi $K^{(\ell)}$ tetap berukuran $[N \times N]$} (hanya bergantung pada jumlah data $N$, bukan jumlah dimensi laten).
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\linewidth}{!}{
+\begin{tikzpicture}[
+    node distance=1.0cm,
+    font=\small,
+    neuron/.style={circle, draw=blue!70!black, fill=blue!10, thick, minimum size=6mm},
+    gp_node/.style={rectangle, draw=teal!80!black, fill=teal!10, rounded corners=4pt, thick, minimum width=2.4cm, minimum height=8mm, align=center},
+    arrow/.style={-{Latex[length=2.5mm]}, thick, draw=black!70}
+]
+    % --- PANEL A: NEAL'S THEOREM (INFINITE NEURONS) ---
+    \node[font=\bfseries\footnotesize, color=blue!80!black] at (1.8, 2.3) {(a) Teorema Neal: Lebar Neuron Tak Terhingga ($M \to \infty$)};
+    
+    \node (x_neal) at (0, 0) {$x$};
+    \node[neuron] (n1) at (1.8, 1.2) {\scriptsize $w_1$};
+    \node[neuron] (n2) at (1.8, 0.4) {\scriptsize $w_2$};
+    \node at (1.8, -0.3) {$\vdots$};
+    \node[neuron] (nM) at (1.8, -1.2) {\scriptsize $w_M$};
+    \node[gp_node] (gp_out) at (4.3, 0) {1 Kanal GP:\\$f(x) \sim \mathcal{GP}$};
+
+    \draw[arrow] (x_neal) -- (n1);
+    \draw[arrow] (x_neal) -- (n2);
+    \draw[arrow] (x_neal) -- (nM);
+    \draw[arrow] (n1) -- (gp_out);
+    \draw[arrow] (n2) -- (gp_out);
+    \draw[arrow] (nM) -- (gp_out);
+    
+    \node[font=\scriptsize\itshape, align=center] at (1.8, -1.8) {$M \to \infty$ neuron\\berbobot acak};
+
+    % Garis pemisah panel
+    \draw[dashed, draw=gray!60, thick] (6.0, 2.4) -- (6.0, -2.1);
+
+    % --- PANEL B: FINITE LATENT DIMENSIONS (DGP CHANNELS) ---
+    \node[font=\bfseries\footnotesize, color=teal!80!black] at (10.0, 2.3) {(b) Arsitektur DGP: Dimensi Laten Terhitung ($D_\ell = 2$)};
+    
+    \node (x_dgp) at (7.0, 0) {$x$};
+    \node[gp_node, minimum width=2.2cm] (gp1) at (9.6, 0.8) {$h_1 \sim \mathcal{GP}_1$\\Kanal Laten 1};
+    \node[gp_node, minimum width=2.2cm] (gp2) at (9.6, -0.8) {$h_2 \sim \mathcal{GP}_2$\\Kanal Laten 2};
+    \node[gp_node, minimum width=2.4cm] (gp_l2) at (13.0, 0) {Lapisan 2: $f^{(2)}(\mathbf{h})$\\Kernel ARD};
+
+    \draw[arrow] (x_dgp) -- node[above, font=\scriptsize] {$k^{(1)}_1$} (gp1);
+    \draw[arrow] (x_dgp) -- node[below, font=\scriptsize] {$k^{(1)}_2$} (gp2);
+    \draw[arrow] (gp1) -- node[above, font=\scriptsize] {$h_1 \in \mathbb{R}$} (gp_l2);
+    \draw[arrow] (gp2) -- node[below, font=\scriptsize] {$h_2 \in \mathbb{R}$} (gp_l2);
+    \draw[arrow] (gp_l2) -- ++(1.6, 0) node[right] {$y$};
+
+\end{tikzpicture}
+}
+\vspace{-0.2cm}
+\caption{Ilustrasi dualitas ``neuron'' pada DGP: (a) Konvergensi teoretis jaringan berlebar tak terhingga menuju satu proses Gaussian, dan (b) Struktur arsitektural praktis DGP dengan $D_\ell = 2$ dimensi/kanal laten terhitung.}
+\label{fig:neuron_dgp}
+\end{figure}
+
+% =========================================================================
+% SEKSI 2: ARSITEKTUR DAN ALUR PROPAGASI DGP 2-LAPISAN
+% =========================================================================
+\section{Arsitektur Propagasi Hierarkis DGP ($L = 2$)}
+\label{sec:arsitektur_dgp}
+
+\noindent Diberikan DGP dua lapisan: masukan $x \in \mathbb{R}$, ruang laten $h \in \mathbb{R}$ ($D_1 = 1$), dan luaran target $y \in \mathbb{R}$.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\linewidth}{!}{
+\begin{tikzpicture}[
+    node distance=1.0cm,
+    font=\small,
+    box/.style={rectangle, draw=black!70, rounded corners=4pt, thick, align=center, inner sep=5pt},
+    layer1/.style={box, draw=dgpgreen, fill=green!6},
+    layer2/.style={box, draw=dgppurple, fill=purple!6},
+    arrow/.style={-{Latex[length=2.8mm]}, thick}
+]
+    % Node-node alur
+    \node (x_in) [box, fill=gray!10] {Masukan\\$x \in \mathbb{R}$};
+    
+    \node (l1) [layer1, right=0.7cm of x_in] {
+        \textbf{Lapisan 1 ($\mathcal{GP}_1$)}\\
+        $h = f^{(1)}(x)$\\
+        $k^{(1)}(x, x') = \sigma_{f1}^2 \exp\left(-\frac{(x-x')^2}{2l_1^2}\right)$
+    };
+    
+    \node (dist_h) [box, fill=yellow!12, draw=orange!80!black, right=0.7cm of l1] {
+        \textbf{Distribusi Laten}\\
+        $h_* \sim \mathcal{N}\left(\mu_{h*}, \; \sigma_{h*}^2\right)$\\
+        \scriptsize $h_*^{(s)} = \mu_{h*} + \sigma_{h*} \epsilon^{(s)}$
+    };
+    
+    \node (l2) [layer2, right=0.7cm of dist_h] {
+        \textbf{Lapisan 2 ($\mathcal{GP}_2$)}\\
+        $y = f^{(2)}(h)$\\
+        $k^{(2)}(h, h') = \sigma_{f2}^2 \exp\left(-\frac{(h-h')^2}{2l_2^2}\right)$
+    };
+    
+    \node (y_out) [box, fill=red!10, draw=dgpred, right=0.7cm of l2] {
+        \textbf{Luaran DGP}\\
+        $\mathbb{E}[y_*] = \mu_{\mathrm{final}}$\\
+        $\mathrm{Var}(y_*) = \sigma^2_{\mathrm{total}}$
+    };
+
+    % Panah penghubung
+    \draw[arrow, draw=dgpgreen] (x_in) -- (l1);
+    \draw[arrow, draw=dgpgreen] (l1) -- node[above, font=\scriptsize] {Posterior L1} (dist_h);
+    \draw[arrow, draw=dgppurple] (dist_h) -- node[above, font=\scriptsize] {Sampel $h_*^{(s)}$} (l2);
+    \draw[arrow, draw=dgpred] (l2) -- node[above, font=\scriptsize] {\textit{Total Var}} (y_out);
+
+\end{tikzpicture}
+}
+\vspace{-0.2cm}
+\caption{Alur propagasi ketidakpastian DGP: Lapisan tersembunyi menghasilkan distribusi acak $h_*$ yang disampel melalui trik reparameterisasi dan dialirkan menuju fungsi kernel Lapisan 2.}
+\label{fig:arsitektur_dgp}
+\end{figure}
+
+\subsection{Tantangan Non-linearitas dan Reparameterization Trick}
+\label{subsec:reparam}
+Karena luaran Lapisan 1 berupa variabel acak $h_* \sim \mathcal{N}(\mu_{h*}, \sigma_{h*}^2)$, integrasi eksak melalui fungsi kernel non-linier $k^{(2)}(h_*, h_i)$ bersifat intraktabel (\textit{intractable}). Salimbeni \& Deisenroth (2017) mengatasi kendala ini menggunakan \textbf{Trik Reparameterisasi Monte Carlo}:
+\begin{equation}
+    h_*^{(s)} = \mu_{h*} + \sigma_{h*} \cdot \epsilon^{(s)}, \quad \epsilon^{(s)} \sim \mathcal{N}(0, 1), \quad s = 1, \dots, S
+\end{equation}
+
+\subsection{Hukum Variansi Total (Law of Total Variance)}
+\label{subsec:law_total_var}
+Variansi akhir DGP diurai secara elegan menjadi dua komponen:
+\begin{equation}
+    \mathrm{Var}(y_*) = \underbrace{\mathbb{E}_{h_*}\left[ \mathrm{Var}(y_* \mid h_*) \right]}_{\text{Ketidakpastian Lokal Lapisan 2}} + \underbrace{\mathrm{Var}_{h_*}\left( \mathbb{E}[y_* \mid h_*] \right)}_{\text{Ketidakpastian Merambat dari Lapisan 1!}}
+\end{equation}
+
+% =========================================================================
+% SEKSI 3: CONTOH PERHITUNGAN NUMERIK DGP MANUAL (N = 3)
+% =========================================================================
+\section{Contoh Perhitungan Numerik Lengkap (\texorpdfstring{$N = 3, N_* = 1$}{N=3, N*=1})}
+\label{sec:perhitungan_numerik}
+
+\begin{mathbox}
+\textbf{Konfigurasi Masalah}:
+\begin{itemize}
+    \item 3 Titik Data Latih: $(x_1, y_1) = (1.0, 2.0)$, $(x_2, y_2) = (2.0, 1.0)$, $(x_3, y_3) = (4.0, 3.0)$.
+    \item Representasi Laten Latih: $\mathbf{h} = [h_1, h_2, h_3]^T = [0.5, \; 1.2, \; 2.8]^T$.
+    \item Titik Uji Celah Interpolasi: $x_* = 3.0$ (tidak memiliki data observasi).
+    \item Parameter Kernel: $\sigma_{f1}^2 = \sigma_{f2}^2 = 1.0$, $l_1 = l_2 = 1.0$, $\sigma_{n1}^2 = \sigma_{n2}^2 = 0.01$.
+\end{itemize}
+\end{mathbox}
+
+\subsection{Langkah 1: Pelatihan Lapisan 1 (\texorpdfstring{$X \to \mathbf{h}$}{X -> h})}
+Matriks kovariansi masukan $K_y^{(1)} = K(X, X) + \sigma_{n1}^2 I$ dan inversnya:
+\begin{equation}
+K_y^{(1)} = \begin{bmatrix} 1.0100 & 0.6065 & 0.0111 \\ 0.6065 & 1.0100 & 0.1353 \\ 0.0111 & 0.1353 & 1.0100 \end{bmatrix}, \quad
+(K_y^{(1)})^{-1} = \begin{bmatrix} 1.5606 & -0.9519 & 0.1104 \\ -0.9519 & 1.5889 & -0.2024 \\ 0.1104 & -0.2024 & 1.0160 \end{bmatrix}
+\end{equation}
+
+Vektor bobot dual Lapisan 1:
+\begin{equation}
+\boldsymbol{\alpha}^{(1)} = (K_y^{(1)})^{-1} \mathbf{h} = (K_y^{(1)})^{-1} \begin{bmatrix} 0.5 \\ 1.2 \\ 2.8 \end{bmatrix} = \begin{bmatrix} \mathbf{-0.0530} \\ \mathbf{0.8639} \\ \mathbf{2.6571} \end{bmatrix}
+\end{equation}
+
+\subsection{Langkah 2: Pelatihan Lapisan 2 (\texorpdfstring{$\mathbf{h} \to \mathbf{y}$}{h -> y})}
+Jarak kernel Lapisan 2 dihitung antar fitur laten $\mathbf{h} = [0.5, 1.2, 2.8]^T$:
+\begin{itemize}
+    \item $k^{(2)}(h_1, h_2) = \exp\left(-0.5 \times |0.5 - 1.2|^2\right) = \exp(-0.245) = 0.7827$
+    \item $k^{(2)}(h_1, h_3) = \exp\left(-0.5 \times |0.5 - 2.8|^2\right) = \exp(-2.645) = 0.0710$
+    \item $k^{(2)}(h_2, h_3) = \exp\left(-0.5 \times |1.2 - 2.8|^2\right) = \exp(-1.280) = 0.2780$
+\end{itemize}
+
+Matriks kovariansi Lapisan 2 dan bobot dual $\boldsymbol{\alpha}^{(2)}$:
+\begin{equation}
+K_y^{(2)} = \begin{bmatrix} 1.0100 & 0.7827 & 0.0710 \\ 0.7827 & 1.0100 & 0.2780 \\ 0.0710 & 0.2780 & 1.0100 \end{bmatrix}, \quad
+\boldsymbol{\alpha}^{(2)} = (K_y^{(2)})^{-1} \mathbf{y} = \begin{bmatrix} \mathbf{4.3212} \\ \mathbf{-3.3462} \\ \mathbf{3.5877} \end{bmatrix}
+\end{equation}
+
+\subsection{Langkah 3: Evaluasi Titik Interpolasi Baru (\texorpdfstring{$x_* = 3.0$}{x* = 3.0})}
+
+\paragraph{A. Propagasi Maju Lapisan 1 ($x_* \to h_*$):}
+Vektor kemiripan titik uji ke masukan latih: $\mathbf{k}_*^{(1)} = [0.1353, \; 0.6065, \; 0.6065]^T$.
+\begin{align}
+\mu_{h*} &= \mathbf{k}_*^{(1)T} \boldsymbol{\alpha}^{(1)} = (0.1353 \times -0.0530) + (0.6065 \times 0.8639) + (0.6065 \times 2.6571) = \mathbf{2.1284} \\
+\sigma_{h*}^2 &= 1.0000 - \mathbf{k}_*^{(1)T} (K_y^{(1)})^{-1} \mathbf{k}_*^{(1)} = 1.0000 - 0.6998 = \mathbf{0.3002} \implies \sigma_{h*} = \mathbf{0.5479}
+\end{align}
+Luaran Lapisan 1 adalah distribusi: $h_* \sim \mathcal{N}\left(2.1284, \; 0.3002\right)$.
+
+\paragraph{B. Reparameterization Sampling:}
+Ditarik 3 sampel representatif $h_*^{(s)} = \mu_{h*} + \sigma_{h*} \epsilon^{(s)}$:
+\begin{itemize}
+    \item \textbf{Sampel 1} ($\epsilon^{(1)} = 0$): $h_*^{(1)} = 2.1284$ (Nilai mean)
+    \item \textbf{Sampel 2} ($\epsilon^{(2)} = +1$): $h_*^{(2)} = 2.1284 + 0.5479 = \mathbf{2.6763}$ (Mendekati $h_3 = 2.8$)
+    \item \textbf{Sampel 3} ($\epsilon^{(3)} = -1$): $h_*^{(3)} = 2.1284 - 0.5479 = \mathbf{1.5805}$ (Mendekati $h_2 = 1.2$)
+\end{itemize}
+
+\paragraph{C. Propagasi Maju Lapisan 2 untuk Masing-masing Sampel ($h_*^{(s)} \to y_*^{(s)}$):}
+\begin{enumerate}
+    \item \textbf{Sampel 1 ($h_*^{(1)} = 2.1284$)}: \\
+    $\mathbf{k}_*^{(2)(1)} = [0.2656, \; 0.6499, \; 0.7981]^T$ \\
+    $\mu_{y*}^{(1)} = \mathbf{k}_*^{(2)(1)T} \boldsymbol{\alpha}^{(2)} = \mathbf{1.8363}, \quad \sigma_{y*}^{2(1)} = 1.0 - \mathbf{k}_*^{(2)(1)T} (K_y^{(2)})^{-1} \mathbf{k}_*^{(2)(1)} = \mathbf{0.1180}$
+    
+    \item \textbf{Sampel 2 ($h_*^{(2)} = 2.6763$)}: \\
+    $\mathbf{k}_*^{(2)(2)} = [0.0936, \; 0.3363, \; \mathbf{0.9924}]^T$ (sangat mirip dengan $h_3 = 2.8$) \\
+    $\mu_{y*}^{(2)} = \mathbf{2.8397}$ (naik mendekati target $y_3 = 3.0$), $\quad \sigma_{y*}^{2(2)} = \mathbf{0.0186}$ (variansi sangat kecil).
+    
+    \item \textbf{Sampel 3 ($h_*^{(3)} = 1.5805$)}: \\
+    $\mathbf{k}_*^{(2)(3)} = [0.5578, \; \mathbf{0.9302}, \; 0.4754]^T$ (sangat mirip dengan $h_2 = 1.2$) \\
+    $\mu_{y*}^{(3)} = \mathbf{1.0034}$ (turun mendekati target $y_2 = 1.0$), $\quad \sigma_{y*}^{2(3)} = \mathbf{0.0481}$.
+\end{enumerate}
+
+\paragraph{D. Agregasi Luaran via Hukum Variansi Total:}
+\begin{align}
+\mu_{\mathrm{final}} &= \frac{1}{3}\left( 1.8363 + 2.8397 + 1.0034 \right) = \mathbf{1.8931} \\
+\mathbb{E}[\sigma_y^2] &= \frac{0.1180 + 0.0186 + 0.0481}{3} = \mathbf{0.0616} \quad (\text{Ketidakpastian lokal L2}) \\
+\mathrm{Var}(\mu_y) &= \frac{1}{3}\sum_{s=1}^3 (\mu_{y*}^{(s)} - \mu_{\mathrm{final}})^2 = \mathbf{0.5636} \quad (\text{Perambatan dari ketidakpastian laten L1}) \\
+\sigma^2_{\mathrm{total}} &= 0.0616 + 0.5636 = \mathbf{0.6252} \implies \sigma_{\mathrm{total}} = \sqrt{0.6252} = \mathbf{0.7907}
+\end{align}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.96\textwidth]{dgp_toy_calculation.pdf}
+\vspace{-0.2cm}
+\caption{Visualisasi numerik DGP 2-Lapisan: (a) Pemetaan $x \to h$ (*input-warping*), (b) Pemetaan laten ke luaran $h \to y$, dan (c) Kurva akhir DGP dengan penggelembungan pita variansi di wilayah celah data kosong ($x_* = 3.0$).}
+\label{fig:plot_dgp}
+\end{figure}
+
+% =========================================================================
+% SEKSI 4: PERBANDINGAN DAN RELEVANSI RISET
+% =========================================================================
+\section{Perbandingan dengan GP Standar dan Relevansi Tugas Akhir}
+\label{sec:perbandingan}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Perbandingan Metrik Prediksi pada Titik Interpolasi Celah ($x_* = 3.0$).}
+\label{tab:komparasi}
+\begin{tabularx}{\textwidth}{l>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Parameter Evaluasi} & \textbf{GP Standar (1-Lapis)} & \textbf{DGP (2-Lapis)} & \textbf{Makna Fisis \& Teoretis} \\
+\midrule
+Prediksi Mean ($\mu_*$) & $1.6388$ & $\mathbf{1.8931}$ & Mengakomodasi distorsi spasial non-stasioner \\
+Variansi Lokal Luaran & $0.3002$ & $0.0616$ & Ketidakpastian kondisional Lapisan 2 \\
+Variansi Merambat ($L_1$) & $0$ & $\mathbf{0.5636}$ & Fluktuasi fitur tersembunyi merambat ke luaran \\
+Variansi Total ($\sigma_*^2$) & $0.3002$ & $\mathbf{0.6252}$ & Menggelembung 2x lipat (lebih realistis) \\
+Standar Deviasi ($\sigma_*$) & $0.5479$ & $\mathbf{0.7907}$ & Estimasi ketidakpastian berjenjang yang jujur \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent \textbf{Relevansi untuk Tugas Akhir (\textit{Image Segmentation with DGP})}: \\
+Pada segmentasi citra, ketidakpastian laten sangat penting pada piksel batas kontur (\textit{boundary edges}) antar kelas objek. DGP mampu mempertahankan ketidakpastian representasi spasial di lapisan dalam, sehingga menghasilkan estimasi batas segmen yang terkalibrasi secara probabilistik tanpa menderita \textit{overconfidence}.
+
+\end{document}
