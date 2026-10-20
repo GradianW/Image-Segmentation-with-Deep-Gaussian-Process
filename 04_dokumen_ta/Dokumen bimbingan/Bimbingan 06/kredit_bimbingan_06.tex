@@ -245,7 +245,7 @@ M_{\mathbf{y}}(\mathbf{t}) &= M_{\mathbf{f}}(\mathbf{t}) \cdot M_{\boldsymbol{\v
 \subsection{Komposisi Parametrik (DNN) vs Komposisi Fungsi Acak (DGP)}
 \label{subsec:dnn_ke_dgp}
 
-\noindent Model \textit{Deep Neural Network} (DNN) dengan $L$ lapisan tersembunyi memetakan masukan $\mathbf{x} \in \mathbb{R}^{d_0}$ menuju estimasi $\hat{\mathbf{y}}$ melalui komposisi pemetaan linier berbobot dan aktivasi non-linier $\sigma(\cdot)$:
+\noindent Model \textit{Deep Neural Network} (DNN) dengan $L$ \textit{hidden layer} memetakan masukan $\mathbf{x} \in \mathbb{R}^{d_0}$ menuju estimasi $\hat{\mathbf{y}}$ melalui komposisi pemetaan linier berbobot dan aktivasi non-linier $\sigma(\cdot)$:
 \begin{equation}
 \mathbf{h}^{(\ell)} = \sigma\left( W^{(\ell)} \mathbf{h}^{(\ell-1)} + \mathbf{b}^{(\ell)} \right), \quad \ell = 1, \dots, L \label{eq:dnn_layer}
 \end{equation}

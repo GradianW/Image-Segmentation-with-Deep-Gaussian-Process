@@ -77,7 +77,7 @@
 \vspace{-0.5cm}
 
 \begin{abstract}
-\noindent Dokumen ringkas ini merangkum esensi komputasi dan pemodelan \textit{Deep Gaussian Process} (DGP). Pembahasan difokuskan pada tiga pilar utama: (1) interpretasi konsep ``banyak neuron'' pada DGP (teorema Neal lebar tak terhingga vs dimensi representasi laten terhitung), (2) diagram alur arsitektur propagasi hierarkis dua lapisan ($L = 2$) dengan trik reparameterisasi, serta (3) simulasi perhitungan matriks manual menggunakan angka \textit{dummy} konkret ($N = 3$) pada titik interpolasi baru ($x_* = 3.0$). Ditunjukkan secara analitik bagaimana ketidakpastian lapisan tersembunyi merambat melalui \textit{Law of Total Variance} menuju luaran akhir.
+\noindent Dokumen ringkas ini merangkum esensi komputasi dan pemodelan \textit{Deep Gaussian Process} (DGP). Pembahasan difokuskan pada tiga pilar utama: (1) interpretasi konsep ``banyak neuron'' pada DGP (teorema Neal lebar tak terhingga vs dimensi representasi laten terhitung), (2) diagram alur arsitektur propagasi hierarkis dua lapisan ($L = 2$) dengan trik reparameterisasi, serta (3) simulasi perhitungan matriks manual menggunakan angka \textit{dummy} konkret ($N = 3$) pada titik interpolasi baru ($x_* = 3.0$). Ditunjukkan secara analitik bagaimana ketidakpastian \textit{hidden layer} merambat melalui \textit{Law of Total Variance} menuju luaran akhir.
 \end{abstract}
 
 \vspace{0.1cm}
@@ -101,11 +101,11 @@
     Artinya, \textbf{setiap satu fungsi GP secara inheren memuat kapasitas representasi $\infty$ neuron berbobot acak} di ruang bobot (\textit{weight space}).
     
     \item \textbf{Sudut Pandang Arsitektural Praktis $\to$ Dimensi Laten Terhitung ($D_\ell$)}: \\
-    Yang diatur oleh arsitek DGP pada setiap lapisan tersembunyi adalah \textbf{dimensi representasi laten} $D_\ell$ (jumlah kanal laten). Jika $D_\ell = 1$, terdapat 1 fungsi laten $h \in \mathbb{R}$. Jika $D_\ell = 2$ atau $D_\ell = 16$, terdapat beberapa kanal laten independen:
+    Yang diatur oleh arsitek DGP pada setiap \textit{hidden layer} adalah \textbf{dimensi representasi laten} $D_\ell$ (jumlah fungsi laten / variabel laten). Jika $D_\ell = 1$, terdapat 1 fungsi laten skalar $h \in \mathbb{R}$. Jika $D_\ell = 2$ atau $D_\ell = 16$, terdapat beberapa dimensi laten independen:
     \begin{equation}
         \mathbf{h}^{(\ell)} = \begin{bmatrix} h_1^{(\ell)} \\ \vdots \\ h_{D_\ell}^{(\ell)} \end{bmatrix}, \quad h_d^{(\ell)} \sim \mathcal{GP}\left(0, \; k_d^{(\ell)}\right), \quad d = 1, \dots, D_\ell
     \end{equation}
-    Keunggulan \textit{kernel trick}: berapapun jumlah kanal laten $D_\ell$, \textbf{dimensi matriks kovariansi $K^{(\ell)}$ tetap berukuran $[N \times N]$} (hanya bergantung pada jumlah data $N$, bukan jumlah dimensi laten).
+    Keunggulan \textit{kernel trick}: berapapun jumlah dimensi laten $D_\ell$, \textbf{dimensi matriks kovariansi $K^{(\ell)}$ tetap berukuran $[N \times N]$} (hanya bergantung pada jumlah data $N$, bukan jumlah dimensi laten).
 \end{enumerate}
 
 \begin{figure}[htbp]
@@ -115,7 +115,7 @@
     node distance=1.0cm,
     font=\small,
     neuron/.style={circle, draw=blue!70!black, fill=blue!10, thick, minimum size=6mm},
-    gp_node/.style={rectangle, draw=teal!80!black, fill=teal!10, rounded corners=4pt, thick, minimum width=2.4cm, minimum height=8mm, align=center},
+    gp_node/.style={rectangle, draw=teal!80!black, fill=teal!10, rounded corners=4pt, thick, minimum width=2.5cm, minimum height=8mm, align=center},
     arrow/.style={-{Latex[length=2.5mm]}, thick, draw=black!70}
 ]
     % --- PANEL A: NEAL'S THEOREM (INFINITE NEURONS) ---
@@ -126,7 +126,7 @@
     \node[neuron] (n2) at (1.8, 0.4) {\scriptsize $w_2$};
     \node at (1.8, -0.3) {$\vdots$};
     \node[neuron] (nM) at (1.8, -1.2) {\scriptsize $w_M$};
-    \node[gp_node] (gp_out) at (4.3, 0) {1 Kanal GP:\\$f(x) \sim \mathcal{GP}$};
+    \node[gp_node] (gp_out) at (4.5, 0) {1 Proses Gaussian:\\$f(x) \sim \mathcal{GP}$};
 
     \draw[arrow] (x_neal) -- (n1);
     \draw[arrow] (x_neal) -- (n2);
@@ -138,15 +138,15 @@
     \node[font=\scriptsize\itshape, align=center] at (1.8, -1.8) {$M \to \infty$ neuron\\berbobot acak};
 
     % Garis pemisah panel
-    \draw[dashed, draw=gray!60, thick] (6.0, 2.4) -- (6.0, -2.1);
+    \draw[dashed, draw=gray!60, thick] (6.2, 2.4) -- (6.2, -2.1);
 
     % --- PANEL B: FINITE LATENT DIMENSIONS (DGP CHANNELS) ---
-    \node[font=\bfseries\footnotesize, color=teal!80!black] at (10.0, 2.3) {(b) Arsitektur DGP: Dimensi Laten Terhitung ($D_\ell = 2$)};
+    \node[font=\bfseries\footnotesize, color=teal!80!black] at (10.2, 2.3) {(b) Arsitektur DGP: Dimensi Laten Terhitung ($D_\ell = 2$)};
     
     \node (x_dgp) at (7.0, 0) {$x$};
-    \node[gp_node, minimum width=2.2cm] (gp1) at (9.6, 0.8) {$h_1 \sim \mathcal{GP}_1$\\Kanal Laten 1};
-    \node[gp_node, minimum width=2.2cm] (gp2) at (9.6, -0.8) {$h_2 \sim \mathcal{GP}_2$\\Kanal Laten 2};
-    \node[gp_node, minimum width=2.4cm] (gp_l2) at (13.0, 0) {Lapisan 2: $f^{(2)}(\mathbf{h})$\\Kernel ARD};
+    \node[gp_node, minimum width=2.4cm] (gp1) at (9.8, 0.8) {$h_1 \sim \mathcal{GP}_1$\\Dimensi Laten 1};
+    \node[gp_node, minimum width=2.4cm] (gp2) at (9.8, -0.8) {$h_2 \sim \mathcal{GP}_2$\\Dimensi Laten 2};
+    \node[gp_node, minimum width=2.5cm] (gp_l2) at (13.4, 0) {Lapisan 2: $f^{(2)}(\mathbf{h})$\\Kernel ARD};
 
     \draw[arrow] (x_dgp) -- node[above, font=\scriptsize] {$k^{(1)}_1$} (gp1);
     \draw[arrow] (x_dgp) -- node[below, font=\scriptsize] {$k^{(1)}_2$} (gp2);
@@ -157,7 +157,7 @@
 \end{tikzpicture}
 }
 \vspace{-0.2cm}
-\caption{Ilustrasi dualitas ``neuron'' pada DGP: (a) Konvergensi teoretis jaringan berlebar tak terhingga menuju satu proses Gaussian, dan (b) Struktur arsitektural praktis DGP dengan $D_\ell = 2$ dimensi/kanal laten terhitung.}
+\caption{Ilustrasi dualitas ``neuron'' pada DGP: (a) Konvergensi teoretis jaringan berlebar tak terhingga menuju satu proses Gaussian, dan (b) Struktur arsitektural praktis DGP dengan $D_\ell = 2$ dimensi laten terhitung (dua fungsi laten independen).}
 \label{fig:neuron_dgp}
 \end{figure}
 
@@ -167,7 +167,7 @@
 \section{Arsitektur Propagasi Hierarkis DGP ($L = 2$)}
 \label{sec:arsitektur_dgp}
 
-\noindent Diberikan DGP dua lapisan: masukan $x \in \mathbb{R}$, ruang laten $h \in \mathbb{R}$ ($D_1 = 1$), dan luaran target $y \in \mathbb{R}$.
+\noindent Diberikan DGP dua lapisan: masukan $x \in \mathbb{R}$, \textit{hidden layer} dengan variabel laten $h \in \mathbb{R}$ ($D_1 = 1$), dan luaran target $y \in \mathbb{R}$.
 
 \begin{figure}[htbp]
 \centering
@@ -216,7 +216,7 @@
 \end{tikzpicture}
 }
 \vspace{-0.2cm}
-\caption{Alur propagasi ketidakpastian DGP: Lapisan tersembunyi menghasilkan distribusi acak $h_*$ yang disampel melalui trik reparameterisasi dan dialirkan menuju fungsi kernel Lapisan 2.}
+\caption{Alur propagasi ketidakpastian DGP: \textit{Hidden layer} menghasilkan distribusi acak $h_*$ yang disampel melalui trik reparameterisasi dan dialirkan menuju fungsi kernel Lapisan 2.}
 \label{fig:arsitektur_dgp}
 \end{figure}
 
@@ -342,7 +342,7 @@ Ditarik 3 sampel representatif $h_*^{(s)} = \mu_{h*} + \sigma_{h*} \epsilon^{(s)
 \midrule
 Prediksi Mean ($\mu_*$) & $1.6388$ & $\mathbf{1.8931}$ & Mengakomodasi distorsi spasial non-stasioner \\
 Variansi Lokal Luaran & $0.3002$ & $0.0616$ & Ketidakpastian kondisional Lapisan 2 \\
-Variansi Merambat ($L_1$) & $0$ & $\mathbf{0.5636}$ & Fluktuasi fitur tersembunyi merambat ke luaran \\
+Variansi Merambat ($L_1$) & $0$ & $\mathbf{0.5636}$ & Fluktuasi fitur laten merambat ke luaran \\
 Variansi Total ($\sigma_*^2$) & $0.3002$ & $\mathbf{0.6252}$ & Menggelembung 2x lipat (lebih realistis) \\
 Standar Deviasi ($\sigma_*$) & $0.5479$ & $\mathbf{0.7907}$ & Estimasi ketidakpastian berjenjang yang jujur \\
 \bottomrule
@@ -350,6 +350,6 @@ Standar Deviasi ($\sigma_*$) & $0.5479$ & $\mathbf{0.7907}$ & Estimasi ketidakpa
 \end{table}
 
 \noindent \textbf{Relevansi untuk Tugas Akhir (\textit{Image Segmentation with DGP})}: \\
-Pada segmentasi citra, ketidakpastian laten sangat penting pada piksel batas kontur (\textit{boundary edges}) antar kelas objek. DGP mampu mempertahankan ketidakpastian representasi spasial di lapisan dalam, sehingga menghasilkan estimasi batas segmen yang terkalibrasi secara probabilistik tanpa menderita \textit{overconfidence}.
+Pada segmentasi citra, ketidakpastian laten sangat penting pada piksel batas kontur (\textit{boundary edges}) antar kelas objek. DGP mampu mempertahankan ketidakpastian representasi spasial di \textit{hidden layer}, sehingga menghasilkan estimasi batas segmen yang terkalibrasi secara probabilistik tanpa menderita \textit{overconfidence}.
 
 \end{document}
