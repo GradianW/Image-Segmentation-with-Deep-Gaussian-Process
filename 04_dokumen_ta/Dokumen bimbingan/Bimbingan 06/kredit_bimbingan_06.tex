@@ -242,23 +242,34 @@ M_{\mathbf{y}}(\mathbf{t}) &= M_{\mathbf{f}}(\mathbf{t}) \cdot M_{\boldsymbol{\v
 \section{Transisi dari DNN Menuju DGP}
 \label{sec:dnn_to_dgp}
 
-\noindent Model \textit{Deep Neural Network} (DNN) dengan $L$ \textit{hidden layer} memetakan masukan $\mathbf{x} \in \mathbb{R}^{d_0}$ menuju estimasi $\hat{\mathbf{y}}$ melalui komposisi pemetaan linier berbobot dan aktivasi non-linier $\sigma(\cdot)$:
-\begin{equation}
-\mathbf{h}^{(\ell)} = \sigma\left( W^{(\ell)} \mathbf{h}^{(\ell-1)} + \mathbf{b}^{(\ell)} \right), \quad \ell = 1, \dots, L \label{eq:dnn_layer}
-\end{equation}
-dengan $\mathbf{h}^{(0)} = \mathbf{x}$, bobot $W^{(\ell)} \in \mathbb{R}^{d_\ell \times d_{\ell-1}}$, dan bias $\mathbf{b}^{(\ell)} \in \mathbb{R}^{d_\ell}$. Komposisi $\hat{\mathbf{y}} = (f_L \circ \dots \circ f_1)(\mathbf{x})$ memungkinkan DNN mempelajari pola data secara bertahap dari lapisan ke lapisan, mulai dari pola sederhana hingga pola yang lebih rumit (seperti mengenali bentuk objek dari susunan piksel citra).
+\noindent \textbf{Deep Neural Network (DNN)}:
+\begin{align}
+\mathbf{h}^{(0)} &= \mathbf{x} \in \mathbb{R}^{d_0} \nonumber \\
+\mathbf{h}^{(\ell)} &= \sigma\left( W^{(\ell)} \mathbf{h}^{(\ell-1)} + \mathbf{b}^{(\ell)} \right), \quad \ell = 1, \dots, L \label{eq:dnn_layer} \\
+\hat{\mathbf{y}} &= \mathbf{h}^{(L)} = (f_L \circ \dots \circ f_1)(\mathbf{x}) \label{eq:dnn_composition}
+\end{align}
+dengan parameter bobot deterministik $W^{(\ell)} \in \mathbb{R}^{d_\ell \times d_{\ell-1}}$, bias $\mathbf{b}^{(\ell)} \in \mathbb{R}^{d_\ell}$, dan fungsi aktivasi non-linier $\sigma(\cdot)$.
 
-Sebaliknya, model \textit{Gaussian Process} (GP) standar pada Seksi \ref{sec:pembuktian_mgf} bersifat dangkal (\textit{shallow}):
+\vspace{0.2cm}
+\noindent \textbf{Gaussian Process (GP) Standar}:
 \begin{equation}
-f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \; k(\mathbf{x}, \mathbf{x}') \right), \quad y = f(\mathbf{x}) + \varepsilon
+f(\mathbf{x}) \sim \mathcal{GP}\left( 0, \; k(\mathbf{x}, \mathbf{x}') \right), \quad y = f(\mathbf{x}) + \varepsilon, \quad \varepsilon \sim \mathcal{N}\left(0, \; \sigma_n^2\right) \label{eq:gp_standard}
 \end{equation}
-Berbeda dengan GP standar yang hanya menggunakan satu fungsi kernel $k(\mathbf{x}, \mathbf{x}')$, \textit{Deep Gaussian Process} (DGP) menggantikan pemetaan parametrik $(W^{(\ell)}, \mathbf{b}^{(\ell)})$ pada Persamaan \eqref{eq:dnn_layer} dengan fungsi acak $\mathbf{f}^{(\ell)} \sim \mathcal{GP}$ pada setiap \textit{hidden layer}:
+dengan fungsi kovariansi tunggal $k(\mathbf{x}, \mathbf{x}')$.
+
+\vspace{0.2cm}
+\noindent \textbf{Deep Gaussian Process (DGP)}:
+\begin{align}
+\mathbf{h}^{(0)} &= \mathbf{x} \nonumber \\
+\mathbf{h}^{(\ell)} &= \mathbf{f}^{(\ell)}(\mathbf{h}^{(\ell-1)}) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \ell = 1, \dots, L \label{eq:dgp_layer}
+\end{align}
+di mana pemetaan berbobot $(W^{(\ell)}, \mathbf{b}^{(\ell)})$ pada \eqref{eq:dnn_layer} digantikan oleh fungsi acak non-parametrik:
 \begin{equation}
-\mathbf{h}^{(\ell)} = \mathbf{f}^{(\ell)}(\mathbf{h}^{(\ell-1)}) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \mathbf{f}^{(\ell)} \sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)} \right), \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right) \label{eq:dgp_layer}
+\mathbf{f}^{(\ell)} \sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)} \right), \quad K^{(\ell)}_{ij} = k^{(\ell)}\left(\mathbf{h}^{(\ell-1)}_i, \mathbf{h}^{(\ell-1)}_j\right), \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right) \label{eq:dgp_prior}
 \end{equation}
-sehingga luaran $\mathbf{y}$ merupakan komposisi fungsi acak Gaussian:
+Komposisi luaran total:
 \begin{equation}
-\mathbf{y} = \mathbf{f}^{(L)}\left( \mathbf{f}^{(L-1)}\left( \dots \mathbf{f}^{(1)}(\mathbf{x}) \dots \right) \right) + \boldsymbol{\varepsilon} \label{eq:dgp_composition}
+\mathbf{y} = \left(\mathbf{f}^{(L)} \circ \dots \circ \mathbf{f}^{(1)}\right)(\mathbf{x}) + \boldsymbol{\varepsilon} = \mathbf{f}^{(L)}\left( \dots \mathbf{f}^{(1)}(\mathbf{x}) \dots \right) + \boldsymbol{\varepsilon} \label{eq:dgp_composition}
 \end{equation}
 
 \begin{figure}[H]
@@ -298,10 +309,8 @@ sehingga luaran $\mathbf{y}$ merupakan komposisi fungsi acak Gaussian:
     
     \node[above=0.2cm of f1, anchor=south, font=\footnotesize\bfseries, color=teal!80!black] {DGP: Komposisi Non-Parametrik};
 \end{tikzpicture}
-\caption{Transisi arsitektur dari komposisi parametrik (DNN) menuju komposisi fungsi acak (DGP).}
+\caption{Komparasi arsitektur: komposisi parametrik (DNN) vs komposisi fungsi acak (DGP).}
 \label{fig:dnn_to_dgp}
 \end{figure}
-
-\noindent Struktur DGP menjadikannya fondasi ideal untuk segmentasi citra: ia menggabungkan keunggulan representasi spasial DNN dengan estimasi ketidakpastian berbasis prinsip distribusi Gaussian.
 
 \end{document}
