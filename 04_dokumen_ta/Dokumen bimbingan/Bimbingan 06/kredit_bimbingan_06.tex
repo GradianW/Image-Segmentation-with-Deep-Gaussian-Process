@@ -254,7 +254,7 @@ f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \; k(\mathbf{x}, \mathbf{x}
 \end{equation}
 Karena transformasi fungsi hanya dikontrol oleh satu fungsi kernel $k(\mathbf{x}, \mathbf{x}')$, GP standar terbatas dalam memodelkan variasi skala spasial drastis serta tidak memiliki pembelajaran fitur berjenjang.
 
-Untuk memadukan keunggulan hierarkis DNN dengan inferensi probabilistik analitik GP, Damianou \& Lawrence (2013)---terinspirasi oleh Teorema Neal (1995) mengenai konvergensi lebar tak terhingga DNN menuju GP---menggantikan pemetaan parametrik tetap \eqref{eq:dnn_layer} dengan fungsi acak Gaussian Process pada setiap lapisan:
+Secara intuitif, struktur \textit{Deep Gaussian Process} (DGP) dapat dipahami layaknya DNN yang tersusun atas beberapa \textit{hidden layer}. Perbedaannya terletak pada sifat pemetaannya: jika pada DNN hubungan antar lapisan dikontrol oleh bobot skalar tetap ($W, \mathbf{b}$) pada Persamaan \eqref{eq:dnn_layer}, maka pada DGP pemetaan pada setiap lapisan diambil dari distribusi proses Gaussian ($\mathcal{GP}$):
 \begin{equation}
 \mathbf{h}^{(\ell)} = \mathbf{f}^{(\ell)}(\mathbf{h}^{(\ell-1)}) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \mathbf{f}^{(\ell)} \sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)} \right), \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right) \label{eq:dgp_layer}
 \end{equation}
