@@ -246,19 +246,19 @@ M_{\mathbf{y}}(\mathbf{t}) &= M_{\mathbf{f}}(\mathbf{t}) \cdot M_{\boldsymbol{\v
 \begin{equation}
 \mathbf{h}^{(\ell)} = \sigma\left( W^{(\ell)} \mathbf{h}^{(\ell-1)} + \mathbf{b}^{(\ell)} \right), \quad \ell = 1, \dots, L \label{eq:dnn_layer}
 \end{equation}
-dengan $\mathbf{h}^{(0)} = \mathbf{x}$, bobot $W^{(\ell)} \in \mathbb{R}^{d_\ell \times d_{\ell-1}}$, dan bias $\mathbf{b}^{(\ell)} \in \mathbb{R}^{d_\ell}$. Komposisi bertingkat $\hat{\mathbf{y}} = (f_L \circ \dots \circ f_1)(\mathbf{x})$ memungkinkan DNN mengekstrak representasi fitur hierarkis secara otomatis dari data masukan berdimensi tinggi.
+dengan $\mathbf{h}^{(0)} = \mathbf{x}$, bobot $W^{(\ell)} \in \mathbb{R}^{d_\ell \times d_{\ell-1}}$, dan bias $\mathbf{b}^{(\ell)} \in \mathbb{R}^{d_\ell}$. Komposisi $\hat{\mathbf{y}} = (f_L \circ \dots \circ f_1)(\mathbf{x})$ memungkinkan DNN mempelajari pola data secara bertahap dari lapisan ke lapisan, mulai dari pola sederhana hingga pola yang lebih rumit (seperti mengenali bentuk objek dari susunan piksel citra).
 
 Sebaliknya, model \textit{Gaussian Process} (GP) standar pada Seksi \ref{sec:pembuktian_mgf} bersifat dangkal (\textit{shallow}):
 \begin{equation}
 f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \; k(\mathbf{x}, \mathbf{x}') \right), \quad y = f(\mathbf{x}) + \varepsilon
 \end{equation}
-Karena transformasi fungsi hanya dikontrol oleh satu fungsi kernel $k(\mathbf{x}, \mathbf{x}')$, GP standar terbatas dalam memodelkan variasi skala spasial drastis serta tidak memiliki pembelajaran fitur berjenjang.
+Karena transformasi fungsi hanya dikontrol oleh satu fungsi kernel $k(\mathbf{x}, \mathbf{x}')$, GP standar terbatas dalam memodelkan perubahan data yang drastis dan tidak mempelajari pola secara bertahap.
 
 Secara intuitif, struktur \textit{Deep Gaussian Process} (DGP) dapat dipahami layaknya DNN yang tersusun atas beberapa \textit{hidden layer}. Perbedaannya terletak pada sifat pemetaannya: jika pada DNN hubungan antar lapisan dikontrol oleh bobot skalar tetap ($W, \mathbf{b}$) pada Persamaan \eqref{eq:dnn_layer}, maka pada DGP pemetaan pada setiap lapisan diambil dari distribusi proses Gaussian ($\mathcal{GP}$):
 \begin{equation}
 \mathbf{h}^{(\ell)} = \mathbf{f}^{(\ell)}(\mathbf{h}^{(\ell-1)}) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \mathbf{f}^{(\ell)} \sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)} \right), \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right) \label{eq:dgp_layer}
 \end{equation}
-sehingga luaran $\mathbf{y}$ merupakan komposisi fungsi acak Gaussian berjenjang:
+sehingga luaran $\mathbf{y}$ merupakan komposisi fungsi acak Gaussian:
 \begin{equation}
 \mathbf{y} = \mathbf{f}^{(L)}\left( \mathbf{f}^{(L-1)}\left( \dots \mathbf{f}^{(1)}(\mathbf{x}) \dots \right) \right) + \boldsymbol{\varepsilon} \label{eq:dgp_composition}
 \end{equation}
@@ -300,10 +300,10 @@ sehingga luaran $\mathbf{y}$ merupakan komposisi fungsi acak Gaussian berjenjang
     
     \node[above=0.2cm of f1, anchor=south, font=\footnotesize\bfseries, color=teal!80!black] {DGP: Komposisi Non-Parametrik};
 \end{tikzpicture}
-\caption{Transisi arsitektur dari komposisi parametrik (DNN) menuju komposisi hierarkis fungsi acak (DGP).}
+\caption{Transisi arsitektur dari komposisi parametrik (DNN) menuju komposisi fungsi acak (DGP).}
 \label{fig:dnn_to_dgp}
 \end{figure}
 
-\noindent Struktur hierarkis DGP menjadikannya fondasi ideal untuk segmentasi citra: ia menggabungkan keunggulan representasi spasial berjenjang DNN dengan kepastian estimasi ketidakpastian berbasis prinsip distribusi Gaussian.
+\noindent Struktur DGP menjadikannya fondasi ideal untuk segmentasi citra: ia menggabungkan keunggulan representasi spasial DNN dengan estimasi ketidakpastian berbasis prinsip distribusi Gaussian.
 
 \end{document}
