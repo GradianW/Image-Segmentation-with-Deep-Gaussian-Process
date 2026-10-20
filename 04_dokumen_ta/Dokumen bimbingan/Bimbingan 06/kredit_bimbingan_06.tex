@@ -268,7 +268,7 @@ di mana pemetaan berbobot $(W^{(\ell)}, \mathbf{b}^{(\ell)})$ pada \eqref{eq:dnn
 \begin{equation}
 \mathbf{f}^{(\ell)} \sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)} \right), \quad K^{(\ell)}_{ij} = k^{(\ell)}\left(\mathbf{h}^{(\ell-1)}_i, \mathbf{h}^{(\ell-1)}_j\right), \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right) \label{eq:dgp_prior}
 \end{equation}
-Komposisi luaran total:
+Komposisi \textit{output} akhir:
 \begin{equation}
 \mathbf{y} = \left(\mathbf{f}^{(L)} \circ \dots \circ \mathbf{f}^{(1)}\right)(\mathbf{x}) + \boldsymbol{\varepsilon} = \mathbf{f}^{(L)}\left( \dots \mathbf{f}^{(1)}(\mathbf{x}) \dots \right) + \boldsymbol{\varepsilon} \label{eq:dgp_composition}
 \end{equation}
