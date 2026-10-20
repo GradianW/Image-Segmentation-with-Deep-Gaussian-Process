@@ -252,9 +252,7 @@ Sebaliknya, model \textit{Gaussian Process} (GP) standar pada Seksi \ref{sec:pem
 \begin{equation}
 f(\mathbf{x}) \sim \mathcal{GP}\left( m(\mathbf{x}), \; k(\mathbf{x}, \mathbf{x}') \right), \quad y = f(\mathbf{x}) + \varepsilon
 \end{equation}
-Karena transformasi fungsi hanya dikontrol oleh satu fungsi kernel $k(\mathbf{x}, \mathbf{x}')$, GP standar terbatas dalam memodelkan perubahan data yang drastis dan tidak mempelajari pola secara bertahap.
-
-Secara intuitif, struktur \textit{Deep Gaussian Process} (DGP) dapat dipahami layaknya DNN yang tersusun atas beberapa \textit{hidden layer}. Perbedaannya terletak pada sifat pemetaannya: jika pada DNN hubungan antar lapisan dikontrol oleh bobot skalar tetap ($W, \mathbf{b}$) pada Persamaan \eqref{eq:dnn_layer}, maka pada DGP pemetaan pada setiap lapisan diambil dari distribusi proses Gaussian ($\mathcal{GP}$):
+Berbeda dengan GP standar yang hanya menggunakan satu fungsi kernel $k(\mathbf{x}, \mathbf{x}')$, \textit{Deep Gaussian Process} (DGP) menggantikan pemetaan parametrik $(W^{(\ell)}, \mathbf{b}^{(\ell)})$ pada Persamaan \eqref{eq:dnn_layer} dengan fungsi acak $\mathbf{f}^{(\ell)} \sim \mathcal{GP}$ pada setiap \textit{hidden layer}:
 \begin{equation}
 \mathbf{h}^{(\ell)} = \mathbf{f}^{(\ell)}(\mathbf{h}^{(\ell-1)}) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \mathbf{f}^{(\ell)} \sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)} \right), \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right) \label{eq:dgp_layer}
 \end{equation}
