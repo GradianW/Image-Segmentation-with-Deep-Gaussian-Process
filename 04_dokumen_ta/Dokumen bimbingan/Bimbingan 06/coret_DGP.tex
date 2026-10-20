@@ -10,10 +10,11 @@
 \usepackage{amsmath,amssymb,amsfonts,amsthm}
 \usepackage{bm}
 \usepackage{geometry}
-\geometry{top=2.0cm, bottom=2.0cm, left=2.0cm, right=2.0cm}
+\geometry{top=1.7cm, bottom=1.7cm, left=1.8cm, right=1.8cm}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{tabularx}
+\usepackage{float}
 \usepackage{microtype}
 \usepackage{tikz}
 \usetikzlibrary{matrix,decorations.pathreplacing,calc,positioning,arrows.meta,shapes.geometric}
@@ -33,8 +34,8 @@
 }
 
 % Reduksi spasi vertikal persamaan secara proporsional
-\setlength{\abovedisplayskip}{5pt}
-\setlength{\belowdisplayskip}{5pt}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
 \setlength{\abovedisplayshortskip}{3pt}
 \setlength{\belowdisplayshortskip}{3pt}
 
@@ -164,7 +165,7 @@
 % =========================================================================
 % SEKSI 2: ARSITEKTUR DAN ALUR PROPAGASI DGP 2-LAPISAN
 % =========================================================================
-\section{Arsitektur Propagasi Hierarkis DGP ($L = 2$)}
+\section{Arsitektur Propagasi Hierarkis DGP (\texorpdfstring{$L = 2$}{L = 2})}
 \label{sec:arsitektur_dgp}
 
 \noindent Diberikan DGP dua lapisan: masukan $x \in \mathbb{R}$, \textit{hidden layer} dengan variabel laten $h \in \mathbb{R}$ ($D_1 = 1$), dan luaran target $y \in \mathbb{R}$.
@@ -251,89 +252,187 @@ Variansi akhir DGP diurai secara elegan menjadi dua komponen:
 \end{mathbox}
 
 \subsection{Langkah 1: Pelatihan Lapisan 1 (\texorpdfstring{$X \to \mathbf{h}$}{X -> h})}
-Matriks kovariansi masukan $K_y^{(1)} = K(X, X) + \sigma_{n1}^2 I$ dan inversnya:
-\begin{equation}
-K_y^{(1)} = \begin{bmatrix} 1.0100 & 0.6065 & 0.0111 \\ 0.6065 & 1.0100 & 0.1353 \\ 0.0111 & 0.1353 & 1.0100 \end{bmatrix}, \quad
-(K_y^{(1)})^{-1} = \begin{bmatrix} 1.5606 & -0.9519 & 0.1104 \\ -0.9519 & 1.5889 & -0.2024 \\ 0.1104 & -0.2024 & 1.0160 \end{bmatrix}
-\end{equation}
+Fungsi kernel RBF Lapisan 1 didefinisikan sebagai $k^{(1)}(x_i, x_j) = \sigma_{f1}^2 \exp\left(-\frac{(x_i - x_j)^2}{2l_1^2}\right)$. Dengan parameter $\sigma_{f1}^2 = 1.0$ dan $l_1 = 1.0$, setiap elemen kovariansi antar data masukan dihitung secara eksplisit:
+\begin{align*}
+k^{(1)}(x_1, x_1) &= \exp\left(-\frac{(1.0 - 1.0)^2}{2(1.0)^2}\right) = \exp(0) = 1.0000 \\
+k^{(1)}(x_1, x_2) &= \exp\left(-\frac{(1.0 - 2.0)^2}{2(1.0)^2}\right) = \exp\left(-\frac{(-1.0)^2}{2}\right) = \exp(-0.5) \approx 0.6065 \\
+k^{(1)}(x_1, x_3) &= \exp\left(-\frac{(1.0 - 4.0)^2}{2(1.0)^2}\right) = \exp\left(-\frac{(-3.0)^2}{2}\right) = \exp(-4.5) \approx 0.0111 \\
+k^{(1)}(x_2, x_2) &= \exp(0) = 1.0000 \\
+k^{(1)}(x_2, x_3) &= \exp\left(-\frac{(2.0 - 4.0)^2}{2(1.0)^2}\right) = \exp\left(-\frac{(-2.0)^2}{2}\right) = \exp(-2.0) \approx 0.1353 \\
+k^{(1)}(x_3, x_3) &= \exp(0) = 1.0000
+\end{align*}
 
-Vektor bobot dual Lapisan 1:
-\begin{equation}
-\boldsymbol{\alpha}^{(1)} = (K_y^{(1)})^{-1} \mathbf{h} = (K_y^{(1)})^{-1} \begin{bmatrix} 0.5 \\ 1.2 \\ 2.8 \end{bmatrix} = \begin{bmatrix} \mathbf{-0.0530} \\ \mathbf{0.8639} \\ \mathbf{2.6571} \end{bmatrix}
-\end{equation}
+Matriks kovariansi data latih $K^{(1)}$ ditambahkan variansi derau observasi $\sigma_{n1}^2 I = 0.01 I$, menghasilkan matriks kovariansi $K_y^{(1)}$ dan inversnya:
+\begin{align}
+K_y^{(1)} &= K^{(1)} + \sigma_{n1}^2 I = \begin{bmatrix} 1.0000 & 0.6065 & 0.0111 \\ 0.6065 & 1.0000 & 0.1353 \\ 0.0111 & 0.1353 & 1.0000 \end{bmatrix} + 0.01 I \nonumber \\
+&= \begin{bmatrix} 1.0100 & 0.6065 & 0.0111 \\ 0.6065 & 1.0100 & 0.1353 \\ 0.0111 & 0.1353 & 1.0100 \end{bmatrix} \\
+(K_y^{(1)})^{-1} &= \begin{bmatrix} 1.5606 & -0.9519 & 0.1104 \\ -0.9519 & 1.5889 & -0.2024 \\ 0.1104 & -0.2024 & 1.0160 \end{bmatrix}
+\end{align}
+
+Vektor bobot dual Lapisan 1 diperoleh dari perkalian matriks invers $(K_y^{(1)})^{-1}$ dengan target representasi laten latih $\mathbf{h} = [0.5, 1.2, 2.8]^T$:
+\begin{align}
+\boldsymbol{\alpha}^{(1)} &= (K_y^{(1)})^{-1} \mathbf{h} = \begin{bmatrix} 1.5606 & -0.9519 & 0.1104 \\ -0.9519 & 1.5889 & -0.2024 \\ 0.1104 & -0.2024 & 1.0160 \end{bmatrix} \begin{bmatrix} 0.5 \\ 1.2 \\ 2.8 \end{bmatrix} \nonumber \\
+&= \begin{bmatrix} (1.5606 \times 0.5) + (-0.9519 \times 1.2) + (0.1104 \times 2.8) \\ (-0.9519 \times 0.5) + (1.5889 \times 1.2) + (-0.2024 \times 2.8) \\ (0.1104 \times 0.5) + (-0.2024 \times 1.2) + (1.0160 \times 2.8) \end{bmatrix} \nonumber \\
+&= \begin{bmatrix} 0.7803 - 1.1423 + 0.3091 \\ -0.4760 + 1.9067 - 0.5667 \\ 0.0552 - 0.2429 + 2.8448 \end{bmatrix} = \begin{bmatrix} \mathbf{-0.0530} \\ \mathbf{0.8639} \\ \mathbf{2.6571} \end{bmatrix}
+\end{align}
 
 \subsection{Langkah 2: Pelatihan Lapisan 2 (\texorpdfstring{$\mathbf{h} \to \mathbf{y}$}{h -> y})}
-Jarak kernel Lapisan 2 dihitung antar fitur laten $\mathbf{h} = [0.5, 1.2, 2.8]^T$:
-\begin{itemize}
-    \item $k^{(2)}(h_1, h_2) = \exp\left(-0.5 \times |0.5 - 1.2|^2\right) = \exp(-0.245) = 0.7827$
-    \item $k^{(2)}(h_1, h_3) = \exp\left(-0.5 \times |0.5 - 2.8|^2\right) = \exp(-2.645) = 0.0710$
-    \item $k^{(2)}(h_2, h_3) = \exp\left(-0.5 \times |1.2 - 2.8|^2\right) = \exp(-1.280) = 0.2780$
-\end{itemize}
+Pada Lapisan 2, fungsi kernel $k^{(2)}(h_i, h_j) = \sigma_{f2}^2 \exp\left(-\frac{(h_i - h_j)^2}{2l_2^2}\right)$ mengukur jarak kemiripan \textbf{antar representasi laten} $\mathbf{h} = [0.5, 1.2, 2.8]^T$:
+\begin{align*}
+k^{(2)}(h_1, h_2) &= \exp\left(-\frac{(0.5 - 1.2)^2}{2(1.0)^2}\right) = \exp\left(-\frac{(-0.7)^2}{2}\right) = \exp(-0.2450) \approx 0.7827 \\
+k^{(2)}(h_1, h_3) &= \exp\left(-\frac{(0.5 - 2.8)^2}{2(1.0)^2}\right) = \exp\left(-\frac{(-2.3)^2}{2}\right) = \exp(-2.6450) \approx 0.0710 \\
+k^{(2)}(h_2, h_3) &= \exp\left(-\frac{(1.2 - 2.8)^2}{2(1.0)^2}\right) = \exp\left(-\frac{(-1.6)^2}{2}\right) = \exp(-1.2800) \approx 0.2780
+\end{align*}
 
-Matriks kovariansi Lapisan 2 dan bobot dual $\boldsymbol{\alpha}^{(2)}$:
-\begin{equation}
-K_y^{(2)} = \begin{bmatrix} 1.0100 & 0.7827 & 0.0710 \\ 0.7827 & 1.0100 & 0.2780 \\ 0.0710 & 0.2780 & 1.0100 \end{bmatrix}, \quad
-\boldsymbol{\alpha}^{(2)} = (K_y^{(2)})^{-1} \mathbf{y} = \begin{bmatrix} \mathbf{4.3212} \\ \mathbf{-3.3462} \\ \mathbf{3.5877} \end{bmatrix}
-\end{equation}
+Matriks kovariansi Lapisan 2 $K_y^{(2)}$ dan inversnya:
+\begin{align}
+K_y^{(2)} &= K^{(2)} + \sigma_{n2}^2 I = \begin{bmatrix} 1.0000 & 0.7827 & 0.0710 \\ 0.7827 & 1.0000 & 0.2780 \\ 0.0710 & 0.2780 & 1.0000 \end{bmatrix} + 0.01 I \nonumber \\
+&= \begin{bmatrix} 1.0100 & 0.7827 & 0.0710 \\ 0.7827 & 1.0100 & 0.2780 \\ 0.0710 & 0.2780 & 1.0100 \end{bmatrix} \\
+(K_y^{(2)})^{-1} &= \begin{bmatrix} 2.6577 & -2.1388 & 0.4014 \\ -2.1388 & 2.7667 & -0.6111 \\ 0.4014 & -0.6111 & 1.1495 \end{bmatrix}
+\end{align}
+
+Vektor bobot dual Lapisan 2 dihitung dari target luaran $\mathbf{y} = [2.0, 1.0, 3.0]^T$:
+\begin{align}
+\boldsymbol{\alpha}^{(2)} &= (K_y^{(2)})^{-1} \mathbf{y} = \begin{bmatrix} 2.6577 & -2.1388 & 0.4014 \\ -2.1388 & 2.7667 & -0.6111 \\ 0.4014 & -0.6111 & 1.1495 \end{bmatrix} \begin{bmatrix} 2.0 \\ 1.0 \\ 3.0 \end{bmatrix} \nonumber \\
+&= \begin{bmatrix} (2.6577 \times 2.0) + (-2.1388 \times 1.0) + (0.4014 \times 3.0) \\ (-2.1388 \times 2.0) + (2.7667 \times 1.0) + (-0.6111 \times 3.0) \\ (0.4014 \times 2.0) + (-0.6111 \times 1.0) + (1.1495 \times 3.0) \end{bmatrix} \nonumber \\
+&= \begin{bmatrix} 5.3154 - 2.1388 + 1.2042 \\ -4.2776 + 2.7667 - 1.8333 \\ 0.8028 - 0.6111 + 3.4485 \end{bmatrix} = \begin{bmatrix} \mathbf{4.3212} \\ \mathbf{-3.3462} \\ \mathbf{3.5877} \end{bmatrix}
+\end{align}
 
 \subsection{Langkah 3: Evaluasi Titik Interpolasi Baru (\texorpdfstring{$x_* = 3.0$}{x* = 3.0})}
 
 \paragraph{A. Propagasi Maju Lapisan 1 ($x_* \to h_*$):}
-Vektor kemiripan titik uji ke masukan latih: $\mathbf{k}_*^{(1)} = [0.1353, \; 0.6065, \; 0.6065]^T$.
+Vektor kemiripan titik uji $x_* = 3.0$ terhadap seluruh data latih masukan dihitung secara eksplisit pada setiap elemennya:
 \begin{align}
-\mu_{h*} &= \mathbf{k}_*^{(1)T} \boldsymbol{\alpha}^{(1)} = (0.1353 \times -0.0530) + (0.6065 \times 0.8639) + (0.6065 \times 2.6571) = \mathbf{2.1284} \\
-\sigma_{h*}^2 &= 1.0000 - \mathbf{k}_*^{(1)T} (K_y^{(1)})^{-1} \mathbf{k}_*^{(1)} = 1.0000 - 0.6998 = \mathbf{0.3002} \implies \sigma_{h*} = \mathbf{0.5479}
+\mathbf{k}_*^{(1)} &= \begin{bmatrix} k^{(1)}(x_1, x_*) \\ k^{(1)}(x_2, x_*) \\ k^{(1)}(x_3, x_*) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{(x_1 - x_*)^2}{2l_1^2}\right) \\ \exp\left(-\frac{(x_2 - x_*)^2}{2l_1^2}\right) \\ \exp\left(-\frac{(x_3 - x_*)^2}{2l_1^2}\right) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{(1.0 - 3.0)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(2.0 - 3.0)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(4.0 - 3.0)^2}{2(1.0)^2}\right) \end{bmatrix} \nonumber \\
+&= \begin{bmatrix} \exp\left(-\frac{(-2.0)^2}{2}\right) \\ \exp\left(-\frac{(-1.0)^2}{2}\right) \\ \exp\left(-\frac{(1.0)^2}{2}\right) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{4.0}{2}\right) \\ \exp\left(-\frac{1.0}{2}\right) \\ \exp\left(-\frac{1.0}{2}\right) \end{bmatrix} = \begin{bmatrix} \exp(-2.0) \\ \exp(-0.5) \\ \exp(-0.5) \end{bmatrix} = \begin{bmatrix} \mathbf{0.1353} \\ \mathbf{0.6065} \\ \mathbf{0.6065} \end{bmatrix}
 \end{align}
-Luaran Lapisan 1 adalah distribusi: $h_* \sim \mathcal{N}\left(2.1284, \; 0.3002\right)$.
+
+Nilai ekspektasi (mean) variabel laten posterior $\mu_{h*}$ di $x_* = 3.0$ diperoleh dari hasil kali dalam $\mathbf{k}_*^{(1)T} \boldsymbol{\alpha}^{(1)}$:
+\begin{align}
+\mu_{h*} &= \mathbf{k}_*^{(1)T} \boldsymbol{\alpha}^{(1)} = \begin{bmatrix} 0.1353 & 0.6065 & 0.6065 \end{bmatrix} \begin{bmatrix} -0.0530 \\ 0.8639 \\ 2.6571 \end{bmatrix} \nonumber \\
+&= (0.1353 \times -0.0530) + (0.6065 \times 0.8639) + (0.6065 \times 2.6571) \nonumber \\
+&= -0.0072 + 0.5239 + 1.6117 = \mathbf{2.1284}
+\end{align}
+
+Untuk menghitung variansi laten, pertama-tama kita evaluasi vektor perantara $\mathbf{v}^{(1)} = (K_y^{(1)})^{-1} \mathbf{k}_*^{(1)}$:
+\begin{align}
+\mathbf{v}^{(1)} &= (K_y^{(1)})^{-1} \mathbf{k}_*^{(1)} = \begin{bmatrix} 1.5606 & -0.9519 & 0.1104 \\ -0.9519 & 1.5889 & -0.2024 \\ 0.1104 & -0.2024 & 1.0160 \end{bmatrix} \begin{bmatrix} 0.1353 \\ 0.6065 \\ 0.6065 \end{bmatrix} \nonumber \\
+&= \begin{bmatrix} (1.5606 \times 0.1353) + (-0.9519 \times 0.6065) + (0.1104 \times 0.6065) \\ (-0.9519 \times 0.1353) + (1.5889 \times 0.6065) + (-0.2024 \times 0.6065) \\ (0.1104 \times 0.1353) + (-0.2024 \times 0.6065) + (1.0160 \times 0.6065) \end{bmatrix} = \begin{bmatrix} -0.2995 \\ 0.7126 \\ 0.5080 \end{bmatrix}
+\end{align}
+
+Kemudian, besarnya reduksi variansi prior oleh data observasi latih dihitung melalui bentuk kuadratik:
+\begin{align}
+\mathbf{k}_*^{(1)T} (K_y^{(1)})^{-1} \mathbf{k}_*^{(1)} &= \mathbf{k}_*^{(1)T} \mathbf{v}^{(1)} = \begin{bmatrix} 0.1353 & 0.6065 & 0.6065 \end{bmatrix} \begin{bmatrix} -0.2995 \\ 0.7126 \\ 0.5080 \end{bmatrix} \nonumber \\
+&= (0.1353 \times -0.2995) + (0.6065 \times 0.7126) + (0.6065 \times 0.5080) \nonumber \\
+&= -0.0405 + 0.4322 + 0.3081 = \mathbf{0.6998}
+\end{align}
+Dengan variansi prior $k^{(1)}(x_*, x_*) = \sigma_{f1}^2 \exp(0) = 1.0000$, diperoleh variansi dan standar deviasi laten posterior:
+\begin{align}
+\sigma_{h*}^2 &= k^{(1)}(x_*, x_*) - \mathbf{k}_*^{(1)T} (K_y^{(1)})^{-1} \mathbf{k}_*^{(1)} = 1.0000 - 0.6998 = \mathbf{0.3002} \\
+\sigma_{h*} &= \sqrt{0.3002} = \mathbf{0.5479}
+\end{align}
+Luaran Lapisan 1 berupa distribusi Gaussian kontinu: $h_* \sim \mathcal{N}\left(\mu_{h*} = 2.1284, \; \sigma_{h*}^2 = 0.3002\right)$.
 
 \paragraph{B. Reparameterization Sampling:}
-Ditarik 3 sampel representatif $h_*^{(s)} = \mu_{h*} + \sigma_{h*} \epsilon^{(s)}$:
-\begin{itemize}
-    \item \textbf{Sampel 1} ($\epsilon^{(1)} = 0$): $h_*^{(1)} = 2.1284$ (Nilai mean)
-    \item \textbf{Sampel 2} ($\epsilon^{(2)} = +1$): $h_*^{(2)} = 2.1284 + 0.5479 = \mathbf{2.6763}$ (Mendekati $h_3 = 2.8$)
-    \item \textbf{Sampel 3} ($\epsilon^{(3)} = -1$): $h_*^{(3)} = 2.1284 - 0.5479 = \mathbf{1.5805}$ (Mendekati $h_2 = 1.2$)
-\end{itemize}
+Untuk merambatkan distribusi kontinu $h_*$ ke kernel non-linier Lapisan 2, kita mengambil $S = 3$ sampel representatif menggunakan trik reparameterisasi $h_*^{(s)} = \mu_{h*} + \sigma_{h*} \cdot \epsilon^{(s)}$:
+\begin{align}
+\text{Sampel 1 } (\epsilon^{(1)} = 0)   &: \quad h_*^{(1)} = 2.1284 + (0.5479 \times 0) = \mathbf{2.1284} \quad (\text{Nilai mean representasi}) \\
+\text{Sampel 2 } (\epsilon^{(2)} = +1)  &: \quad h_*^{(2)} = 2.1284 + (0.5479 \times 1.0) = \mathbf{2.6763} \quad (\text{Mendekati data laten } h_3 = 2.8) \\
+\text{Sampel 3 } (\epsilon^{(3)} = -1)  &: \quad h_*^{(3)} = 2.1284 - (0.5479 \times 1.0) = \mathbf{1.5805} \quad (\text{Mendekati data laten } h_2 = 1.2)
+\end{align}
 
-\paragraph{C. Propagasi Maju Lapisan 2 untuk Masing-masing Sampel ($h_*^{(s)} \to y_*^{(s)}$):}
+\paragraph{C. Propagasi Maju Lapisan 2 untuk Setiap Sampel ($h_*^{(s)} \to y_*^{(s)}$):}
+Untuk masing-masing sampel $h_*^{(s)}$, vektor kemiripan $\mathbf{k}_*^{(2)(s)}$ dievaluasi terhadap seluruh representasi laten latih $[h_1, h_2, h_3] = [0.5, 1.2, 2.8]$:
+
 \begin{enumerate}
-    \item \textbf{Sampel 1 ($h_*^{(1)} = 2.1284$)}: \\
-    $\mathbf{k}_*^{(2)(1)} = [0.2656, \; 0.6499, \; 0.7981]^T$ \\
-    $\mu_{y*}^{(1)} = \mathbf{k}_*^{(2)(1)T} \boldsymbol{\alpha}^{(2)} = \mathbf{1.8363}, \quad \sigma_{y*}^{2(1)} = 1.0 - \mathbf{k}_*^{(2)(1)T} (K_y^{(2)})^{-1} \mathbf{k}_*^{(2)(1)} = \mathbf{0.1180}$
+    \item \textbf{Evaluasi Sampel 1 ($h_*^{(1)} = 2.1284$)}:
+    \begin{align}
+    \mathbf{k}_*^{(2)(1)} &= \begin{bmatrix} k^{(2)}(h_1, h_*^{(1)}) \\ k^{(2)}(h_2, h_*^{(1)}) \\ k^{(2)}(h_3, h_*^{(1)}) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{(0.5 - 2.1284)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(1.2 - 2.1284)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(2.8 - 2.1284)^2}{2(1.0)^2}\right) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{(-1.6284)^2}{2}\right) \\ \exp\left(-\frac{(-0.9284)^2}{2}\right) \\ \exp\left(-\frac{(0.6716)^2}{2}\right) \end{bmatrix} \nonumber \\
+    &= \begin{bmatrix} \exp(-1.3259) \\ \exp(-0.4310) \\ \exp(-0.2255) \end{bmatrix} = \begin{bmatrix} \mathbf{0.2656} \\ \mathbf{0.6499} \\ \mathbf{0.7981} \end{bmatrix}
+    \end{align}
+    Prediksi mean kondisional $\mu_{y*}^{(1)}$:
+    \begin{align}
+    \mu_{y*}^{(1)} &= \mathbf{k}_*^{(2)(1)T} \boldsymbol{\alpha}^{(2)} = \begin{bmatrix} 0.2656 & 0.6499 & 0.7981 \end{bmatrix} \begin{bmatrix} 4.3212 \\ -3.3462 \\ 3.5877 \end{bmatrix} \nonumber \\
+    &= (0.2656 \times 4.3212) + (0.6499 \times -3.3462) + (0.7981 \times 3.5877) \nonumber \\
+    &= 1.1477 - 2.1747 + 2.8633 = \mathbf{1.8363}
+    \end{align}
+    Vektor perantara $\mathbf{v}^{(2)(1)} = (K_y^{(2)})^{-1} \mathbf{k}_*^{(2)(1)}$ dan variansi lokal $\sigma_{y*}^{2(1)}$:
+    \begin{align}
+    \mathbf{v}^{(2)(1)} &= \begin{bmatrix} 2.6577 & -2.1388 & 0.4014 \\ -2.1388 & 2.7667 & -0.6111 \\ 0.4014 & -0.6111 & 1.1495 \end{bmatrix} \begin{bmatrix} 0.2656 \\ 0.6499 \\ 0.7981 \end{bmatrix} = \begin{bmatrix} -0.3639 \\ 0.7431 \\ 0.6276 \end{bmatrix} \\
+    \sigma_{y*}^{2(1)} &= k^{(2)}(h_*^{(1)}, h_*^{(1)}) - \mathbf{k}_*^{(2)(1)T} \mathbf{v}^{(2)(1)} \nonumber \\
+    &= 1.0 - \left( (0.2656 \times -0.3639) + (0.6499 \times 0.7431) + (0.7981 \times 0.6276) \right) \nonumber \\
+    &= 1.0 - (-0.0967 + 0.4829 + 0.5009) = 1.0 - 0.8820 = \mathbf{0.1180}
+    \end{align}
     
-    \item \textbf{Sampel 2 ($h_*^{(2)} = 2.6763$)}: \\
-    $\mathbf{k}_*^{(2)(2)} = [0.0936, \; 0.3363, \; \mathbf{0.9924}]^T$ (sangat mirip dengan $h_3 = 2.8$) \\
-    $\mu_{y*}^{(2)} = \mathbf{2.8397}$ (naik mendekati target $y_3 = 3.0$), $\quad \sigma_{y*}^{2(2)} = \mathbf{0.0186}$ (variansi sangat kecil).
+    \item \textbf{Evaluasi Sampel 2 ($h_*^{(2)} = 2.6763$)}:
+    \begin{align}
+    \mathbf{k}_*^{(2)(2)} &= \begin{bmatrix} \exp\left(-\frac{(0.5 - 2.6763)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(1.2 - 2.6763)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(2.8 - 2.6763)^2}{2(1.0)^2}\right) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{(-2.1763)^2}{2}\right) \\ \exp\left(-\frac{(-1.4763)^2}{2}\right) \\ \exp\left(-\frac{(0.1237)^2}{2}\right) \end{bmatrix} = \begin{bmatrix} \exp(-2.3681) \\ \exp(-1.0897) \\ \exp(-0.0077) \end{bmatrix} = \begin{bmatrix} \mathbf{0.0936} \\ \mathbf{0.3363} \\ \mathbf{0.9924} \end{bmatrix}
+    \end{align}
+    Prediksi mean kondisional $\mu_{y*}^{(2)}$:
+    \begin{align}
+    \mu_{y*}^{(2)} &= (0.0936 \times 4.3212) + (0.3363 \times -3.3462) + (0.9924 \times 3.5877) \nonumber \\
+    &= 0.4045 - 1.1253 + 3.5604 = \mathbf{2.8397}
+    \end{align}
+    Vektor perantara $\mathbf{v}^{(2)(2)} = [-0.0726, \; 0.1245, \; 0.9729]^T$ dan variansi lokal:
+    \begin{align}
+    \sigma_{y*}^{2(2)} &= 1.0 - \mathbf{k}_*^{(2)(2)T} \mathbf{v}^{(2)(2)} = 1.0 - (-0.0068 + 0.0419 + 0.9655) = 1.0 - 0.9814 = \mathbf{0.0186}
+    \end{align}
+    *(Perhatikan: Karena representasi laten $h_*^{(2)} = 2.6763$ sangat mendekati titik latih $h_3 = 2.8$, prediksi mean $\mu_{y*}^{(2)}$ melonjak menuju target $y_3 = 3.0$ dengan kepastian tinggi / variansi sangat kecil $\sigma_{y*}^{2(2)} = 0.0186$)*.
     
-    \item \textbf{Sampel 3 ($h_*^{(3)} = 1.5805$)}: \\
-    $\mathbf{k}_*^{(2)(3)} = [0.5578, \; \mathbf{0.9302}, \; 0.4754]^T$ (sangat mirip dengan $h_2 = 1.2$) \\
-    $\mu_{y*}^{(3)} = \mathbf{1.0034}$ (turun mendekati target $y_2 = 1.0$), $\quad \sigma_{y*}^{2(3)} = \mathbf{0.0481}$.
+    \item \textbf{Evaluasi Sampel 3 ($h_*^{(3)} = 1.5805$)}:
+    \begin{align}
+    \mathbf{k}_*^{(2)(3)} &= \begin{bmatrix} \exp\left(-\frac{(0.5 - 1.5805)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(1.2 - 1.5805)^2}{2(1.0)^2}\right) \\ \exp\left(-\frac{(2.8 - 1.5805)^2}{2(1.0)^2}\right) \end{bmatrix} = \begin{bmatrix} \exp\left(-\frac{(-1.0805)^2}{2}\right) \\ \exp\left(-\frac{(-0.3805)^2}{2}\right) \\ \exp\left(-\frac{(1.2195)^2}{2}\right) \end{bmatrix} = \begin{bmatrix} \exp(-0.5837) \\ \exp(-0.0724) \\ \exp(-0.7436) \end{bmatrix} = \begin{bmatrix} \mathbf{0.5578} \\ \mathbf{0.9302} \\ \mathbf{0.4754} \end{bmatrix}
+    \end{align}
+    Prediksi mean kondisional $\mu_{y*}^{(3)}$:
+    \begin{align}
+    \mu_{y*}^{(3)} &= (0.5578 \times 4.3212) + (0.9302 \times -3.3462) + (0.4754 \times 3.5877) \nonumber \\
+    &= 2.4104 - 3.1126 + 1.7056 = \mathbf{1.0034}
+    \end{align}
+    Vektor perantara $\mathbf{v}^{(2)(3)} = [-0.3117, \; 1.0924, \; 0.2023]^T$ dan variansi lokal:
+    \begin{align}
+    \sigma_{y*}^{2(3)} &= 1.0 - \mathbf{k}_*^{(2)(3)T} \mathbf{v}^{(2)(3)} = 1.0 - (-0.1739 + 1.0162 + 0.0962) = 1.0 - 0.9519 = \mathbf{0.0481}
+    \end{align}
+    *(Perhatikan: Karena $h_*^{(3)} = 1.5805$ sangat mendekati $h_2 = 1.2$, prediksi mean $\mu_{y*}^{(3)}$ bergeser mendekati target $y_2 = 1.0$)*.
 \end{enumerate}
 
 \paragraph{D. Agregasi Luaran via Hukum Variansi Total:}
+Rata-rata prediksi luaran DGP dari seluruh lintasan Monte Carlo:
+\begin{equation}
+\mu_{\mathrm{final}} = \frac{1}{3}\sum_{s=1}^3 \mu_{y*}^{(s)} = \frac{1.8363 + 2.8397 + 1.0034}{3} = \frac{5.6794}{3} = \mathbf{1.8931}
+\end{equation}
+
+Pemisahan analitis dua komponen variansi total berdasarkan Hukum Variansi Total:
 \begin{align}
-\mu_{\mathrm{final}} &= \frac{1}{3}\left( 1.8363 + 2.8397 + 1.0034 \right) = \mathbf{1.8931} \\
-\mathbb{E}[\sigma_y^2] &= \frac{0.1180 + 0.0186 + 0.0481}{3} = \mathbf{0.0616} \quad (\text{Ketidakpastian lokal L2}) \\
-\mathrm{Var}(\mu_y) &= \frac{1}{3}\sum_{s=1}^3 (\mu_{y*}^{(s)} - \mu_{\mathrm{final}})^2 = \mathbf{0.5636} \quad (\text{Perambatan dari ketidakpastian laten L1}) \\
-\sigma^2_{\mathrm{total}} &= 0.0616 + 0.5636 = \mathbf{0.6252} \implies \sigma_{\mathrm{total}} = \sqrt{0.6252} = \mathbf{0.7907}
+\mathbb{E}_{h_*}[\mathrm{Var}(y_* \mid h_*)] &= \frac{\sigma_{y*}^{2(1)} + \sigma_{y*}^{2(2)} + \sigma_{y*}^{2(3)}}{3} = \frac{0.1180 + 0.0186 + 0.0481}{3} = \mathbf{0.0616} \quad (\text{Variansi lokal L2}) \\
+\mathrm{Var}_{h_*}(\mathbb{E}[y_* \mid h_*]) &= \frac{1}{3}\sum_{s=1}^3 \left(\mu_{y*}^{(s)} - \mu_{\mathrm{final}}\right)^2 = \frac{(-0.0568)^2 + (0.9466)^2 + (-0.8897)^2}{3} \nonumber \\
+&= \frac{0.003226 + 0.896052 + 0.791566}{3} = \frac{1.690844}{3} = \mathbf{0.5636} \quad (\text{Variansi merambat L1})
 \end{align}
 
-\begin{figure}[htbp]
+Variansi total akhir, standar deviasi gabungan, serta interval keyakinan $95\%$:
+\begin{align}
+\sigma^2_{\mathrm{total}} &= \mathbb{E}[\sigma_y^2] + \mathrm{Var}(\mu_y) = 0.0616 + 0.5636 = \mathbf{0.6252} \implies \sigma_{\mathrm{total}} = \sqrt{0.6252} = \mathbf{0.7907} \\
+\text{IK } 95\% &: \quad [1.8931 \pm 2(0.7907)] = [1.8931 \pm 1.5814] = [\mathbf{0.3117}, \; \mathbf{3.4745}]
+\end{align}
+
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.96\textwidth]{dgp_toy_calculation.pdf}
-\vspace{-0.2cm}
+\includegraphics[width=0.70\textwidth]{dgp_toy_calculation.pdf}
+\vspace{-0.3cm}
 \caption{Visualisasi numerik DGP 2-Lapisan: (a) Pemetaan $x \to h$ (*input-warping*), (b) Pemetaan laten ke luaran $h \to y$, dan (c) Kurva akhir DGP dengan penggelembungan pita variansi di wilayah celah data kosong ($x_* = 3.0$).}
 \label{fig:plot_dgp}
 \end{figure}
 
+\vspace{-0.3cm}
 % =========================================================================
 % SEKSI 4: PERBANDINGAN DAN RELEVANSI RISET
 % =========================================================================
 \section{Perbandingan dengan GP Standar dan Relevansi Tugas Akhir}
 \label{sec:perbandingan}
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \small
+\renewcommand{\arraystretch}{0.95}
 \caption{Perbandingan Metrik Prediksi pada Titik Interpolasi Celah ($x_* = 3.0$).}
 \label{tab:komparasi}
 \begin{tabularx}{\textwidth}{l>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\raggedright\arraybackslash}X}
@@ -349,7 +448,23 @@ Standar Deviasi ($\sigma_*$) & $0.5479$ & $\mathbf{0.7907}$ & Estimasi ketidakpa
 \end{tabularx}
 \end{table}
 
-\noindent \textbf{Relevansi untuk Tugas Akhir (\textit{Image Segmentation with DGP})}: \\
-Pada segmentasi citra, ketidakpastian laten sangat penting pada piksel batas kontur (\textit{boundary edges}) antar kelas objek. DGP mampu mempertahankan ketidakpastian representasi spasial di \textit{hidden layer}, sehingga menghasilkan estimasi batas segmen yang terkalibrasi secara probabilistik tanpa menderita \textit{overconfidence}.
+\subsection{Analisis Komparatif: Mengapa Variansi DGP Membengkak?}
+Dari perbandingan numerik pada Tabel~\ref{tab:komparasi}, terlihat perbedaan fundamental antara GP standar dan DGP:
+\begin{enumerate}
+    \item \textbf{Efek Distorsi Spasial (\textit{Input Warping})}: Prediksi mean DGP bergeser dari $1.6388$ ke $\mathbf{1.8931}$. Hal ini terjadi karena Lapisan 1 memetakan masukan $x_* = 3.0$ ke ruang laten dengan mean $\mu_{h*} = 2.1284$, yang secara relatif lebih condong mendekati titik latih $h_3 = 2.8$ dibandingkan posisi $x_*$ terhadap $x_3$ pada ruang masukan asli.
+    \item \textbf{Penjumlahan Variansi Berjenjang}: Variansi total DGP menggelembung menjadi $\mathbf{0.6252}$ (dua kali lipat GP standar $0.3002$). Pada GP standar, ketidakpastian diasumsikan stasioner dan hanya fungsi dari jarak Euclidean masukan. Pada DGP, ketidakpastian dipecah menjadi dua: ketidakpastian kondisional Lapisan 2 ($0.0616$) dan ketidakpastian merambat dari fluktuasi representasi laten Lapisan 1 ($\mathbf{0.5636}$). Komponen kedua inilah yang mendominasi dan mencegah model menderita *overconfidence*.
+    \item \textbf{Sifat Non-Gaussian Luaran}: Secara teoretis, distribusi marginal luaran DGP adalah campuran tak hingga (*infinite mixture*):
+    \begin{equation}
+        p(y_* \mid x_*, \mathcal{D}) = \int p\left(y_* \mid h_*, \mathcal{D}^{(2)}\right) p\left(h_* \mid x_*, \mathcal{D}^{(1)}\right) dh_*
+    \end{equation}
+    Integral ini menghasilkan distribusi posterior non-Gaussian yang mampu menangkap asimetri dan multimodalitas pada data kompleks.
+\end{enumerate}
+
+\subsection{Implikasi Metodologis untuk Tugas Akhir: \textit{Image Segmentation with DGP}}
+Pada tugas akhir segmentasi citra, arsitektur DGP memberikan keunggulan metodologis yang signifikan:
+\begin{itemize}
+    \item \textbf{Ekstraksi Fitur Probabilistik}: \textit{Hidden layer} DGP bertindak sebagai ruang representasi fitur laten spasial. Jika GP standar terikat pada kernel stasioner kaku, DGP mampu meregangkan ruang laten di area transisi tajam dan merapatkannya di wilayah homogen.
+    \item \textbf{Estimasi Batas Segmen Terkalibrasi}: Wilayah paling rawan galat pada segmentasi citra adalah piksel perbatasan antar-objek (\textit{boundary edges}). Di zona ambigu ini, komponen variansi laten merambat $\mathrm{Var}_{h_*}(\mathbb{E}[y_* \mid h_*])$ otomatis melonjak tinggi. Hal ini menghasilkan pita keyakinan yang lebar pada batas kontur objek, memberikan informasi ketidakpastian yang jujur bagi praktisi tanpa menderita prediksi yang keliru namun berkeyakinan tinggi (*overconfident misclassification*).
+\end{itemize}
 
 \end{document}
