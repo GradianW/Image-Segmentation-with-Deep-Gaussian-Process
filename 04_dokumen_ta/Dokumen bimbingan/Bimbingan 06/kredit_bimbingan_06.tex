@@ -239,6 +239,7 @@ M_{\mathbf{y}}(\mathbf{t}) &= M_{\mathbf{f}}(\mathbf{t}) \cdot M_{\boldsymbol{\v
 % =========================================================================
 % 2. TRANSISI DARI DNN MENUJU DGP
 % =========================================================================
+\newpage
 \section{Transisi dari DNN Menuju DGP}
 \label{sec:dnn_to_dgp}
 
@@ -263,7 +264,7 @@ dengan fungsi kovariansi tunggal $k(\mathbf{x}, \mathbf{x}')$.
 \mathbf{h}^{(0)} &= \mathbf{x} \nonumber \\
 \mathbf{h}^{(\ell)} &= \mathbf{f}^{(\ell)}(\mathbf{h}^{(\ell-1)}) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \ell = 1, \dots, L \label{eq:dgp_layer}
 \end{align}
-di mana pemetaan berbobot $(W^{(\ell)}, \mathbf{b}^{(\ell)})$ pada \eqref{eq:dnn_layer} digantikan oleh fungsi acak non-parametrik:
+di mana pemetaan berbobot $(W^{(\ell)}, \mathbf{b}^{(\ell)})$ pada \eqref{eq:dnn_layer} digantikan oleh fungsi dari distribusi proses Gaussian ($\mathcal{GP}$):
 \begin{equation}
 \mathbf{f}^{(\ell)} \sim \mathcal{GP}\left( \mathbf{0}, \; K^{(\ell)} \right), \quad K^{(\ell)}_{ij} = k^{(\ell)}\left(\mathbf{h}^{(\ell-1)}_i, \mathbf{h}^{(\ell-1)}_j\right), \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I\right) \label{eq:dgp_prior}
 \end{equation}
@@ -271,46 +272,5 @@ Komposisi luaran total:
 \begin{equation}
 \mathbf{y} = \left(\mathbf{f}^{(L)} \circ \dots \circ \mathbf{f}^{(1)}\right)(\mathbf{x}) + \boldsymbol{\varepsilon} = \mathbf{f}^{(L)}\left( \dots \mathbf{f}^{(1)}(\mathbf{x}) \dots \right) + \boldsymbol{\varepsilon} \label{eq:dgp_composition}
 \end{equation}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[
-    node distance=1.2cm,
-    layer/.style={rectangle, draw=blue!70!black, fill=blue!5, rounded corners, minimum width=2.2cm, minimum height=0.7cm, font=\footnotesize\bfseries, align=center},
-    dgp_layer/.style={rectangle, draw=teal!70!black, fill=teal!5, rounded corners, minimum width=2.2cm, minimum height=0.7cm, font=\footnotesize\bfseries, align=center},
-    arrow/.style={-Latex, thick, draw=blue!70!black},
-    dgp_arrow/.style={-Latex, thick, draw=teal!70!black}
-]
-    % DNN
-    \node (x1) {$\mathbf{x}$};
-    \node[layer, right=of x1] (h1) {$\sigma(W^{(1)}\mathbf{x} + \mathbf{b}^{(1)})$};
-    \node[right=of h1] (dots1) {$\cdots$};
-    \node[layer, right=of dots1] (hL) {$\sigma(W^{(L)}\mathbf{h}^{(L-1)} + \mathbf{b}^{(L)})$};
-    \node[right=of hL] (y1) {$\hat{\mathbf{y}}$};
-    
-    \draw[arrow] (x1) -- (h1);
-    \draw[arrow] (h1) -- (dots1);
-    \draw[arrow] (dots1) -- (hL);
-    \draw[arrow] (hL) -- (y1);
-    
-    \node[above=0.2cm of h1, anchor=south, font=\footnotesize\bfseries, color=blue!80!black] {DNN: Komposisi Parametrik};
-
-    % DGP
-    \node[below=1.3cm of x1] (x2) {$\mathbf{x}$};
-    \node[dgp_layer, right=of x2] (f1) {$\mathbf{f}^{(1)} \sim \mathcal{GP}_1$};
-    \node[right=of f1] (dots2) {$\cdots$};
-    \node[dgp_layer, right=of dots2] (fL) {$\mathbf{f}^{(L)} \sim \mathcal{GP}_L$};
-    \node[right=of fL] (y2) {$\mathbf{y}$};
-    
-    \draw[dgp_arrow] (x2) -- node[above, font=\scriptsize] {$\mathbf{h}^{(0)}$} (f1);
-    \draw[dgp_arrow] (f1) -- node[above, font=\scriptsize] {$\mathbf{h}^{(1)}$} (dots2);
-    \draw[dgp_arrow] (dots2) -- node[above, font=\scriptsize] {$\mathbf{h}^{(L-1)}$} (fL);
-    \draw[dgp_arrow] (fL) -- node[above, font=\scriptsize] {$\mathbf{h}^{(L)}$} (y2);
-    
-    \node[above=0.2cm of f1, anchor=south, font=\footnotesize\bfseries, color=teal!80!black] {DGP: Komposisi Non-Parametrik};
-\end{tikzpicture}
-\caption{Komparasi arsitektur: komposisi parametrik (DNN) vs komposisi fungsi acak (DGP).}
-\label{fig:dnn_to_dgp}
-\end{figure}
 
 \end{document}
