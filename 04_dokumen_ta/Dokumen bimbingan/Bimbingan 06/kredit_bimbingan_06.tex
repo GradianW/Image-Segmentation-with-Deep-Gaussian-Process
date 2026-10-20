@@ -242,9 +242,6 @@ M_{\mathbf{y}}(\mathbf{t}) &= M_{\mathbf{f}}(\mathbf{t}) \cdot M_{\boldsymbol{\v
 \section{Konsep Deep Neural Network (DNN) dan Transisi Menuju Deep Gaussian Process (DGP)}
 \label{sec:dnn_to_dgp}
 
-\subsection{Komposisi Parametrik (DNN) vs Komposisi Fungsi Acak (DGP)}
-\label{subsec:dnn_ke_dgp}
-
 \noindent Model \textit{Deep Neural Network} (DNN) dengan $L$ \textit{hidden layer} memetakan masukan $\mathbf{x} \in \mathbb{R}^{d_0}$ menuju estimasi $\hat{\mathbf{y}}$ melalui komposisi pemetaan linier berbobot dan aktivasi non-linier $\sigma(\cdot)$:
 \begin{equation}
 \mathbf{h}^{(\ell)} = \sigma\left( W^{(\ell)} \mathbf{h}^{(\ell-1)} + \mathbf{b}^{(\ell)} \right), \quad \ell = 1, \dots, L \label{eq:dnn_layer}
@@ -306,27 +303,6 @@ sehingga luaran $\mathbf{y}$ merupakan komposisi fungsi acak Gaussian berjenjang
 \caption{Transisi arsitektur dari komposisi parametrik (DNN) menuju komposisi hierarkis fungsi acak (DGP).}
 \label{fig:dnn_to_dgp}
 \end{figure}
-
-\subsection{Perbandingan Karakteristik Arsitektur}
-\label{subsec:komparasi_arsitektur}
-
-\begin{table}[H]
-\centering
-\small
-\caption{Perbandingan Karakteristik Arsitektur DNN, GP Standar, dan DGP.}
-\label{tab:komparasi_dnn_gp_dgp}
-\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
-\toprule
-\textbf{Karakteristik} & \textbf{Deep Neural Network} & \textbf{Gaussian Process Standar} & \textbf{Deep Gaussian Process} \\
-\midrule
-\textbf{Struktur Pemetaan} & Komposisi bertingkat ($L$ lapis) & Tunggal / dangkal (1 lapis) & Komposisi bertingkat ($L$ lapis) \\
-\textbf{Sifat Transformasi} & Parametrik berbobot tetap & Non-parametrik via Kernel tunggal & Non-parametrik via GP hierarkis \\
-\textbf{Representasi Fitur} & Hierarki fitur mendalam & Terbatas pada ruang fitur kernel & Hierarki kernel mendalam \\
-\textbf{Kuantifikasi Ketidakpastian} & Tidak tersedia (titik pasti $\hat{\mathbf{y}}$) & Analitik pada seluruh ruang masukan & Inheren di setiap lapisan \\
-\textbf{Fleksibilitas Non-Stasioner} & Fleksibel (via aktivasi) & Terbatas stasioneritas kernel & Sangat fleksibel (\textit{input-warping}) \\
-\bottomrule
-\end{tabularx}
-\end{table}
 
 \noindent Struktur hierarkis DGP menjadikannya fondasi ideal untuk segmentasi citra: ia menggabungkan keunggulan representasi spasial berjenjang DNN dengan kepastian estimasi ketidakpastian berbasis prinsip distribusi Gaussian.
 
