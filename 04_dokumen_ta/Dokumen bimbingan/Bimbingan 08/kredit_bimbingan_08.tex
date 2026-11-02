@@ -1,0 +1,326 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}              % Notasi tebal untuk vektor & matriks
+\usepackage{geometry}
+\geometry{top=2.0cm, bottom=2.0cm, left=2.0cm, right=2.0cm}
+\usepackage{graphicx}
+\usepackage{booktabs}        % Tabel profesional
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{mdframed}        % Kotak highlight untuk definisi
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+\pdfstringdefDisableCommands{%
+  \def\boldsymbol#1{#1}%
+  \def\bm#1{#1}%
+  \def\mathbf#1{#1}%
+}
+
+% Makro sitasi fleksibel
+\newcommand{\citep}[2][]{(Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+\newcommand{\citet}[2][]{Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+
+% Lingkungan Teorema & Definisi
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{claim}{Claim}[section]
+
+\theoremstyle{definition}
+\newtheorem{definisi}{Definisi}[section]
+
+\theoremstyle{remark}
+\newtheorem{catatan}{Catatan}[section]
+
+% Definisi warna kustom untuk kotak
+\definecolor{dgpblue}{RGB}{26, 82, 118}
+\definecolor{dgpred}{RGB}{148, 49, 38}
+
+\newmdenv[
+    linecolor=dgpblue,
+    outerlinewidth=1.2pt,
+    roundcorner=4pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=blue!2,
+    nobreak=true
+]{mathbox}
+
+\newmdenv[
+    linecolor=dgpred,
+    outerlinewidth=1.2pt,
+    roundcorner=4pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=red!2,
+    nobreak=true
+]{alertbox}
+
+% Format nama pembuktian
+\addto\captionsindonesian{\renewcommand{\proofname}{Proof}}
+\renewcommand{\proofname}{Proof}
+
+% Path direktori gambar
+\graphicspath{{figures/}}
+
+% =========================================================================
+% INFORMASI DOKUMEN
+% =========================================================================
+\title{
+    \vspace{-1.6cm}
+    \textbf{\Large BIMBINGAN TUGAS AKHIR \#8} \\[0.2em]
+}
+\author{}
+\date{\vspace{-0.6cm} Selasa, 3 November 2026}
+
+\begin{document}
+
+\maketitle
+\vspace{-1.1cm}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\setlength{\abovedisplayshortskip}{1pt}
+\setlength{\belowdisplayshortskip}{1pt}
+
+% =========================================================================
+% 1. DEEP NEURAL NETWORK
+% =========================================================================
+\section{Deep Neural Network}
+\label{sec:dnn}
+
+\noindent Diberikan dataset $\mathcal{D} = \{\mathbf{x}_i\}_{i=1}^N$ dengan $N$ data sampel. Setiap \textbf{data ke-$i$} dinyatakan sebagai vektor baris $\mathbf{x}_i \in \mathbb{R}^{1 \times D}$ dengan $D$ fitur:
+\begin{equation}
+    \mathbf{x}_i = \begin{bmatrix} x_{i, 1} & x_{i, 2} & \dots & x_{i, D} \end{bmatrix} \in \mathbb{R}^{1 \times D} \label{eq:vektor_fitur_data_i}
+\end{equation}
+Untuk arsitektur dengan $L$ layer ($\ell = 1, \dots, L$) dan neuron $n_\ell \in \mathbb{N}^+$:
+\begin{equation}
+    \mathbf{x}^{(0)}_i = \mathbf{x}_i \in \mathbb{R}^{1 \times n_0}, \quad n_0 = D, \quad x^{(0)}_{i, k} = x_{i, k}
+\end{equation}
+di mana $\mathbf{x}^{(\ell-1)}_i \in \mathbb{R}^{1 \times n_{\ell-1}}$ ditransformasikan menjadi $\mathbf{x}^{(\ell)}_i \in \mathbb{R}^{1 \times n_\ell}$ hingga mencapai output layer $\mathbf{x}^{(L)}_i \in \mathbb{R}^{1 \times n_L}$.
+
+% -------------------------------------------------------------------------
+\subsection{Tinjau Satu Neuron}
+\label{subsec:neuron_skalar}
+
+Untuk neuron ke-$j$ pada layer $\ell$ ($j = 1, \dots, n_\ell$), komputasi terhadap \textbf{data ke-$i$} dirumuskan sebagai:
+\begin{align}
+    z^{(\ell)}_{i, j} &= \sum_{k=1}^{n_{\ell-1}} x^{(\ell-1)}_{i, k} w^{(\ell)}_{kj} + b^{(\ell)}_j \label{eq:scalar_z} \\
+    x^{(\ell)}_{i, j} &= \sigma^{(\ell)}\left( z^{(\ell)}_{i, j} \right) \label{eq:scalar_x}
+\end{align}
+dengan indeks dan parameter:
+\begin{itemize}\setlength{\itemsep}{-2pt}\setlength{\parsep}{0pt}\setlength{\topsep}{0pt}
+    \item $i \in \{1, \dots, N\}$: indeks data ke-$i$.
+    \item $k \in \{1, \dots, n_{\ell-1}\}$: indeks fitur input (layer $\ell-1$).
+    \item $j \in \{1, \dots, n_\ell\}$: indeks neuron / fitur output (layer $\ell$).
+    \item $w^{(\ell)}_{kj} \in \mathbb{R}$: bobot fitur $k$ ke neuron $j$.
+    \item $b^{(\ell)}_j \in \mathbb{R}$: bias neuron $j$.
+    \item $\sigma^{(\ell)}: \mathbb{R} \to \mathbb{R}$: fungsi aktivasi element-wise.
+\end{itemize}
+
+% -------------------------------------------------------------------------
+\subsection{Tinjau Satu Data}
+\label{subsec:vektorisasi_layer}
+
+Didefinisikan vektor baris data fitur ke-$i$, matriks bobot $W^{(\ell)}$, dan vektor bias untuk layer $\ell$:
+\begin{align}
+    \mathbf{x}^{(\ell-1)}_i &= \begin{bmatrix} x^{(\ell-1)}_{i, 1} & x^{(\ell-1)}_{i, 2} & \dots & x^{(\ell-1)}_{i, n_{\ell-1}} \end{bmatrix} \in \mathbb{R}^{1 \times n_{\ell-1}} \label{eq:vector_x_prev} \\
+    W^{(\ell)} &= \begin{bmatrix}
+        w^{(\ell)}_{11} & w^{(\ell)}_{12} & \dots & w^{(\ell)}_{1 n_\ell} \\
+        w^{(\ell)}_{21} & w^{(\ell)}_{22} & \dots & w^{(\ell)}_{2 n_\ell} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        w^{(\ell)}_{n_{\ell-1} 1} & w^{(\ell)}_{n_{\ell-1} 2} & \dots & w^{(\ell)}_{n_{\ell-1} n_\ell}
+    \end{bmatrix} \in \mathbb{R}^{n_{\ell-1} \times n_\ell} \label{eq:matrix_W} \\
+    \mathbf{b}^{(\ell)} &= \begin{bmatrix} b^{(\ell)}_1 & \dots & b^{(\ell)}_{n_\ell} \end{bmatrix} \in \mathbb{R}^{1 \times n_\ell}, \quad
+    \mathbf{z}^{(\ell)}_i = \begin{bmatrix} z^{(\ell)}_{i, 1} & \dots & z^{(\ell)}_{i, n_\ell} \end{bmatrix} \in \mathbb{R}^{1 \times n_\ell} \label{eq:vectors_bz}
+\end{align}
+Transformasi vektor baris pada layer $\ell$ untuk \textbf{data ke-$i$}:
+\begin{align}
+    \underbrace{\mathbf{z}^{(\ell)}_i}_{(1 \times n_\ell)} &= \underbrace{\mathbf{x}^{(\ell-1)}_i}_{(1 \times n_{\ell-1})} \times \underbrace{W^{(\ell)}}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} \label{eq:vector_z} \\
+    \underbrace{\mathbf{x}^{(\ell)}_i}_{(1 \times n_\ell)} &= \sigma^{(\ell)}\left( \mathbf{z}^{(\ell)}_i \right) \label{eq:vector_x}
+\end{align}
+
+% -------------------------------------------------------------------------
+\subsection{Tinjau \texorpdfstring{$N$}{N} Data}
+\label{subsec:matriks_batch}
+
+Diberikan matriks data input $X^{(\ell-1)} \in \mathbb{R}^{N \times n_{\ell-1}}$ di mana setiap baris ke-$i$ memuat vektor baris fitur dari \textbf{data ke-$i$}, $\mathbf{x}^{(\ell-1)}_i$:
+\begin{equation}
+    X^{(\ell-1)} = \begin{bmatrix}
+        \mathbf{x}^{(\ell-1)}_1 \\
+        \mathbf{x}^{(\ell-1)}_2 \\
+        \vdots \\
+        \mathbf{x}^{(\ell-1)}_i \\
+        \vdots \\
+        \mathbf{x}^{(\ell-1)}_N
+    \end{bmatrix} = \begin{bmatrix}
+        x^{(\ell-1)}_{1, 1} & x^{(\ell-1)}_{1, 2} & \dots & x^{(\ell-1)}_{1, n_{\ell-1}} \\
+        x^{(\ell-1)}_{2, 1} & x^{(\ell-1)}_{2, 2} & \dots & x^{(\ell-1)}_{2, n_{\ell-1}} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        x^{(\ell-1)}_{i, 1} & x^{(\ell-1)}_{i, 2} & \dots & x^{(\ell-1)}_{i, n_{\ell-1}} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        x^{(\ell-1)}_{N, 1} & x^{(\ell-1)}_{N, 2} & \dots & x^{(\ell-1)}_{N, n_{\ell-1}}
+    \end{bmatrix} \in \mathbb{R}^{N \times n_{\ell-1}} \label{eq:matrix_batch_X}
+\end{equation}
+dengan $X^{(0)} = X \in \mathbb{R}^{N \times D}$ sebagai matriks data awal ($N$ baris data, masing-masing memiliki $D$ kolom fitur).
+
+Operasi matriks pada tingkat batch:
+\begin{align}
+    \underbrace{Z^{(\ell)}}_{(N \times n_\ell)} &= \underbrace{X^{(\ell-1)}}_{(N \times n_{\ell-1})} \times \underbrace{W^{(\ell)}}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{1}_N}_{(N \times 1)} \times \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} \label{eq:batch_row_z} \\
+    \underbrace{X^{(\ell)}}_{(N \times n_\ell)} &= \sigma^{(\ell)}\left( Z^{(\ell)} \right) \label{eq:batch_row_x}
+\end{align}
+dengan $\mathbf{1}_N = [1, 1, \dots, 1]^T \in \mathbb{R}^{N \times 1}$ adalah vektor kolom bernilai satu. Baris ke-$i$ dari matriks $Z^{(\ell)}$ dan $X^{(\ell)}$ masing-masing menyatakan $\mathbf{z}^{(\ell)}_i \in \mathbb{R}^{1 \times n_\ell}$ dan $\mathbf{x}^{(\ell)}_i \in \mathbb{R}^{1 \times n_\ell}$ dari data ke-$i$.
+
+% -------------------------------------------------------------------------
+\subsection{Fungsi Objektif}
+\label{subsec:fungsi_objektif}
+
+Pada layer terakhir ($\ell = L$), tidak diterapkan fungsi aktivasi non-linier, sehingga prediksi output berpadanan langsung dengan transformasi matriks:
+\begin{equation}
+    \hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \in \mathbb{R}^{N \times n_L} \label{eq:output_pred_batch}
+\end{equation}
+dan untuk data tunggal ke-$i$:
+\begin{equation}
+    \hat{\mathbf{y}}_i = \mathbf{x}_i^{(L-1)} W^{(L)} + \mathbf{b}^{(L)} \in \mathbb{R}^{1 \times n_L} \label{eq:output_pred_single}
+\end{equation}
+Diberikan matriks target $Y \in \mathbb{R}^{N \times n_L}$. Fungsi objektif \textit{Mean Squared Error} (MSE) dievaluasi melalui selisih target $Y$ dengan prediksi $\hat{Y}$:
+\begin{equation}
+    \mathcal{L} = \frac{1}{2N} \left\| Y - \hat{Y} \right\|_F^2 = \frac{1}{2N} \sum_{i=1}^N \sum_{j=1}^{n_L} \left( y_{i, j} - \hat{y}_{i, j} \right)^2 \label{eq:loss_mse}
+\end{equation}
+di mana $\|\cdot\|_F$ menyatakan norma Frobenius matriks.
+
+% =========================================================================
+% 2. PENURUNAN GRADIEN PARAMETER
+% =========================================================================
+\clearpage
+\section{Penurunan Gradien Parameter}
+\label{sec:penurunan_gradien}
+\enlargethispage{2\baselineskip}
+
+\subsection{Motivasi Optimasi (Gradient Descent)}
+\label{subsec:motivasi_gd}
+
+Pembaruan parameter matriks bobot $W^{(\ell)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell}$ dan vektor bias $\mathbf{b}^{(\ell)} \in \mathbb{R}^{1 \times n_\ell}$ pada algoritma \textit{Gradient Descent} dengan \textit{learning rate} $\eta > 0$ dirumuskan sebagai:
+\begin{align}
+    W^{(\ell)}_{n+1} &= W^{(\ell)}_n - \eta \frac{\partial \mathcal{L}}{\partial W^{(\ell)}_n} \label{eq:update_w} \\
+    \mathbf{b}^{(\ell)}_{n+1} &= \mathbf{b}^{(\ell)}_n - \eta \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(\ell)}_n} \label{eq:update_b}
+\end{align}
+dengan $n$ menyatakan indeks iterasi.
+
+\subsection{Turunan Parameter pada Layer Output (\texorpdfstring{$\ell = L$}{l = L})}
+\label{subsec:gradien_layer_L}
+
+Karena pada layer output tidak diterapkan fungsi aktivasi, prediksi dinyatakan sebagai:
+\begin{equation}
+    \hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \in \mathbb{R}^{N \times n_L} \label{eq:pred_output_L}
+\end{equation}
+Turunan fungsi skalar $\mathcal{L}$ terhadap matriks $\hat{Y} \in \mathbb{R}^{N \times n_L}$ didefinisikan sebagai:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \begin{bmatrix}
+        \frac{\partial \mathcal{L}}{\partial \hat{\mathbf{y}}_1} \\
+        \frac{\partial \mathcal{L}}{\partial \hat{\mathbf{y}}_2} \\
+        \vdots \\
+        \frac{\partial \mathcal{L}}{\partial \hat{\mathbf{y}}_i} \\
+        \vdots \\
+        \frac{\partial \mathcal{L}}{\partial \hat{\mathbf{y}}_N}
+    \end{bmatrix} = \begin{bmatrix}
+        \frac{\partial \mathcal{L}}{\partial \hat{y}_{1, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{1, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{1, n_L}} \\
+        \frac{\partial \mathcal{L}}{\partial \hat{y}_{2, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{2, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{2, n_L}} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, n_L}} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, n_L}}
+    \end{bmatrix} \in \mathbb{R}^{N \times n_L} \label{eq:matrix_grad_Yhat}
+\end{equation}
+Dengan \textit{chain rule}, turunan terhadap setiap elemen $\hat{y}_{i, j}$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, j}} = \frac{\partial \mathcal{L}}{\partial (y_{i, j} - \hat{y}_{i, j})} \frac{\partial (y_{i, j} - \hat{y}_{i, j})}{\partial \hat{y}_{i, j}} = \frac{1}{N} (y_{i, j} - \hat{y}_{i, j}) \cdot (-1) = \frac{1}{N} (\hat{y}_{i, j} - y_{i, j}) \label{eq:matrix_frob_deriv}
+\end{equation}
+Sehingga,
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial \hat{Y}} &= \frac{\partial \left( \frac{1}{2N} \|Y - \hat{Y}\|_F^2 \right)}{\partial (Y - \hat{Y})} \frac{\partial (Y - \hat{Y})}{\partial \hat{Y}} \nonumber \\
+    &= \frac{1}{N} (Y - \hat{Y}) \cdot (-1) = \frac{1}{N} (\hat{Y} - Y) \in \mathbb{R}^{N \times n_L} \label{eq:dL_dYhat}
+\end{align}
+Melalui aturan rantai dengan menjabarkan $\hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)}$, gradien terhadap matriks bobot $W^{(L)}$ dan vektor bias $\mathbf{b}^{(L)}$ diperoleh sebagai:
+\begin{align}
+    \underbrace{\frac{\partial \mathcal{L}}{\partial W^{(L)}}}_{(n_{L-1} \times n_L)} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} \frac{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)}{\partial W^{(L)}} \nonumber \\
+    &= \left( X^{(L-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} = \frac{1}{N} \underbrace{\left( X^{(L-1)} \right)^T}_{(n_{L-1} \times N)} \times \underbrace{\left( \hat{Y} - Y \right)}_{(N \times n_L)} \label{eq:batch_grad_W_L} \\[0.3em]
+    \underbrace{\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L)}}}_{(1 \times n_L)} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} \frac{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)}{\partial \mathbf{b}^{(L)}} \nonumber \\
+    &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} = \frac{1}{N} \underbrace{\mathbf{1}_N^T}_{(1 \times N)} \times \underbrace{\left( \hat{Y} - Y \right)}_{(N \times n_L)} \label{eq:batch_grad_b_L}
+\end{align}
+
+\clearpage
+\subsection{Turunan Parameter pada Layer \texorpdfstring{$\ell = L-1, \dots, 2, 1$}{l = L-1, ..., 2, 1}}
+\label{subsec:gradien_layer_hidden}
+
+Pada hidden layer $\ell \in \{L-1, \dots, 2, 1\}$, fungsi aktivasi $\sigma^{(\ell)}$ diterapkan terhadap bentuk matriks:
+\begin{equation}
+    X^{(\ell)} = \sigma^{(\ell)}\left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right) \in \mathbb{R}^{N \times n_\ell} \label{eq:X_hidden_matrix}
+\end{equation}
+
+\noindent \textbf{\textit{Backward Propagation} pada Layer $\ell = L-1$}: \\
+\textit{Backward propagation} galat dari layer output ke fitur $X^{(L-1)}$ dievaluasi melalui aturan rantai:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial X^{(L-1)}} = \frac{\partial \mathcal{L}}{\partial \hat{Y}} \frac{\partial \hat{Y}}{\partial X^{(L-1)}} = \frac{1}{N} \left( \hat{Y} - Y \right) \left( W^{(L)} \right)^T \in \mathbb{R}^{N \times n_{L-1}} \label{eq:dL_dXLprev}
+\end{equation}
+Turunan terhadap bentuk pre-aktivasi layer $L-1$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} = \frac{\partial \mathcal{L}}{\partial X^{(L-1)}} \odot {\sigma^{(L-1)}}'\left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)
+\end{equation}
+Gradien parameter $W^{(L-1)}$ dan $\mathbf{b}^{(L-1)}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial W^{(L-1)}} &= \left( X^{(L-2)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \in \mathbb{R}^{n_{L-2} \times n_{L-1}} \\[0.3em]
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L-1)}} &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \in \mathbb{R}^{1 \times n_{L-1}}
+\end{align}
+\textit{Backward propagation} ke fitur layer $L-2$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial X^{(L-2)}} = \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \left( W^{(L-1)} \right)^T \in \mathbb{R}^{N \times n_{L-2}}
+\end{equation}
+
+\noindent \textbf{\textit{Backward Propagation} pada Layer $\ell = L-2$}: \\
+Turunan terhadap bentuk pre-aktivasi layer $L-2$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} = \frac{\partial \mathcal{L}}{\partial X^{(L-2)}} \odot {\sigma^{(L-2)}}'\left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)
+\end{equation}
+Gradien parameter $W^{(L-2)}$ dan $\mathbf{b}^{(L-2)}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial W^{(L-2)}} &= \left( X^{(L-3)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \in \mathbb{R}^{n_{L-3} \times n_{L-2}} \\[0.3em]
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L-2)}} &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \in \mathbb{R}^{1 \times n_{L-2}}
+\end{align}
+\textit{Backward propagation} ke fitur layer $L-3$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial X^{(L-3)}} = \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \left( W^{(L-2)} \right)^T \in \mathbb{R}^{N \times n_{L-3}}
+\end{equation}
+
+\noindent \textbf{\textit{Backward Propagation} Umum pada Hidden Layer ($\ell = L-1, \dots, 2, 1$)}: \\
+Secara umum, untuk setiap hidden layer $\ell \in \{L-1, \dots, 2, 1\}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} &= \frac{\partial \mathcal{L}}{\partial X^{(\ell)}} \odot {\sigma^{(\ell)}}'\left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right) \in \mathbb{R}^{N \times n_\ell} \label{eq:batch_dL_hidden} \\[0.3em]
+    \frac{\partial \mathcal{L}}{\partial W^{(\ell)}} &= \left( X^{(\ell-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell} \label{eq:batch_grad_w_hidden} \\[0.3em]
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(\ell)}} &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \in \mathbb{R}^{1 \times n_\ell} \label{eq:batch_grad_b_hidden} \\[0.3em]
+    \frac{\partial \mathcal{L}}{\partial X^{(\ell-1)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \left( W^{(\ell)} \right)^T \in \mathbb{R}^{N \times n_{\ell-1}} \label{eq:batch_dL_dXprev}
+\end{align}
+dengan kondisi batas input awal $X^{(0)} = X \in \mathbb{R}^{N \times D}$.
+
+\end{document}

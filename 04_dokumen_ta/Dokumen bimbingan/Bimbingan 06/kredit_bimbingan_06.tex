@@ -79,7 +79,41 @@
 % =========================================================================
 
 % =========================================================================
-% 1. PEMBUKTIAN DISTRIBUSI NORMAL y: DUA KASUS BOBOT w
+% 1. EKSPERIMEN DERET WAKTU EMISI CO2 SEKTOR RESIDENTIAL US
+% =========================================================================
+\section{Eksperimen Pemodelan Emisi \texorpdfstring{$\text{CO}_2$}{CO2} Sektor Residential US}
+\label{sec:eksperimen_co2_us}
+
+\noindent Pemodelan deret waktu emisi $\text{CO}_2$ sektor \textit{Residential} US ($N = 1.612$ data harian) dibagi secara kronologis menjadi \textbf{Data Training} ($N = 1.289$, 80\%) dan \textbf{Data Testing} ($N = 323$, 20\%). Seluruh model diimplementasikan menggunakan framework \textbf{GPyTorch} (\texttt{ExactGP}) dengan parameter kernel tetap:
+\begin{enumerate}\setlength{\itemsep}{2pt}
+    \item \textbf{Standard Gaussian Process (1-Layer)}:
+    \begin{equation}
+        k(x, x') = \sigma_f^2 \exp\left( -\frac{(x - x')^2}{2\ell^2} \right), \quad \ell = 0{,}20 \text{ tahun}, \; \sigma_f^2 = 1{,}0, \; \sigma_n^2 = 0{,}05
+    \end{equation}
+    
+    \item \textbf{Deep Gaussian Process 2-Layer ($L = 2$)}:
+    \begin{equation}
+        x \;\xrightarrow{k^{(1)}}\; h^{(1)} \;\xrightarrow{k^{(2)}}\; y
+    \end{equation}
+    Layer 1 memetakan waktu $x$ ke fitur laten $h^{(1)}$ ($\ell_1 = 0{,}3$, $\sigma_{n1}^2 = 0{,}01$), yang kemudian dipetakan oleh Layer 2 menuju target emisi $y$ ($\ell_2 = 0{,}3$, $\sigma_{n2}^2 = 0{,}03$).
+
+    \item \textbf{Deep Gaussian Process 3-Layer ($L = 3$)}:
+    \begin{equation}
+        x \;\xrightarrow{k^{(1)}}\; h^{(1)} \;\xrightarrow{k^{(2)}}\; h^{(2)} \;\xrightarrow{k^{(3)}}\; y
+    \end{equation}
+    dengan struktur komposisi dua hidden layer laten ($\ell_1 = \ell_2 = 0{,}3$, $\sigma_{n1}^2 = \sigma_{n2}^2 = 0{,}01$) menuju layer output ($\ell_3 = 0{,}3$, $\sigma_{n3}^2 = 0{,}03$).
+\end{enumerate}
+
+\vspace{-0.3cm}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.70\linewidth]{us_residential_gp_dgp_comparison.pdf}
+\caption{Komparasi pemodelan emisi $\text{CO}_2$ sektor Residential US: (a) Data mentah; (b) GP Standar 1-Layer; (c) Deep GP 2-Layer; dan (d) Deep GP 3-Layer.}
+\label{fig:us_residential_comparison}
+\end{figure}
+\newpage
+% =========================================================================
+% 2. PEMBUKTIAN DISTRIBUSI NORMAL y: DUA KASUS BOBOT w
 % =========================================================================
 \section{Pembuktian Distribusi Normal \texorpdfstring{$y = f(x) + \varepsilon$}{y = f(x) + epsilon}}
 \label{sec:pembuktian_mgf}
@@ -237,7 +271,7 @@ M_{\mathbf{y}}(\mathbf{t}) &= M_{\mathbf{f}}(\mathbf{t}) \cdot M_{\boldsymbol{\v
 \end{proof}
 
 % =========================================================================
-% 2. PERBEDAAN DNN DAN DGP
+% 3. PERBEDAAN DNN DAN DGP
 % =========================================================================
 \newpage
 \section{Perbedaan DNN dan DGP}

@@ -1,0 +1,9 @@
+\BOOKMARK [1][-]{section.1}{Deep\040Neural\040Network}{}% 1
+\BOOKMARK [2][-]{subsection.1.1}{Tinjau\040Satu\040Neuron}{section.1}% 2
+\BOOKMARK [2][-]{subsection.1.2}{Tinjau\040Satu\040Data}{section.1}% 3
+\BOOKMARK [2][-]{subsection.1.3}{Tinjau\040N\040Data}{section.1}% 4
+\BOOKMARK [2][-]{subsection.1.4}{Fungsi\040Objektif}{section.1}% 5
+\BOOKMARK [1][-]{section.2}{Penurunan\040Gradien\040Parameter}{}% 6
+\BOOKMARK [2][-]{subsection.2.1}{Motivasi\040Optimasi\040\(Gradient\040Descent\)}{section.2}% 7
+\BOOKMARK [2][-]{subsection.2.2}{Turunan\040Parameter\040pada\040Layer\040Output\040\(l\040=\040L\)}{section.2}% 8
+\BOOKMARK [2][-]{subsection.2.3}{Turunan\040Parameter\040pada\040Layer\040l\040=\040L-1,\040...,\0402,\0401}{section.2}% 9

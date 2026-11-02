@@ -1,0 +1,11 @@
+\BOOKMARK [1][-]{section.1}{Konsep\040``Banyak\040Neuron''\040pada\040Deep\040Gaussian\040Process}{}% 1
+\BOOKMARK [1][-]{section.2}{Arsitektur\040Propagasi\040Hierarkis\040DGP\040\(L\040=\0402\)}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Tantangan\040Non-linearitas\040dan\040Reparameterization\040Trick}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Hukum\040Variansi\040Total\040\(Law\040of\040Total\040Variance\)}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Contoh\040Perhitungan\040Numerik\040Lengkap\040\(N=3,\040N*=1\)}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Langkah\0401:\040Pelatihan\040Lapisan\0401\040\(X\040->\040h\)}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Langkah\0402:\040Pelatihan\040Lapisan\0402\040\(h\040->\040y\)}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Langkah\0403:\040Evaluasi\040Titik\040Interpolasi\040Baru\040\(x*\040=\0403.0\)}{section.3}% 8
+\BOOKMARK [1][-]{section.4}{Perbandingan\040dengan\040GP\040Standar\040dan\040Relevansi\040Tugas\040Akhir}{}% 9
+\BOOKMARK [2][-]{subsection.4.1}{Analisis\040Komparatif:\040Mengapa\040Variansi\040DGP\040Membengkak?}{section.4}% 10
+\BOOKMARK [2][-]{subsection.4.2}{Implikasi\040Metodologis\040untuk\040Tugas\040Akhir:\040Image\040Segmentation\040with\040DGP}{section.4}% 11

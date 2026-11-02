@@ -132,9 +132,79 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
   4. **Eksperimen Pemodelan GP pada Dataset $\text{CO}_2$ (Mauna Loa)**:
      - Mencoba mengimplementasikan Gaussian Process Regression pada dataset konsentrasi $\text{CO}_2$ atmosfer Mauna Loa (*Keeling Curve*) sebagaimana dibahas pada buku Rasmussen & Williams Bab 5 Subbab 5.4.3 untuk membuktikan keandalan kombinasi berbagai kernel (tren jangka panjang, variasi musiman periodik, ketidakteraturan jangka menengah, dan noise putih).
 * **Tindak Lanjut (To-Do)**:
-  - [ ] Membaca dan membedah Subbab 2.1 (*Weight-space View*) dari buku Rasmussen & Williams (2006).
-  - [ ] Menyusun penurunan analitis lengkap pembuktian distribusi Gaussian untuk $f(\mathbf{x}) = \mathbf{x}^T \mathbf{w}$ dan $y = f(\mathbf{x}) + \varepsilon$ menggunakan MGF (*Moment Generating Function*).
+  - [x] Membaca dan membedah Subbab 2.1 (*Weight-space View*) dari buku Rasmussen & Williams (2006).
+  - [x] Menyusun penurunan analitis lengkap pembuktian distribusi Gaussian untuk $f(\mathbf{x}) = \mathbf{x}^T \mathbf{w}$ dan $y = f(\mathbf{x}) + \varepsilon$ menggunakan MGF (*Moment Generating Function*).
   - [ ] Menuliskan tinjauan perbandingan teoretis antara Gradient Descent dan Adam, serta penjelasan kapan optimasi metaheuristik digunakan dalam konteks machine learning/GP.
-  - [ ] Menyiapkan skrip Python eksperimen GPR pada dataset deret waktu Mauna Loa $\text{CO}_2$ dengan rancangan komposisi kernel sesuai Bab 5.4.3 Rasmussen.
-  - [ ] Menyusun dokumen Kredit Bimbingan #6 (format LaTeX) untuk dibawa pada bimbingan berikutnya (Rabu, 21 Oktober 2026).
+  - [x] Menyiapkan skrip Python eksperimen GPR pada dataset deret waktu $\text{CO}_2$ (diuji komparasi model GP 1-layer, Deep GP 2-layer, dan 3-layer pada emisi $\text{CO}_2$ Residential US).
+  - [x] Menyusun draf dokumen Kredit Bimbingan #6 (format LaTeX) untuk dibawa pada bimbingan berikutnya.
+
+---
+
+### Catatan Jeda — Pekan Ujian (12 – 16 Oktober 2026)
+* **Keterangan**:
+  Sesi bimbingan mingguan ditiadakan sementara karena berlangsungnya pekan ujian bagi mahasiswa. Kegiatan asistensi disepakati untuk dilanjutkan kembali pada pekan setelah ujian selesai.
+
+---
+
+### Pertemuan #6 - Rabu, 21 Oktober 2026 (Dibatalkan - Miskomunikasi Jadwal)
+* **Agenda**: Pembahasan Dokumen Kredit #6 bersama Dosen Pembimbing Utama (Tidak Terlaksana)
+* **Keterangan Kejadian**:
+  - Pada hari Rabu, 21 Oktober 2026, saya dan rekan satu topik (Nabila Azizah Andien) datang ke ruangan bimbingan sesuai perkiraan jadwal asistensi rutin dengan membawa draf dokumen Kredit Bimbingan #6.
+  - Setelah menunggu beberapa saat di ruangan, Bapak Pembimbing tidak kunjung hadir. Salah satu dari kami kemudian menanyakan konfirmasi kehadiran beliau melalui *group chat*.
+  - Dari tanggapan yang diberikan, terkonfirmasi bahwa terjadi **miskomunikasi penentuan jadwal bimbingan**: kami berkeyakinan bahwa jadwal bimbingan dilaksanakan pada hari **Rabu (21 Oktober 2026)**, sedangkan Bapak Dosen Pembimbing meyakini bahwa jadwal yang disepakati adalah hari **Selasa (20 Oktober 2026)**.
+  - Akibat perbedaan persepsi hari tersebut, sesi bimbingan bersama Pembimbing Utama pada pekan ini tidak terlaksana.
+
+---
+
+### Pertemuan #7 - Jumat, 23 Oktober 2026 (Konsultasi Ko-Pembimbing - Ibu Maharani)
+* **Anggota Kelompok Topik**: Saya & Nabila Azizah Andien (*Topik: Image Segmentation with Deep Gaussian Process*)
+* **Agenda**: Konsultasi Progres Tugas Akhir bersama Dosen Ko-Pembimbing (Ibu Maharani)
+* **Poin Pembahasan**:
+  - Menindaklanjuti tidak terlaksananya bimbingan bersama Pembimbing Utama pada hari Rabu sebelumnya, rekan satu topik (Nabila) berinisiatif menghubungi Ko-Pembimbing, Ibu Maharani, untuk mengajukan jadwal konsultasi bimbingan pada hari Jumat, 23 Oktober 2026.
+  - Melaporkan dan mendiskusikan status progres pengerjaan topik tugas akhir secara umum.
+  - *Catatan Evaluasi*: Berdasarkan tinjauan pribadi terhadap jalannya diskusi, substansi pembahasan lebih bersifat koordinasi umum progres studi dan tidak menghasilkan masukan teknis baru, koreksi spesifik, maupun poin krusial yang berdampak langsung terhadap pengerjaan materi teoretis GP/DGP yang sedang saya susun.
+* **Saran & Masukan Dosen Ko-Pembimbing**:
+  1. Tetap menjaga keberlanjutan progres dan segera mengonsolidasikan materi bimbingan teknis bersama Dosen Pembimbing Utama.
+  2. Mematangkan kesiapan bahan/kredit yang telah dikerjakan untuk dipaparkan secara komprehensif pada jadwal bimbingan berikutnya.
+* **Tindak Lanjut (To-Do)**:
+  - [x] Menyesuaikan dan mematangkan draf dokumen Kredit Bimbingan #6 yang sebelumnya telah disiapkan (memperbarui tanggal dan melengkapi materi pendukung).
+  - [ ] Melengkapi dokumen kredit dengan ringkasan komparasi algoritma optimasi (Gradient Descent vs Adam & batasan gradien menuju Metaheuristik) yang menjadi to-do dari Pertemuan #5.
+  - [ ] Mengintegrasikan konsep teoretis "Neuron" pada DGP serta contoh simulasi perambatan variansi manual (dari suplemen teknis) ke dalam dokumen kredit.
+  - [x] Menghadiri bimbingan bersama Dosen Pembimbing Utama pada jadwal yang telah disepakati: **Selasa, 27 Oktober 2026**.
+
+---
+
+### Pertemuan #8 - Selasa, 27 Oktober 2026 (Offline)
+* **Anggota Kelompok Topik**: Saya & Nabila Azizah Andien (*Topik: Image Segmentation with Deep Gaussian Process*)
+* **Kehadiran**: Bapak Pembimbing (Dosen Pembimbing Utama) & Ibu Maharani (Dosen Ko-Pembimbing)
+* **Agenda**: Presentasi Dokumen Kredit Bimbingan #6, Pembagian Spesifikasi Fokus Topik Penelitian, serta Arahan Penjabaran Matematis DNN & Penurunan Backpropagation
+* **Poin Pembahasan**:
+  - **Presentasi Dokumen Kredit Bimbingan #6**:
+    - Sesi bimbingan tatap muka dihadiri lengkap oleh Bapak Pembimbing Utama dan Ibu Ko-Pembimbing (Ibu Maharani).
+    - Pada pertemuan kali ini, sesi presentasi berfokus pada pemaparan dokumen `kredit_bimbingan_06.pdf` yang saya bawa (mencakup hasil eksperimen pemodelan deret waktu emisi $\text{CO}_2$ sektor Residential US dengan perbandingan Standard GP 1-Layer, Deep GP 2-Layer, dan 3-Layer; pembuktian MGF distribusi normal univariat dan multivariat pada model $y = f(x) + \varepsilon$ untuk bobot $w$ konstan vs $w$ berdistribusi normal; serta komparasi formulasi arsitektur DNN vs GP vs DGP).
+  - **Spesifikasi & Diferensiasi Topik Penelitian (Saya vs Nabila Azizah Andien)**:
+    - Terjadi penegasan pembagian fokus dan spesifikasi penelitian tugas akhir antara saya dan rekan satu topik (Nabila Azizah Andien) pada model observasi $y = f + \varepsilon$:
+      - **Fokus Penelitian Saya**: Khusus meneliti kasus di mana fungsi laten $f$ berbentuk linier terhadap bobot/fitur, yaitu $f = X^T W$ (atau $f = \mathbf{x}^T \mathbf{w}$ dalam *weight-space view*).
+      - **Fokus Penelitian Nabila Azizah Andien**: Meneliti kasus di mana $f$ merupakan fungsi dalam bentuk secara general (*general function-space view* / non-parametrik langsung dengan kernel).
+  - **Arahan Pendalaman Matematis DNN & Penurunan Backpropagation**:
+    - Dari presentasi yang disampaikan, Bapak Pembimbing memberikan arahan agar untuk pertemuan berikutnya saya menjabarkan bagaimana Deep Neural Network (DNN) bekerja secara matematis formal.
+    - Beliau menghendaki agar operasi matriks dari setiap *layer* dan *neuron* dijabarkan secara rinci dan terstruktur (mulai dari dimensi matriks bobot, penambahan bias, perambatan maju/*forward pass*, hingga fungsi aktivasi).
+    - Selain itu, beliau juga meminta saya untuk mencoba menuliskan dan menurunkan formulasi algoritma *backpropagation* secara matematis dalam dua kasus:
+      1. Penurunan *backpropagation* jika bobot $w$ bernilai konstan/**skalar** (deterministik).
+      2. Penurunan *backpropagation* jika bobot $w$ **berdistribusi** (probabilistik / stokastik).
+* **Saran & Masukan Dosen Pembimbing**:
+  1. **Penjabaran Matematis Operasi Matriks DNN (Layer & Neuron)**:
+     - Menguraikan operasi aljabar linier/matriks pada setiap lapisan (*layer*) dan setiap unit neuron secara formal, presisi, dan runut ke dalam dokumen kredit berikutnya.
+  2. **Penurunan Analitis Backpropagation (Kasus Bobot Skalar vs Bobot Berdistribusi)**:
+     - Menuliskan turunan berantai (*chain rule*) perambatan galat mundur (*backpropagation*) konvensional dengan parameter bobot skalar.
+     - Mengeksplorasi dan mencoba menurunkan formulasi pembaruan gradien apabila bobot $w$ diperlakukan sebagai peubah acak yang memiliki distribusi probabilitas.
+  3. **Penajaman Landasan Teori Sesuai Ruang Lingkup Spesifik**:
+     - Mengarahkan pembahasan teoretis yang disusun agar selaras dengan spesifikasi penelitian tugas akhir saya ($y = f + \varepsilon$ dengan $f = X^T W$).
+* **Tindak Lanjut (To-Do)**:
+  - [ ] Menyusun draf dokumen Kredit Bimbingan #7 yang memuat penjabaran matematis DNN secara mendalam (operasi matriks per layer dan neuron).
+  - [ ] Menuliskan dan menurunkan rumus analitis *backpropagation* untuk kasus bobot deterministik ($w$ skalar).
+  - [ ] Menuliskan penurunan dan eksplorasi *backpropagation* untuk kasus bobot yang berdistribusi probabilitas ($w$ stokastik/Gaussian).
+  - [ ] Mematangkan formulasi model spesifik $y = f + \varepsilon$ dengan $f = X^T W$ sebagai fondasi menuju pembentukan kovariansi dan Deep GP.
+
+
 

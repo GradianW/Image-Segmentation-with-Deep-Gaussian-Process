@@ -1,0 +1,326 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA & PENGATURAN TATA LETAK
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}
+\usepackage{geometry}
+\geometry{top=1.8cm, bottom=1.8cm, left=1.8cm, right=1.8cm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=teal!70!black,
+    citecolor=teal!70!black,
+    urlcolor=teal!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+
+% Reduksi spasi vertikal persamaan
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\setlength{\abovedisplayshortskip}{3pt}
+\setlength{\belowdisplayshortskip}{3pt}
+
+% Pengaturan warna
+\definecolor{dgpblue}{RGB}{26, 82, 118}
+\definecolor{dgpgreen}{RGB}{30, 132, 73}
+\definecolor{dgppurple}{RGB}{108, 52, 131}
+\definecolor{dgpred}{RGB}{148, 49, 38}
+\definecolor{boxbg}{RGB}{245, 248, 250}
+\definecolor{codebg}{RGB}{240, 242, 245}
+
+% Kotak informasi mdframed
+\newmdenv[
+    linecolor=dgpblue,
+    outerlinewidth=1.2pt,
+    roundcorner=4pt,
+    innertopmargin=7pt,
+    innerbottommargin=7pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=boxbg
+]{mathbox}
+
+\newmdenv[
+    linecolor=dgpred,
+    outerlinewidth=1.0pt,
+    roundcorner=3pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=8pt,
+    innerleftmargin=8pt,
+    backgroundcolor=red!3
+]{alertbox}
+
+\newmdenv[
+    linecolor=gray!60,
+    outerlinewidth=0.8pt,
+    roundcorner=3pt,
+    innertopmargin=5pt,
+    innerbottommargin=5pt,
+    innerrightmargin=8pt,
+    innerleftmargin=8pt,
+    backgroundcolor=codebg
+]{codebox}
+
+% =========================================================================
+% JUDUL DOKUMEN
+% =========================================================================
+\title{
+    \vspace{-1.2cm}
+    \textbf{\Large SUPLEMEN KAJIAN KRITIS: NOTEBOOK \texttt{CO2\_1.ipynb}} \\[0.3em]
+    \textbf{\large Evaluasi Algoritma: Status DSVI, ELBO, dan Optimasi Hyperparameter}
+}
+\author{
+    \textbf{Topik Tugas Akhir}: \textit{Image Segmentation with Deep Gaussian Process} \\
+    Catatan Pendalaman Teori \& Implementasi Komputasi Bimbingan 06
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\vspace{-0.5cm}
+
+\begin{abstract}
+\noindent Dokumen teknis ini disusun untuk menjawab secara analitik, terperinci, dan berbasis bukti kode sumber tiga pertanyaan mendasar terkait notebook eksperimen \texttt{CO2\_1.ipynb}: (1) Apakah DGP pada notebook tersebut menggunakan \textit{Doubly Stochastic Variational Inference} (DSVI)? (2) Apakah terdapat perhitungan dan pemanfaatan \textit{Evidence Lower Bound} (ELBO)? dan (3) Apakah dilakukan prosedur optimasi hyperparameter? Berdasarkan bedah kode dan analisis struktur probabilitas, ditemukan bahwa model yang berjalan adalah \textbf{Kaskade Gaussian Process Eksak Independen (\textit{Cascaded ExactGP})} dengan parameter tetap (\textit{hardcoded}), \textbf{BUKAN} model \textit{Deep Gaussian Process} sejati berbasis DSVI dan ELBO. Dokumen ini juga menyajikan tinjauan matematis formal bagi mahasiswa Departemen Matematika dalam mempertahankan integritas teori pada draf Tugas Akhir.
+\end{abstract}
+
+\vspace{0.1cm}
+\hrule
+\vspace{0.3cm}
+
+% =========================================================================
+% RINGKASAN EKSEKUTIF
+% =========================================================================
+\section{Ringkasan Eksekutif: Jawaban 3 Pertanyaan Kunci}
+\label{sec:ringkasan}
+
+\begin{mathbox}
+\begin{center}
+\textbf{\large TABEL KESIMPULAN HASIL AUDIT KODE \texttt{CO2\_1.ipynb}}
+\end{center}
+\vspace{0.1cm}
+\begin{tabularx}{\textwidth}{p{4.2cm} c X}
+\toprule
+\textbf{Pertanyaan} & \textbf{Status} & \textbf{Keterangan Matematis \& Implementasi} \\
+\midrule
+\textbf{1. Menggunakan DSVI?} & \textcolor{dgpred}{\textbf{TIDAK}} & Menggunakan kelas \texttt{gpytorch.models.ExactGP} berdimensi $[N \times N]$ penuh ($N = 1.289$). Tidak ada \textit{inducing points} $\mathbf{Z}$, tidak ada distribusi variasional $q(\mathbf{U})$, dan tidak ada inferensi gabungan antar-lapisan. \\
+\addlinespace[4pt]
+\textbf{2. Menggunakan ELBO?} & \textcolor{dgpred}{\textbf{TIDAK}} & Tidak terdapat objek loss \texttt{VariationalELBO} maupun \texttt{ExactMarginalLogLikelihood}. Tidak ada \textit{training loop} dan optimasi gradien. Model langsung diposisikan pada mode evaluasi prediktif (\texttt{eval()}). \\
+\addlinespace[4pt]
+\textbf{3. Melakukan Optimasi Hyperparameter?} & \textcolor{dgpred}{\textbf{TIDAK}} & Seluruh hyperparameter kernel ($\ell$, $\sigma_f^2$, $\sigma_n^2$) dimasukkan secara manual dan bernilai tetap (\textit{fixed/hardcoded values}). Tidak ada algoritma \textit{Gradient Descent}, Adam, maupun L-BFGS. \\
+\bottomrule
+\end{tabularx}
+\end{mathbox}
+
+\vspace{0.2cm}
+
+% =========================================================================
+% SEKSI 1: ANALISIS DSVI
+% =========================================================================
+\section{Kajian Pertanyaan 1: Mengapa Model BUKAN Merupakan DSVI?}
+\label{sec:analisis_dsvi}
+
+\noindent Kerangka kerja \textbf{Doubly Stochastic Variational Inference (DSVI)} yang dirumuskan oleh Salimbeni \& Deisenroth (NeurIPS 2017) merupakan paradigma standar bagi DGP modern. Untuk menguji apakah \texttt{CO2\_1.ipynb} menggunakan DSVI, mari kita bandingkan syarat formal DSVI dengan apa yang tertulis pada kode:
+
+\subsection{Karakteristik Mutlak DSVI Sejati (Salimbeni \& Deisenroth, 2017)}
+Model DGP $L$-lapisan dengan DSVI menuntut struktur hierarkis probabilitas bersama (\textit{joint distribution}):
+\begin{equation}
+    p\left(\mathbf{y}, \{\mathbf{f}^{(\ell)}, \mathbf{u}^{(\ell)}\}_{\ell=1}^L\right) = p(\mathbf{y} \mid \mathbf{f}^{(L)}) \prod_{\ell=1}^L p\left(\mathbf{f}^{(\ell)} \mid \mathbf{u}^{(\ell)}, \mathbf{f}^{(\ell-1)}\right) p(\mathbf{u}^{(\ell)})
+\end{equation}
+dengan aproksimasi distribusi variasional bebas:
+\begin{equation}
+    q\left(\{\mathbf{f}^{(\ell)}, \mathbf{u}^{(\ell)}\}_{\ell=1}^L\right) = \prod_{\ell=1}^L p\left(\mathbf{f}^{(\ell)} \mid \mathbf{u}^{(\ell)}, \mathbf{f}^{(\ell-1)}\right) q(\mathbf{u}^{(\ell)}), \quad q(\mathbf{u}^{(\ell)}) = \mathcal{N}(\mathbf{m}^{(\ell)}, \mathbf{S}^{(\ell)})
+\end{equation}
+Inti matematis DSVI mensyaratkan:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+    \item \textbf{Adanya Titik Induksi (\textit{Inducing Points}) $\mathbf{Z}^{(\ell)} \in \mathbb{R}^{M_\ell \times D_{\ell-1}}$}: Jumlah titik $M \ll N$ digunakan agar komputasi matriks tereduksi menjadi $\mathcal{O}(M^3)$.
+    \item \textbf{Trik Reparameterisasi Antar-Lapisan}: Variabel laten pada setiap titik sampel ditransmisikan menggunakan deviasi standar kondisional: $h_{n,s}^{(\ell)} = \mu_{n,s}^{(\ell)} + \epsilon_{n,s} \cdot \sqrt{v_{n,s}^{(\ell)}}$ dengan $\epsilon \sim \mathcal{N}(0, I)$.
+    \item \textbf{Inferensi Bersama (\textit{Joint Learning})}: Parameter variasional $\{\mathbf{m}^{(\ell)}, \mathbf{S}^{(\ell)}\}$ pada seluruh lapisan dioptimasi secara serentak dari ujung ke ujung (\textit{end-to-end}).
+\end{enumerate}
+
+\subsection{Fakta Implementasi pada Notebook \texttt{CO2\_1.ipynb}}
+Ketika menelaah baris kode pada Sel 8, 10, dan 12 pada notebook \texttt{CO2\_1.ipynb}, kita menemukan implementasi berikut:
+
+\begin{codebox}
+\small
+\textbf{Cuplikan Sel 8: Definisi Kelas Model}
+\begin{verbatim}
+class GPyTorchExactGP(gpytorch.models.ExactGP):
+    def __init__(self, train_x, train_y, likelihood, lengthscale=0.20):
+        super().__init__(train_x, train_y, likelihood)
+        self.mean_module = gpytorch.means.ConstantMean()
+        self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel())
+        self.covar_module.base_kernel.lengthscale = torch.tensor([[lengthscale]])
+\end{verbatim}
+\end{codebox}
+
+\begin{codebox}
+\small
+\textbf{Cuplikan Sel 10: Setup DGP 2-Layer}
+\begin{verbatim}
+# Membuat target tiruan (dummy) untuk Layer 1:
+h1_train = (train_x - train_x.mean()) / train_x.std()
+
+gp1 = GPyTorchExactGP(train_x, h1_train, lh1, lengthscale=0.30)
+gp2 = GPyTorchExactGP(h1_train, train_y, lh2, lengthscale=0.30)
+\end{verbatim}
+\end{codebox}
+
+\noindent Dari konstruksi kode di atas, terlihat kejanggalan teoretis yang sangat mendasar:
+\begin{enumerate}
+    \item \textbf{Mewarisi \texttt{ExactGP}, Bukan \texttt{ApproximateGP}}: DSVI di dalam pustaka GPyTorch selalu dibangun di atas modul variasional \texttt{gpytorch.models.ApproximateGP} bersama \texttt{VariationalStrategy}. Penggunaan \texttt{ExactGP} membuktikan bahwa model menyelesaikan invers analitik penuh $[K_{NN} + \sigma_n^2 I]^{-1}$ berukuran $1.289 \times 1.289$, bukan aproksimasi variasional berbasis inducing points.
+    \item \textbf{Target Laten Lapisan 1 Bersifat Deterministik dan Artifisial}: Variabel $h^{(1)}$ pada DGP sejati adalah variabel acak laten tak teramati yang distribusinya dicari via posterior. Namun pada \texttt{CO2\_1.ipynb}, target lapisan 1 (\texttt{h1\_train}) didefinisikan secara paksa sebagai normalisasi linier dari input waktu $x$:
+    \begin{equation}
+        h_{\mathrm{train}}^{(1)} = \frac{x_{\mathrm{train}} - \bar{x}}{s_x}
+    \end{equation}
+    Ini berarti \texttt{gp1} dan \texttt{gp2} adalah \textbf{dua model regresi independen yang terisolasi total}.
+    \item \textbf{Status Model Sesungguhnya}: Model ini di dalam literatur tepatnya disebut sebagai \textbf{\textit{Cascaded ExactGP with Monte Carlo Forward Sampling}} (Kaskade GP Eksak berantai), bukan \textit{Deep Gaussian Process} sejati.
+\end{enumerate}
+
+\vspace{0.2cm}
+
+% =========================================================================
+% SEKSI 2: ANALISIS ELBO
+% =========================================================================
+\section{Kajian Pertanyaan 2: Apakah Terdapat Penggunaan ELBO?}
+\label{sec:analisis_elbo}
+
+\noindent \textbf{Jawabannya tegas: SAMA SEKALI TIDAK ADA.}
+
+\subsection{Landasan Teori: Peran ELBO pada DGP}
+Pada DGP berbasis inferensi variasional, \textit{Evidence Lower Bound} (ELBO) berfungsi sebagai fungsi objektif tunggal yang diturunkan melalui pertidaksamaan Jensen:
+\begin{equation}
+    \log p(\mathbf{y} \mid \mathbf{x}) \ge \mathcal{L}_{\mathrm{ELBO}} = \sum_{n=1}^N \underbrace{\mathbb{E}_{q(f_n^{(L)})}\left[ \log p(y_n \mid f_n^{(L)}) \right]}_{\text{Data Likelihood Fit}} - \sum_{\ell=1}^L \underbrace{\mathrm{KL}\left( q(\mathbf{u}^{(\ell)}) \,\Vert\, p(\mathbf{u}^{(\ell)}) \right)}_{\text{Kompleksitas / Regularisasi Prior}}
+\end{equation}
+ELBO menyeimbangkan antara kecocokan model terhadap data observasi (suku pertama) dan penalti divergensi informasi terhadap prior (suku kedua).
+
+\subsection{Fakta Implementasi pada Notebook \texttt{CO2\_1.ipynb}}
+Pada notebook \texttt{CO2\_1.ipynb}:
+\begin{itemize}
+    \item Tidak ada deklarasi kelas fungsi tujuan GPyTorch seperti \texttt{gpytorch.mlls.VariationalELBO} maupun \texttt{gpytorch.mlls.ExactMarginalLogLikelihood}.
+    \item Tidak ditemukan satupun sintaks pelatihan: \texttt{loss.backward()} dan \texttt{optimizer.step()}.
+    \item Model secara langsung dipasang pada mode inferensi non-gradien:
+    \begin{codebox}
+    \small
+    \begin{verbatim}
+    model_gp.eval()
+    lh_gp.eval()
+    with torch.no_grad(), gpytorch.settings.fast_pred_var():
+        pred_gp_dense = model_gp(dense_x)
+    \end{verbatim}
+    \end{codebox}
+\end{itemize}
+Karena tidak ada proses estimasi parameter variasional, nilai ELBO tidak pernah dihitung, tidak pernah diaproksimasi, dan tidak pernah dimaksimalkan.
+
+\vspace{0.2cm}
+
+% =========================================================================
+% SEKSI 3: ANALISIS OPTIMASI HYPERPARAMETER
+% =========================================================================
+\section{Kajian Pertanyaan 3: Apakah Melakukan Optimasi Hyperparameter?}
+\label{sec:analisis_optimasi}
+
+\noindent \textbf{Jawabannya tegas: TIDAK ADA OPTIMASI HYPERPARAMETER.}
+
+\subsection{Parameter Bersifat Pilihan Manual (\textit{Fixed/Hardcoded})}
+Seluruh parameter kernel pada notebook tersebut ditentukan secara sewenang-wenang (\textit{ad-hoc manual assignment}) di awal inisialisasi:
+\begin{itemize}
+    \item \textbf{GP 1-Layer (Sel 8)}:
+    \begin{equation}
+        \ell = 0{,}20 \text{ tahun}, \quad \sigma_f^2 = 1{,}0, \quad \sigma_n^2 = 0{,}05
+    \end{equation}
+    \item \textbf{DGP 2-Layer (Sel 10)}:
+    \begin{align}
+        \text{Layer 1} &: \ell_1 = 0{,}30, \quad \sigma_{n1}^2 = 0{,}01 \nonumber \\
+        \text{Layer 2} &: \ell_2 = 0{,}30, \quad \sigma_{n2}^2 = 0{,}03
+    \end{align}
+    \item \textbf{DGP 3-Layer (Sel 12)}:
+    \begin{align}
+        \text{Layer 1} &: \ell_1 = 0{,}30, \quad \sigma_{n1}^2 = 0{,}01 \nonumber \\
+        \text{Layer 2} &: \ell_2 = 0{,}30, \quad \sigma_{n2}^2 = 0{,}01 \nonumber \\
+        \text{Layer 3} &: \ell_3 = 0{,}30, \quad \sigma_{n3}^2 = 0{,}03
+    \end{align}
+\end{itemize}
+
+\subsection{Implikasi Matematis Ketiadaan Optimasi}
+Dalam kaidah pembelajaran mesin berbasis Gaussian Process (Rasmussen \& Williams, 2006), nilai hyperparameter optimal $\hat{\boldsymbol{\theta}} = \{\hat{\ell}, \hat{\sigma}_f^2, \hat{\sigma}_n^2\}$ harus diperoleh melalui minimisasi \textit{Negative Log Marginal Likelihood} (NLML):
+\begin{equation}
+    \hat{\boldsymbol{\theta}} = \arg\min_{\boldsymbol{\theta}} \left\{ \frac{1}{2} \mathbf{y}^\top \mathbf{K}_y^{-1} \mathbf{y} + \frac{1}{2} \log \det \mathbf{K}_y + \frac{N}{2} \log 2\pi \right\}
+\end{equation}
+Pada notebook \texttt{CO2\_1.ipynb}, turunan berarah $\frac{\partial \mathcal{L}}{\partial \boldsymbol{\theta}}$ tidak pernah dihitung. Kurva prediksi yang terbentuk pada grafik semata-mata adalah hasil evaluasi rumus kondisional analitik GP standar:
+\begin{equation}
+    \mathbf{f}_* \mid \mathbf{y} \sim \mathcal{N}\left( K_{*N} (K_{NN} + \sigma_n^2 I)^{-1} \mathbf{y}, \; K_{**} - K_{*N}(K_{NN} + \sigma_n^2 I)^{-1} K_{N*} \right)
+\end{equation}
+dengan matriks kovariansi yang dihitung menggunakan angka hyperparameter tebakan manual.
+
+\vspace{0.2cm}
+
+% =========================================================================
+% SEKSI 4: TABEL KOMPARASI MENYELURUH
+% =========================================================================
+\section{Tabel Komparasi Paradigma Pemodelan}
+\label{sec:tabel_komparasi}
+
+\begin{table}[H]
+\centering
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{p{3.2cm} X X}
+\toprule
+\textbf{Aspek Teoretis} & \textbf{Implementasi \texttt{CO2\_1.ipynb}} & \textbf{DGP Modern DSVI Sejati (Salimbeni, 2017)} \\
+\midrule
+\textbf{Kelas Arsitektur} & Kaskade \texttt{ExactGP} deterministik & Hierarki Variasional \texttt{ApproximateGP} \\
+\textbf{Basis Titik Latih} & Seluruh data training ($N = 1.289$) & Inducing points bebas ($M \ll N$, misal $M = 64$) \\
+\textbf{Kompleksitas Memori} & $\mathcal{O}(N^2)$ Cholesky matriks penuh & $\mathcal{O}(M^2)$ per batch data \\
+\textbf{Target Hidden Layer} & Dipaksa bernilai pasti ($h^{(1)} = \text{standarisasi}(x)$) & Variabel acak laten sejati ($h \sim q(h)$) \\
+\textbf{Fungsi Objektif} & Tidak ada (tanpa loss function) & $\mathcal{L}_{\mathrm{ELBO}}$ (Likelihood fit $-$ penalti KL) \\
+\textbf{Status Optimasi} & Tanpa optimasi (\textit{hardcoded fixed params}) & Optimasi gradien stokastik (Adam optimizer) \\
+\textbf{Propagasi Laten} & Monte Carlo sampling saat evaluasi testing & Reparameterisasi pathwise saat training \& testing \\
+\bottomrule
+\end{tabularx}
+\caption{Perbandingan struktural antara model pada \texttt{CO2\_1.ipynb} dan DGP DSVI formal.}
+\label{tab:komparasi}
+\end{table}
+
+\vspace{0.2cm}
+
+% =========================================================================
+% SEKSI 5: PANDUAN STRATEGIS MAHASISWA MATEMATIKA
+% =========================================================================
+\section{Rekomendasi \& Panduan Tanggapan untuk Bimbingan}
+\label{sec:rekomendasi}
+
+\noindent Sebagai mahasiswa Departemen Matematika, kejujuran dan ketepatan formal notasi adalah nilai tertinggi dalam penulisan Tugas Akhir. Berikut arahan posisi yang harus Anda ambil:
+
+\begin{alertbox}
+\textbf{Bagaimana memposisikan file \texttt{CO2\_1.ipynb} di hadapan Dosen Pembimbing?}
+\begin{enumerate}\setlength{\itemsep}{2pt}
+    \item \textbf{Jangan klaim file tersebut sebagai DGP DSVI}: Jika Anda menyatakan notebook ini menggunakan DSVI atau mengoptimasi ELBO, dosen pembimbing akan segera melihat bahwa kodenya tidak memuat fungsi loss dan inducing points, sehingga kredibilitas teori Anda akan dipertanyakan.
+    \item \textbf{Posisikan sebagai Simulasi Awal Perambatan Variansi (\textit{Toy Demonstration})}: Sampaikan bahwa eksperimen pada \texttt{CO2\_1.ipynb} adalah \textit{studi simulasi perilaku perambatan variansi kaskade GP} untuk membuktikan secara visual bagaimana pita variansi $\pm 2\sigma$ melebar ketika beberapa lapisan fungsi dievaluasi secara berantai via integrasi Monte Carlo.
+    \item \textbf{Tunjukkan Arsitektur DSVI Sejati yang Sudah Anda Siapkan}: Arahkan dosen pembimbing bahwa implementasi DGP berbasis DSVI dan optimasi ELBO yang sesungguhnya telah Anda bangun secara sistematis pada folder repositori:
+    \begin{center}
+        \texttt{02\_eksperimen/01\_dgp\_gpytorch/01\_dgp\_gpytorch\_implementation.ipynb}
+    \end{center}
+    di mana pada notebook tersebut: \texttt{ApproximateGP}, \texttt{VariationalELBO}, $M$ buah titik induksi, serta pembaruan gradien menggunakan \texttt{torch.optim.Adam} telah bekerja secara utuh dan terverifikasi secara matematis.
+\end{enumerate}
+\end{alertbox}
+
+\end{document}

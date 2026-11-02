@@ -1,0 +1,172 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}              % Notasi tebal untuk vektor & matriks
+\usepackage{geometry}
+\geometry{top=1.8cm, bottom=1.8cm, left=2.0cm, right=2.0cm}
+\usepackage{graphicx}
+\usepackage{booktabs}        % Tabel profesional
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{mdframed}        % Kotak highlight untuk definisi
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+\pdfstringdefDisableCommands{%
+  \def\boldsymbol#1{#1}%
+  \def\bm#1{#1}%
+  \def\mathbf#1{#1}%
+}
+
+% Makro sitasi fleksibel
+\newcommand{\citep}[2][]{%
+  \def\tempa{#2}%
+  \def\tempb{rasmussen2006gaussian}%
+  \def\tempc{damianou2013deep}%
+  \def\tempd{salimbeni2017doubly}%
+  \def\tempe{damianou2013deep,salimbeni2017doubly}%
+  \ifx\tempa\tempb(Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)%
+  \else\ifx\tempa\tempe(Damianou \& Lawrence, 2013; Salimbeni \& Deisenroth, 2017)%
+  \else\ifx\tempa\tempc(Damianou \& Lawrence, 2013)%
+  \else\ifx\tempa\tempd(Salimbeni \& Deisenroth, 2017)%
+  \else(#2\if\relax\detokenize{#1}\relax\else, #1\fi)%
+  \fi\fi\fi\fi%
+}
+\newcommand{\citet}[2][]{Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+
+% Lingkungan Teorema & Definisi
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{claim}{Claim}[section]
+
+\theoremstyle{definition}
+\newtheorem{definisi}{Definisi}[section]
+
+\theoremstyle{remark}
+\newtheorem{catatan}{Catatan}[section]
+
+% Definisi warna kustom untuk kotak dan diagram
+\definecolor{dgpblue}{RGB}{26, 82, 118}
+\definecolor{dgpgreen}{RGB}{30, 132, 73}
+\definecolor{dgppurple}{RGB}{108, 52, 131}
+\definecolor{dgpred}{RGB}{148, 49, 38}
+
+\newmdenv[
+    linecolor=dgpblue,
+    outerlinewidth=1.2pt,
+    roundcorner=4pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=blue!2
+]{mathbox}
+
+\newmdenv[
+    linecolor=dgpred,
+    outerlinewidth=1.2pt,
+    roundcorner=4pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=red!2
+]{alertbox}
+
+% Format nama pembuktian
+\addto\captionsindonesian{\renewcommand{\proofname}{Proof}}
+\renewcommand{\proofname}{Proof}
+
+% Path direktori gambar
+\graphicspath{{figures/}}
+
+% =========================================================================
+% INFORMASI DOKUMEN
+% =========================================================================
+\begin{document}
+
+\begin{center}
+    {\Large\textbf{BIMBINGAN TUGAS AKHIR \#7}} \\[0.3em]
+    {\small Selasa, 27 Oktober 2026}
+\end{center}
+\vspace{-0.2cm}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\setlength{\abovedisplayshortskip}{4pt}
+\setlength{\belowdisplayshortskip}{4pt}
+
+% =========================================================================
+% 1. p(y|X) PADA GP DAN DGP
+% =========================================================================
+\section{\texorpdfstring{$p(\mathbf{y} \mid X)$}{p(y|X)} pada GP dan DGP}
+\label{sec:py_gp_dgp}
+
+% -------------------------------------------------------------------------
+\subsection{Distribusi Marginal \texorpdfstring{$p(\mathbf{y} \mid X)$}{p(y|X)} pada Gaussian Process}
+\label{subsec:marginal_gp}
+
+\noindent Ditinjau model $\mathbf{y} = X \mathbf{w} + \boldsymbol{\varepsilon}$ dengan $\mathbf{w} \sim \mathcal{N}\left(\mathbf{0}, \; \Sigma_p\right)$ dan $\boldsymbol{\varepsilon} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_n^2 I_N\right)$:
+\begin{equation}
+    \mathbf{y} \mid X \sim \mathcal{N}\left(\mathbf{0}, \; X \Sigma_p X^T + \sigma_n^2 I_N\right) \label{eq:marginal_linier}
+\end{equation}
+dengan kovariansi linier $K_{\text{lin}} = X \Sigma_p X^T$.
+
+\noindent Untuk memperluas model ke fungsi non-linier, vektor masukan $\mathbf{x} \in \mathbb{R}^D$ dipetakan ke dalam ruang fitur (\textit{feature space}) $\mathcal{H}$ berdimensi tinggi melalui pemetaan $\boldsymbol{\phi}(\mathbf{x}): \mathbb{R}^D \to \mathcal{H}$ \citep[hlm.~11--12]{rasmussen2006gaussian}. Matriks masukan $X \in \mathbb{R}^{N \times D}$ bertransformasi menjadi matriks fitur $\Phi = [\boldsymbol{\phi}(\mathbf{x}_1), \dots, \boldsymbol{\phi}(\mathbf{x}_N)]^T \in \mathbb{R}^{N \times |\mathcal{H}|}$, sehingga struktur kovariansi $X \Sigma_p X^T$ bertransformasi menjadi:
+\begin{equation}
+    K = \Phi \Sigma_p \Phi^T \in \mathbb{R}^{N \times N} \label{eq:kovariansi_fitur}
+\end{equation}
+Melalui penerapan \textit{kernel trick}, setiap elemen matriks kovariansi $K$ dievaluasi secara langsung melalui fungsi kernel tanpa komputasi eksplisit di ruang $\mathcal{H}$:
+\begin{equation}
+    K_{ij} = k(\mathbf{x}_i, \mathbf{x}_j) = \boldsymbol{\phi}(\mathbf{x}_i)^T \Sigma_p \boldsymbol{\phi}(\mathbf{x}_j) \label{eq:kernel_trick}
+\end{equation}
+Dengan demikian, distribusi marginal observasi pada Gaussian Process adalah:
+\begin{equation}
+    \mathbf{y} \mid X \sim \mathcal{N}\left(\mathbf{0}, \; K + \sigma_n^2 I_N\right) \label{eq:distribusi_y_gp}
+\end{equation}
+
+\noindent Fungsi kerapatan probabilitas marginal (\textit{marginal likelihood}) $p(\mathbf{y} \mid X)$ dievaluasi dalam bentuk analitik tertutup (\textit{closed-form}):
+\begin{equation}
+    p(\mathbf{y} \mid X) = \frac{1}{(2\pi)^{N/2} \left| K + \sigma_n^2 I_N \right|^{1/2}} \exp\left( -\frac{1}{2}\mathbf{y}^T \left(K + \sigma_n^2 I_N\right)^{-1} \mathbf{y} \right) \label{eq:marginal_likelihood_densitas}
+\end{equation}
+dengan fungsi \textit{log marginal likelihood}:
+\begin{equation}
+    \log p(\mathbf{y} \mid X) = -\frac{1}{2}\mathbf{y}^T \left(K + \sigma_n^2 I_N\right)^{-1} \mathbf{y} - \frac{1}{2}\log \det\left(K + \sigma_n^2 I_N\right) - \frac{N}{2}\log(2\pi) \label{eq:log_marginal_likelihood}
+\end{equation}
+
+% -------------------------------------------------------------------------
+\subsection{Bentuk \texorpdfstring{$p(\mathbf{y} \mid X)$}{p(y|X)} pada Deep GP}
+\label{subsec:intraktabilitas_dgp}
+
+\noindent Pada arsitektur \textit{Deep Gaussian Process} (DGP) dengan $L$ lapisan hierarkis, pemetaan dimodelkan secara berantai:
+\begin{align}
+    \mathbf{h}^{(0)} &= X \in \mathbb{R}^{N \times D_{\text{in}}} \label{eq:dgp_input} \\
+    \mathbf{h}^{(\ell)} &= \mathbf{f}^{(\ell)}\left(\mathbf{h}^{(\ell-1)}\right) + \boldsymbol{\varepsilon}^{(\ell)}, \quad \mathbf{f}^{(\ell)} \sim \mathcal{GP}\left(\mathbf{0}, \; k^{(\ell)}\left(\mathbf{h}^{(\ell-1)}, \mathbf{h}^{(\ell-1)'}\right)\right), \quad \ell = 1, \dots, L-1 \label{eq:dgp_hidden} \\
+    \mathbf{y} &= \mathbf{f}^{(L)}\left(\mathbf{h}^{(L-1)}\right) + \boldsymbol{\varepsilon}^{(L)}, \quad \boldsymbol{\varepsilon}^{(\ell)} \sim \mathcal{N}\left(\mathbf{0}, \; \sigma_\ell^2 I_N\right) \label{eq:dgp_output}
+\end{align}
+
+\noindent Berdasarkan pemodelan lapisan pada Persamaan~\eqref{eq:dgp_hidden} dan \eqref{eq:dgp_output}, distribusi marginal bersama $p(\mathbf{y} \mid X)$ dituliskan dengan mengintegrasikan seluruh variabel laten $\mathbf{h}^{(1)}, \dots, \mathbf{h}^{(L-1)}$:
+\begin{equation}
+    p(\mathbf{y} \mid X) = \int p\left(\mathbf{y} \mid \mathbf{h}^{(L-1)}\right) \left[ \prod_{\ell=1}^{L-1} p\left(\mathbf{h}^{(\ell)} \mid \mathbf{h}^{(\ell-1)}\right) \right] d\mathbf{h}^{(1)} \dots d\mathbf{h}^{(L-1)}
+    \label{eq:integral_dgp_marginal}
+\end{equation}
+
+\end{document}

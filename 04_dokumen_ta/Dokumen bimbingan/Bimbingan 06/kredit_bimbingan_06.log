@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  17 OCT 2026 22:57
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.9.3)  21 OCT 2026 08:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1230,71 +1230,81 @@ e-pdfdoc.def
 File: se-pdfdoc.def 2019/11/29 v1.12 stringenc: PDFDocEncoding
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10.95> on input line 88.
-LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 9
-6.
+(Font)              <10.95> on input line 87.
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 8
+7.
 
-(C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
-File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [1
+(C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `lmtt' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+<figures/us_residential_gp_dgp_comparison.pdf, id=26, 943.6003pt x 618.04651pt>
+
+File: figures/us_residential_gp_dgp_comparison.pdf Graphic file (type pdf)
+<use figures/us_residential_gp_dgp_comparison.pdf>
+Package pdftex.def Info: figures/us_residential_gp_dgp_comparison.pdf  used on 
+input line 110.
+(pdftex.def)             Requested size: 318.66948pt x 208.71843pt.
+[1
 
 {C:/Users/MyBook Z Series/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/
 Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm-ec.en
 c}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/lm
--mathit.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/d
-vips/lm/lm-rm.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts
+-rm.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips
+/lm/lm-mathit.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts
 /enc/dvips/lm/lm-mathsy.enc}{C:/Users/MyBook Z Series/AppData/Local/Programs/Mi
-KTeX/fonts/enc/dvips/lm/lm-ts1.enc}{C:/Users/MyBook Z Series/AppData/Local/Prog
-rams/MiKTeX/fonts/enc/dvips/lm/lm-mathex.enc}] [2] [3] [4]
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 316.
-LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 316.
- [5]
-(kredit_bimbingan_06.aux)
+KTeX/fonts/enc/dvips/lm/lm-mathex.enc} <./figures/us_residential_gp_dgp_compari
+son.pdf>]
+LaTeX Font Info:    Trying to load font information for TS1+lmr on input line 1
+30.
+
+(C:\Users\MyBook Z Series\AppData\Local\Programs\MiKTeX\tex/latex/lm\ts1lmr.fd
+File: ts1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+) [2{C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/lm/
+lm-ts1.enc}] [3] [4] [5] (kredit_bimbingan_06.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `kredit_bimbingan_06.out' has not changed.
-(rerunfilecheck)             Checksum: E0217E404B59E2753B778C4580D320E0;854.
+(rerunfilecheck)             Checksum: C2EAA10FA7F52FBF9AA936453EF4FEFC;489.
  ) 
 Here is how much of TeX's memory you used:
- 29288 strings out of 467871
- 545697 string characters out of 5413501
- 994150 words of memory out of 5000000
- 57416 multiletter control sequences out of 15000+600000
- 762715 words of font info for 229 fonts, out of 8000000 for 9000
+ 29080 strings out of 467871
+ 542591 string characters out of 5413501
+ 991672 words of memory out of 5000000
+ 57269 multiletter control sequences out of 15000+600000
+ 738188 words of font info for 186 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,14n,94p,1018b,2199s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,11n,94p,1018b,2138s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm
 /lmbx10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1
 /public/lm/lmbx12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/f
 onts/type1/public/lm/lmbx8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs
-/MiKTeX/fonts/type1/public/lm/lmbx9.pfb><C:/Users/MyBook Z Series/AppData/Local
-/Programs/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/MyBook Z Series/App
-Data/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/MyBook Z 
-Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users
-/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi6.pfb>
+/MiKTeX/fonts/type1/public/lm/lmex10.pfb><C:/Users/MyBook Z Series/AppData/Loca
+l/Programs/MiKTeX/fonts/type1/public/lm/lmmi10.pfb><C:/Users/MyBook Z Series/Ap
+pData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi12.pfb><C:/Users/MyBook Z
+ Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi6.pfb><C:/Users
+/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmmi8.pfb>
 <C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/l
-mmi8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/pu
-blic/lm/lmmi9.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts
-/type1/public/lm/lmmib10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/M
-iKTeX/fonts/type1/public/lm/lmr10.pfb><C:/Users/MyBook Z Series/AppData/Local/P
-rograms/MiKTeX/fonts/type1/public/lm/lmr12.pfb><C:/Users/MyBook Z Series/AppDat
-a/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/MyBook Z Serie
-s/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/MyBook
- Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmr9.pfb><C:/User
-s/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pf
-b><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm
-/lmsy10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1
-/public/lm/lmsy6.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fo
-nts/type1/public/lm/lmsy8.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/
-MiKTeX/fonts/type1/public/lm/lmsy9.pfb><C:/Users/MyBook Z Series/AppData/Local/
-Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on kredit_bimbingan_06.pdf (5 pages, 366246 bytes).
+mmib10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/
+public/lm/lmr10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fon
+ts/type1/public/lm/lmr12.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/M
+iKTeX/fonts/type1/public/lm/lmr6.pfb><C:/Users/MyBook Z Series/AppData/Local/Pr
+ograms/MiKTeX/fonts/type1/public/lm/lmr8.pfb><C:/Users/MyBook Z Series/AppData/
+Local/Programs/MiKTeX/fonts/type1/public/lm/lmri10.pfb><C:/Users/MyBook Z Serie
+s/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy10.pfb><C:/Users/MyBo
+ok Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy6.pfb><C:/U
+sers/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmsy8.
+pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/type1/public/
+lm/lmtt10.pfb><C:/Users/MyBook Z Series/AppData/Local/Programs/MiKTeX/fonts/typ
+e1/public/amsfonts/symbols/msbm10.pfb>
+Output written on kredit_bimbingan_06.pdf (5 pages, 467862 bytes).
 PDF statistics:
- 247 PDF objects out of 1000 (max. 8388607)
- 51 named destinations out of 1000 (max. 500000)
- 73797 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 325 PDF objects out of 1000 (max. 8388607)
+ 50 named destinations out of 1000 (max. 500000)
+ 62010 words of extra memory for PDF output out of 74296 (max. 10000000)
 

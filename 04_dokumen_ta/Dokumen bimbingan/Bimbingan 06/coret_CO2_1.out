@@ -1,0 +1,12 @@
+\BOOKMARK [1][-]{section.1}{Ringkasan\040Eksekutif:\040Jawaban\0403\040Pertanyaan\040Kunci}{}% 1
+\BOOKMARK [1][-]{section.2}{Kajian\040Pertanyaan\0401:\040Mengapa\040Model\040BUKAN\040Merupakan\040DSVI?}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Karakteristik\040Mutlak\040DSVI\040Sejati\040\(Salimbeni\040&\040Deisenroth,\0402017\)}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Fakta\040Implementasi\040pada\040Notebook\040CO2_1.ipynb}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Kajian\040Pertanyaan\0402:\040Apakah\040Terdapat\040Penggunaan\040ELBO?}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Landasan\040Teori:\040Peran\040ELBO\040pada\040DGP}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Fakta\040Implementasi\040pada\040Notebook\040CO2_1.ipynb}{section.3}% 7
+\BOOKMARK [1][-]{section.4}{Kajian\040Pertanyaan\0403:\040Apakah\040Melakukan\040Optimasi\040Hyperparameter?}{}% 8
+\BOOKMARK [2][-]{subsection.4.1}{Parameter\040Bersifat\040Pilihan\040Manual\040\(Fixed/Hardcoded\)}{section.4}% 9
+\BOOKMARK [2][-]{subsection.4.2}{Implikasi\040Matematis\040Ketiadaan\040Optimasi}{section.4}% 10
+\BOOKMARK [1][-]{section.5}{Tabel\040Komparasi\040Paradigma\040Pemodelan}{}% 11
+\BOOKMARK [1][-]{section.6}{Rekomendasi\040&\040Panduan\040Tanggapan\040untuk\040Bimbingan}{}% 12
