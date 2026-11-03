@@ -30,26 +30,24 @@
 \newlabel{eq:output_pred_batch}{{13}{2}{Fungsi Objektif}{equation.13}{}}
 \newlabel{eq:output_pred_single}{{14}{2}{Fungsi Objektif}{equation.14}{}}
 \newlabel{eq:loss_mse}{{15}{2}{Fungsi Objektif}{equation.15}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {2}Penurunan Gradien Parameter}{3}{section.2}\protected@file@percent }
-\newlabel{sec:penurunan_gradien}{{2}{3}{Penurunan Gradien Parameter}{section.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Motivasi Optimasi (Gradient Descent)}{3}{subsection.2.1}\protected@file@percent }
-\newlabel{subsec:motivasi_gd}{{2.1}{3}{Motivasi Optimasi (Gradient Descent)}{subsection.2.1}{}}
-\newlabel{eq:update_w}{{16}{3}{Motivasi Optimasi (Gradient Descent)}{equation.16}{}}
-\newlabel{eq:update_b}{{17}{3}{Motivasi Optimasi (Gradient Descent)}{equation.17}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Backward Propagation}{3}{section.2}\protected@file@percent }
+\newlabel{sec:penurunan_gradien}{{2}{3}{Backward Propagation}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Motivasi}{3}{subsection.2.1}\protected@file@percent }
+\newlabel{subsec:motivasi_gd}{{2.1}{3}{Motivasi}{subsection.2.1}{}}
+\newlabel{eq:update_w}{{16}{3}{Motivasi}{equation.16}{}}
+\newlabel{eq:update_b}{{17}{3}{Motivasi}{equation.17}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Turunan Parameter pada Layer Output ($\ell = L$)}{3}{subsection.2.2}\protected@file@percent }
 \newlabel{subsec:gradien_layer_L}{{2.2}{3}{Turunan Parameter pada Layer Output (\texorpdfstring {$\ell = L$}{l = L})}{subsection.2.2}{}}
 \newlabel{eq:pred_output_L}{{18}{3}{Turunan Parameter pada Layer Output (\texorpdfstring {$\ell = L$}{l = L})}{equation.18}{}}
-\newlabel{eq:matrix_grad_Yhat}{{19}{3}{Turunan Parameter pada Layer Output (\texorpdfstring {$\ell = L$}{l = L})}{equation.19}{}}
-\newlabel{eq:matrix_frob_deriv}{{20}{3}{Turunan Parameter pada Layer Output (\texorpdfstring {$\ell = L$}{l = L})}{equation.20}{}}
-\newlabel{eq:dL_dYhat}{{21}{3}{Turunan Parameter pada Layer Output (\texorpdfstring {$\ell = L$}{l = L})}{equation.21}{}}
-\newlabel{eq:batch_grad_W_L}{{22}{3}{Turunan Parameter pada Layer Output (\texorpdfstring {$\ell = L$}{l = L})}{equation.22}{}}
-\newlabel{eq:batch_grad_b_L}{{23}{3}{Turunan Parameter pada Layer Output (\texorpdfstring {$\ell = L$}{l = L})}{equation.23}{}}
+\newlabel{eq:claim_dL_dYhat}{{19}{3}{}{equation.19}{}}
+\newlabel{eq:claim_grad_W_L}{{22}{3}{}{equation.22}{}}
+\newlabel{eq:claim_grad_b_L}{{24}{3}{}{equation.24}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3}Turunan Parameter pada Layer $\ell = L-1, \dots  , 2, 1$}{4}{subsection.2.3}\protected@file@percent }
 \newlabel{subsec:gradien_layer_hidden}{{2.3}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{subsection.2.3}{}}
-\newlabel{eq:X_hidden_matrix}{{24}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.24}{}}
-\newlabel{eq:dL_dXLprev}{{25}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.25}{}}
-\newlabel{eq:batch_dL_hidden}{{34}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.34}{}}
-\newlabel{eq:batch_grad_w_hidden}{{35}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.35}{}}
-\newlabel{eq:batch_grad_b_hidden}{{36}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.36}{}}
-\newlabel{eq:batch_dL_dXprev}{{37}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.37}{}}
+\newlabel{eq:X_hidden_matrix}{{26}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.26}{}}
+\newlabel{eq:dL_dXLprev}{{27}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.27}{}}
+\newlabel{eq:batch_dL_hidden}{{36}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.36}{}}
+\newlabel{eq:batch_grad_w_hidden}{{37}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.37}{}}
+\newlabel{eq:batch_grad_b_hidden}{{38}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.38}{}}
+\newlabel{eq:batch_dL_dXprev}{{39}{4}{Turunan Parameter pada Layer \texorpdfstring {$\ell = L-1, \dots , 2, 1$}{l = L-1, ..., 2, 1}}{equation.39}{}}
 \gdef \@abspage@last{4}

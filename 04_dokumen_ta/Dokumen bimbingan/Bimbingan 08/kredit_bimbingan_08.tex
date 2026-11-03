@@ -110,7 +110,7 @@
 \section{Deep Neural Network}
 \label{sec:dnn}
 
-\noindent Diberikan dataset $\mathcal{D} = \{\mathbf{x}_i\}_{i=1}^N$ dengan $N$ data sampel. Setiap \textbf{data ke-$i$} dinyatakan sebagai vektor baris $\mathbf{x}_i \in \mathbb{R}^{1 \times D}$ dengan $D$ fitur:
+\noindent Diberikan dataset $\mathcal{D} = \{\mathbf{x}_i\}_{i=1}^N$ dengan $N$ data sampel. Setiap data ke-$i$ dinyatakan sebagai vektor baris $\mathbf{x}_i \in \mathbb{R}^{1 \times D}$ dengan $D$ fitur:
 \begin{equation}
     \mathbf{x}_i = \begin{bmatrix} x_{i, 1} & x_{i, 2} & \dots & x_{i, D} \end{bmatrix} \in \mathbb{R}^{1 \times D} \label{eq:vektor_fitur_data_i}
 \end{equation}
@@ -124,7 +124,7 @@ di mana $\mathbf{x}^{(\ell-1)}_i \in \mathbb{R}^{1 \times n_{\ell-1}}$ ditransfo
 \subsection{Tinjau Satu Neuron}
 \label{subsec:neuron_skalar}
 
-Untuk neuron ke-$j$ pada layer $\ell$ ($j = 1, \dots, n_\ell$), komputasi terhadap \textbf{data ke-$i$} dirumuskan sebagai:
+Untuk neuron ke-$j$ pada layer $\ell$ ($j = 1, \dots, n_\ell$), komputasi terhadap data ke-$i$ dirumuskan sebagai:
 \begin{align}
     z^{(\ell)}_{i, j} &= \sum_{k=1}^{n_{\ell-1}} x^{(\ell-1)}_{i, k} w^{(\ell)}_{kj} + b^{(\ell)}_j \label{eq:scalar_z} \\
     x^{(\ell)}_{i, j} &= \sigma^{(\ell)}\left( z^{(\ell)}_{i, j} \right) \label{eq:scalar_x}
@@ -155,7 +155,7 @@ Didefinisikan vektor baris data fitur ke-$i$, matriks bobot $W^{(\ell)}$, dan ve
     \mathbf{b}^{(\ell)} &= \begin{bmatrix} b^{(\ell)}_1 & \dots & b^{(\ell)}_{n_\ell} \end{bmatrix} \in \mathbb{R}^{1 \times n_\ell}, \quad
     \mathbf{z}^{(\ell)}_i = \begin{bmatrix} z^{(\ell)}_{i, 1} & \dots & z^{(\ell)}_{i, n_\ell} \end{bmatrix} \in \mathbb{R}^{1 \times n_\ell} \label{eq:vectors_bz}
 \end{align}
-Transformasi vektor baris pada layer $\ell$ untuk \textbf{data ke-$i$}:
+Transformasi vektor baris pada layer $\ell$ untuk data ke-$i$:
 \begin{align}
     \underbrace{\mathbf{z}^{(\ell)}_i}_{(1 \times n_\ell)} &= \underbrace{\mathbf{x}^{(\ell-1)}_i}_{(1 \times n_{\ell-1})} \times \underbrace{W^{(\ell)}}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} \label{eq:vector_z} \\
     \underbrace{\mathbf{x}^{(\ell)}_i}_{(1 \times n_\ell)} &= \sigma^{(\ell)}\left( \mathbf{z}^{(\ell)}_i \right) \label{eq:vector_x}
@@ -165,7 +165,7 @@ Transformasi vektor baris pada layer $\ell$ untuk \textbf{data ke-$i$}:
 \subsection{Tinjau \texorpdfstring{$N$}{N} Data}
 \label{subsec:matriks_batch}
 
-Diberikan matriks data input $X^{(\ell-1)} \in \mathbb{R}^{N \times n_{\ell-1}}$ di mana setiap baris ke-$i$ memuat vektor baris fitur dari \textbf{data ke-$i$}, $\mathbf{x}^{(\ell-1)}_i$:
+Diberikan matriks data input $X^{(\ell-1)} \in \mathbb{R}^{N \times n_{\ell-1}}$ di mana setiap baris ke-$i$ memuat vektor baris fitur dari data ke-$i$, $\mathbf{x}^{(\ell-1)}_i$:
 \begin{equation}
     X^{(\ell-1)} = \begin{bmatrix}
         \mathbf{x}^{(\ell-1)}_1 \\
@@ -185,7 +185,7 @@ Diberikan matriks data input $X^{(\ell-1)} \in \mathbb{R}^{N \times n_{\ell-1}}$
 \end{equation}
 dengan $X^{(0)} = X \in \mathbb{R}^{N \times D}$ sebagai matriks data awal ($N$ baris data, masing-masing memiliki $D$ kolom fitur).
 
-Operasi matriks pada tingkat batch:
+Operasi tingkat \textit{batch}:
 \begin{align}
     \underbrace{Z^{(\ell)}}_{(N \times n_\ell)} &= \underbrace{X^{(\ell-1)}}_{(N \times n_{\ell-1})} \times \underbrace{W^{(\ell)}}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{1}_N}_{(N \times 1)} \times \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} \label{eq:batch_row_z} \\
     \underbrace{X^{(\ell)}}_{(N \times n_\ell)} &= \sigma^{(\ell)}\left( Z^{(\ell)} \right) \label{eq:batch_row_x}
@@ -214,11 +214,11 @@ di mana $\|\cdot\|_F$ menyatakan norma Frobenius matriks.
 % 2. PENURUNAN GRADIEN PARAMETER
 % =========================================================================
 \clearpage
-\section{Penurunan Gradien Parameter}
+\section{Backward Propagation}
 \label{sec:penurunan_gradien}
 \enlargethispage{2\baselineskip}
 
-\subsection{Motivasi Optimasi (Gradient Descent)}
+\subsection{Motivasi}
 \label{subsec:motivasi_gd}
 
 Pembaruan parameter matriks bobot $W^{(\ell)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell}$ dan vektor bias $\mathbf{b}^{(\ell)} \in \mathbb{R}^{1 \times n_\ell}$ pada algoritma \textit{Gradient Descent} dengan \textit{learning rate} $\eta > 0$ dirumuskan sebagai:
@@ -235,7 +235,15 @@ Karena pada layer output tidak diterapkan fungsi aktivasi, prediksi dinyatakan s
 \begin{equation}
     \hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \in \mathbb{R}^{N \times n_L} \label{eq:pred_output_L}
 \end{equation}
-Turunan fungsi skalar $\mathcal{L}$ terhadap matriks $\hat{Y} \in \mathbb{R}^{N \times n_L}$ didefinisikan sebagai:
+
+\begin{claim}
+Turunan fungsi objektif $\mathcal{L}$ terhadap matriks prediksi $\hat{Y} \in \mathbb{R}^{N \times n_L}$ adalah:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} (\hat{Y} - Y) \in \mathbb{R}^{N \times n_L} \label{eq:claim_dL_dYhat}
+\end{equation}
+\end{claim}
+\begin{proof}
+Turunan fungsi skalar $\mathcal{L}$ terhadap matriks $\hat{Y}$ didefinisikan sebagai:
 \begin{equation}
     \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \begin{bmatrix}
         \frac{\partial \mathcal{L}}{\partial \hat{\mathbf{y}}_1} \\
@@ -251,24 +259,40 @@ Turunan fungsi skalar $\mathcal{L}$ terhadap matriks $\hat{Y} \in \mathbb{R}^{N 
         \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, n_L}} \\
         \vdots & \vdots & \ddots & \vdots \\
         \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, n_L}}
-    \end{bmatrix} \in \mathbb{R}^{N \times n_L} \label{eq:matrix_grad_Yhat}
+    \end{bmatrix} \in \mathbb{R}^{N \times n_L}
 \end{equation}
 Dengan \textit{chain rule}, turunan terhadap setiap elemen $\hat{y}_{i, j}$:
 \begin{equation}
-    \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, j}} = \frac{\partial \mathcal{L}}{\partial (y_{i, j} - \hat{y}_{i, j})} \frac{\partial (y_{i, j} - \hat{y}_{i, j})}{\partial \hat{y}_{i, j}} = \frac{1}{N} (y_{i, j} - \hat{y}_{i, j}) \cdot (-1) = \frac{1}{N} (\hat{y}_{i, j} - y_{i, j}) \label{eq:matrix_frob_deriv}
+    \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, j}} = \frac{\partial \mathcal{L}}{\partial (y_{i, j} - \hat{y}_{i, j})} \frac{\partial (y_{i, j} - \hat{y}_{i, j})}{\partial \hat{y}_{i, j}} = \frac{1}{N} (y_{i, j} - \hat{y}_{i, j}) \cdot (-1) = \frac{1}{N} (\hat{y}_{i, j} - y_{i, j})
 \end{equation}
-Sehingga,
-\begin{align}
-    \frac{\partial \mathcal{L}}{\partial \hat{Y}} &= \frac{\partial \left( \frac{1}{2N} \|Y - \hat{Y}\|_F^2 \right)}{\partial (Y - \hat{Y})} \frac{\partial (Y - \hat{Y})}{\partial \hat{Y}} \nonumber \\
-    &= \frac{1}{N} (Y - \hat{Y}) \cdot (-1) = \frac{1}{N} (\hat{Y} - Y) \in \mathbb{R}^{N \times n_L} \label{eq:dL_dYhat}
-\end{align}
-Melalui aturan rantai dengan menjabarkan $\hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)}$, gradien terhadap matriks bobot $W^{(L)}$ dan vektor bias $\mathbf{b}^{(L)}$ diperoleh sebagai:
-\begin{align}
-    \underbrace{\frac{\partial \mathcal{L}}{\partial W^{(L)}}}_{(n_{L-1} \times n_L)} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} \frac{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)}{\partial W^{(L)}} \nonumber \\
-    &= \left( X^{(L-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} = \frac{1}{N} \underbrace{\left( X^{(L-1)} \right)^T}_{(n_{L-1} \times N)} \times \underbrace{\left( \hat{Y} - Y \right)}_{(N \times n_L)} \label{eq:batch_grad_W_L} \\[0.3em]
-    \underbrace{\frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L)}}}_{(1 \times n_L)} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} \frac{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)}{\partial \mathbf{b}^{(L)}} \nonumber \\
-    &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \right)} = \frac{1}{N} \underbrace{\mathbf{1}_N^T}_{(1 \times N)} \times \underbrace{\left( \hat{Y} - Y \right)}_{(N \times n_L)} \label{eq:batch_grad_b_L}
-\end{align}
+Sehingga diperoleh $\frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} (\hat{Y} - Y)$.
+\end{proof}
+
+\begin{claim}
+Gradien fungsi objektif terhadap matriks bobot $W^{(L)}$ adalah:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial W^{(L)}} = \frac{1}{N} \left( X^{(L-1)} \right)^T \left( \hat{Y} - Y \right) \in \mathbb{R}^{n_{L-1} \times n_L} \label{eq:claim_grad_W_L}
+\end{equation}
+\end{claim}
+\begin{proof}
+Dengan \textit{chain rule} terhadap $\hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)}$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial W^{(L)}} = \frac{\partial \mathcal{L}}{\partial \hat{Y}} \frac{\partial \hat{Y}}{\partial W^{(L)}} = \left( X^{(L-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} \left( X^{(L-1)} \right)^T \left( \hat{Y} - Y \right) \qedhere
+\end{equation}
+\end{proof}
+
+\begin{claim}
+Gradien fungsi objektif terhadap vektor bias $\mathbf{b}^{(L)}$ adalah:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L)}} = \frac{1}{N} \mathbf{1}_N^T \left( \hat{Y} - Y \right) \in \mathbb{R}^{1 \times n_L} \label{eq:claim_grad_b_L}
+\end{equation}
+\end{claim}
+\begin{proof}
+Dengan \textit{chain rule} terhadap $\hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)}$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L)}} = \frac{\partial \mathcal{L}}{\partial \hat{Y}} \frac{\partial \hat{Y}}{\partial \mathbf{b}^{(L)}} = \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} \mathbf{1}_N^T \left( \hat{Y} - Y \right) \qedhere
+\end{equation}
+\end{proof}
 
 \clearpage
 \subsection{Turunan Parameter pada Layer \texorpdfstring{$\ell = L-1, \dots, 2, 1$}{l = L-1, ..., 2, 1}}
