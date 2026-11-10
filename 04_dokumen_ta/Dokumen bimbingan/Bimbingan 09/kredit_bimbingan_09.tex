@@ -1,0 +1,432 @@
+\documentclass[11pt,a4paper]{article}
+
+% =========================================================================
+% PAKET-PAKET UTAMA
+% =========================================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}              % Notasi tebal untuk vektor & matriks
+\usepackage{geometry}
+\geometry{top=2.0cm, bottom=2.0cm, left=2.0cm, right=2.0cm}
+\usepackage{graphicx}
+\usepackage{booktabs}        % Tabel profesional
+\usepackage{tabularx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{mdframed}        % Kotak highlight untuk definisi
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue!70!black,
+    urlcolor=blue!70!black,
+    pdfencoding=auto,
+    psdextra
+}
+\pdfstringdefDisableCommands{%
+  \def\boldsymbol#1{#1}%
+  \def\bm#1{#1}%
+  \def\mathbf#1{#1}%
+}
+
+% Makro sitasi fleksibel
+\newcommand{\citep}[2][]{(Rasmussen \& Williams, 2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+\newcommand{\citet}[2][]{Rasmussen \& Williams (2006\if\relax\detokenize{#1}\relax\else, #1\fi)}
+
+% Lingkungan Teorema & Definisi
+\theoremstyle{plain}
+\newtheorem{teorema}{Teorema}[section]
+\newtheorem{claim}{Claim}[section]
+
+\theoremstyle{definition}
+\newtheorem{definisi}{Definisi}[section]
+
+\theoremstyle{remark}
+\newtheorem{catatan}{Catatan}[section]
+
+% Definisi warna kustom untuk kotak
+\definecolor{dgpblue}{RGB}{26, 82, 118}
+\definecolor{dgpred}{RGB}{148, 49, 38}
+
+\newmdenv[
+    linecolor=dgpblue,
+    outerlinewidth=1.2pt,
+    roundcorner=4pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=blue!2,
+    nobreak=true
+]{mathbox}
+
+\newmdenv[
+    linecolor=dgpred,
+    outerlinewidth=1.2pt,
+    roundcorner=4pt,
+    innertopmargin=6pt,
+    innerbottommargin=6pt,
+    innerrightmargin=10pt,
+    innerleftmargin=10pt,
+    backgroundcolor=red!2,
+    nobreak=true
+]{alertbox}
+
+% Format nama pembuktian
+\addto\captionsindonesian{\renewcommand{\proofname}{Proof}}
+\renewcommand{\proofname}{Proof}
+
+% Path direktori gambar
+\graphicspath{{figures/}}
+
+% =========================================================================
+% INFORMASI DOKUMEN
+% =========================================================================
+\title{
+    \vspace{-1.6cm}
+    \textbf{\Large BIMBINGAN TUGAS AKHIR \#9} \\[0.2em]
+}
+\author{}
+\date{\vspace{-0.6cm} Selasa, 10 November 2026}
+
+\begin{document}
+
+\maketitle
+\vspace{-1.1cm}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\setlength{\abovedisplayshortskip}{1pt}
+\setlength{\belowdisplayshortskip}{1pt}
+
+% =========================================================================
+% 1. REPARAMETERIZATION TRICK DAN BACKPROPAGATION PADA BOBOT BERDISTRIBUSI
+% =========================================================================
+\section{Reparameterization Trick dan Backpropagation pada Bobot Berdistribusi}
+\label{sec:reparam}
+
+% -------------------------------------------------------------------------
+\subsection{Reparameterization Trick pada Bobot Berdistribusi}
+\label{subsec:ide_reparam}
+
+\subsubsection{Tinjau Satu Bobot}
+\label{subsubsec:tinjau_satu_bobot}
+
+\noindent Untuk setiap bobot $w^{(\ell)}_{k, j}$ pada layer $\ell \in \{1, \dots, L\}$ ($k = 1, \dots, n_{\ell-1}$; $j = 1, \dots, n_\ell$) yang berdistribusi Normal dengan rata-rata $\mu^{(\ell)}_{k, j} \in \mathbb{R}$ dan variansi $\left(\sigma^{(\ell)}_{k, j}\right)^2 > 0$:
+\begin{equation}
+    w^{(\ell)}_{k, j} \sim \mathcal{N}\!\left( \mu^{(\ell)}_{k, j}, \left(\sigma^{(\ell)}_{k, j}\right)^2 \right) \label{eq:w_gaussian}
+\end{equation}
+Standarisasi (\textit{reparameterization}) terhadap peubah acak Normal Baku $z^{(\ell)}_{k, j} \sim \mathcal{N}(0, 1)$ dirumuskan sebagai:
+\begin{equation}
+    z^{(\ell)}_{k, j} = \frac{w^{(\ell)}_{k, j} - \mu^{(\ell)}_{k, j}}{\sigma^{(\ell)}_{k, j}} \sim \mathcal{N}(0, 1) \quad \Longleftrightarrow \quad w^{(\ell)}_{k, j} = \mu^{(\ell)}_{k, j} + \sigma^{(\ell)}_{k, j} z^{(\ell)}_{k, j} \label{eq:reparam_scalar}
+\end{equation}
+dengan turunan parsial lokal terhadap parameter distribusi $\mu^{(\ell)}_{k, j}$ dan $\sigma^{(\ell)}_{k, j}$:
+\begin{equation}
+    \frac{\partial w^{(\ell)}_{k, j}}{\partial \mu^{(\ell)}_{k, j}} = 1, \qquad \frac{\partial w^{(\ell)}_{k, j}}{\partial \sigma^{(\ell)}_{k, j}} = z^{(\ell)}_{k, j} \label{eq:local_deriv_w}
+\end{equation}
+
+% -------------------------------------------------------------------------
+\subsubsection{Tinjau Satu Neuron}
+\label{subsubsec:tinjau_satu_neuron}
+
+\noindent Untuk neuron ke-$j$ pada layer $\ell$, vektor bobot $\mathbf{w}^{(\ell)}_j \in \mathbb{R}^{n_{\ell-1} \times 1}$ berdistribusi Normal Multivariat dengan vektor rata-rata $\boldsymbol{\mu}^{(\ell)}_j \in \mathbb{R}^{n_{\ell-1} \times 1}$ dan matriks kovariansi diagonal $\Sigma^{(\ell)}_j \in \mathbb{R}^{n_{\ell-1} \times n_{\ell-1}}$:
+\begin{equation}
+    \underbrace{\begin{bmatrix} w^{(\ell)}_{1, j} \\ w^{(\ell)}_{2, j} \\ \vdots \\ w^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}}_{\mathbf{w}^{(\ell)}_j} \sim \mathcal{N}\!\left(
+    \underbrace{\begin{bmatrix} \mu^{(\ell)}_{1, j} \\ \mu^{(\ell)}_{2, j} \\ \vdots \\ \mu^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}}_{\boldsymbol{\mu}^{(\ell)}_j}, \;
+    \underbrace{\begin{bmatrix}
+        \left(\sigma^{(\ell)}_{1, j}\right)^2 & 0 & \dots & 0 \\
+        0 & \left(\sigma^{(\ell)}_{2, j}\right)^2 & \dots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \dots & \left(\sigma^{(\ell)}_{n_{\ell-1}, j}\right)^2
+    \end{bmatrix}}_{\Sigma^{(\ell)}_j}
+    \right) \label{eq:w_mvn}
+\end{equation}
+Standarisasi terhadap vektor Normal Multivariat Baku $\mathbf{z}^{(\ell)}_j = \begin{bmatrix} z^{(\ell)}_{1, j} & z^{(\ell)}_{2, j} & \dots & z^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}^T \sim \mathcal{N}\!\left(\mathbf{0}, I_{n_{\ell-1}}\right)$:
+\begin{equation}
+    \mathbf{z}^{(\ell)}_j = \left(\Sigma^{(\ell)}_j\right)^{-1/2} \left( \mathbf{w}^{(\ell)}_j - \boldsymbol{\mu}^{(\ell)}_j \right) \sim \mathcal{N}\!\left(\mathbf{0}, I_{n_{\ell-1}}\right) \quad \Longleftrightarrow \quad \mathbf{w}^{(\ell)}_j = \boldsymbol{\mu}^{(\ell)}_j + \left(\Sigma^{(\ell)}_j\right)^{1/2} \mathbf{z}^{(\ell)}_j \label{eq:mvn_reparam_vec}
+\end{equation}
+Karena $\left(\Sigma^{(\ell)}_j\right)^{1/2}$ merupakan matriks diagonal, perkalian matriks $\left(\Sigma^{(\ell)}_j\right)^{1/2} \mathbf{z}^{(\ell)}_j$ ekuivalen dengan perkalian elemen-demi-elemen ($\odot$):
+\begin{equation}
+    \underbrace{\begin{bmatrix} w^{(\ell)}_{1, j} \\ w^{(\ell)}_{2, j} \\ \vdots \\ w^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}}_{\mathbf{w}^{(\ell)}_j}
+    =
+    \underbrace{\begin{bmatrix} \mu^{(\ell)}_{1, j} \\ \mu^{(\ell)}_{2, j} \\ \vdots \\ \mu^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}}_{\boldsymbol{\mu}^{(\ell)}_j}
+    +
+    \underbrace{\begin{bmatrix}
+        \sigma^{(\ell)}_{1, j} & 0 & \dots & 0 \\
+        0 & \sigma^{(\ell)}_{2, j} & \dots & 0 \\
+        \vdots & \vdots & \ddots & \vdots \\
+        0 & 0 & \dots & \sigma^{(\ell)}_{n_{\ell-1}, j}
+    \end{bmatrix}}_{\left(\Sigma^{(\ell)}_j\right)^{1/2}}
+    \underbrace{\begin{bmatrix} z^{(\ell)}_{1, j} \\ z^{(\ell)}_{2, j} \\ \vdots \\ z^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}}_{\mathbf{z}^{(\ell)}_j}
+    =
+    \begin{bmatrix} \mu^{(\ell)}_{1, j} \\ \mu^{(\ell)}_{2, j} \\ \vdots \\ \mu^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}
+    +
+    \begin{bmatrix} \sigma^{(\ell)}_{1, j} \\ \sigma^{(\ell)}_{2, j} \\ \vdots \\ \sigma^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix}
+    \odot
+    \begin{bmatrix} z^{(\ell)}_{1, j} \\ z^{(\ell)}_{2, j} \\ \vdots \\ z^{(\ell)}_{n_{\ell-1}, j} \end{bmatrix} \label{eq:diag_to_hadamard}
+\end{equation}
+
+% -------------------------------------------------------------------------
+\subsubsection{Tinjau Satu Layer}
+\label{subsubsec:tinjau_satu_layer}
+
+\noindent Dengan menggabungkan seluruh kolom neuron $j = 1, \dots, n_\ell$ ke dalam matriks bobot $W^{(\ell)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell}$ pada layer $\ell \in \{1, \dots, L\}$:
+\begin{equation}
+    \underbrace{\begin{bmatrix}
+        w^{(\ell)}_{1, 1} & \dots & w^{(\ell)}_{1, n_\ell} \\
+        \vdots & \ddots & \vdots \\
+        w^{(\ell)}_{n_{\ell-1}, 1} & \dots & w^{(\ell)}_{n_{\ell-1}, n_\ell}
+    \end{bmatrix}}_{W^{(\ell)}}
+    =
+    \underbrace{\begin{bmatrix}
+        \mu^{(\ell)}_{1, 1} & \dots & \mu^{(\ell)}_{1, n_\ell} \\
+        \vdots & \ddots & \vdots \\
+        \mu^{(\ell)}_{n_{\ell-1}, 1} & \dots & \mu^{(\ell)}_{n_{\ell-1}, n_\ell}
+    \end{bmatrix}}_{M^{(\ell)}}
+    +
+    \underbrace{\begin{bmatrix}
+        \sigma^{(\ell)}_{1, 1} & \dots & \sigma^{(\ell)}_{1, n_\ell} \\
+        \vdots & \ddots & \vdots \\
+        \sigma^{(\ell)}_{n_{\ell-1}, 1} & \dots & \sigma^{(\ell)}_{n_{\ell-1}, n_\ell}
+    \end{bmatrix}}_{\Sigma^{(\ell)}}
+    \odot
+    \underbrace{\begin{bmatrix}
+        z^{(\ell)}_{1, 1} & \dots & z^{(\ell)}_{1, n_\ell} \\
+        \vdots & \ddots & \vdots \\
+        z^{(\ell)}_{n_{\ell-1}, 1} & \dots & z^{(\ell)}_{n_{\ell-1}, n_\ell}
+    \end{bmatrix}}_{Z_w^{(\ell)}} \label{eq:matrices_W_M_Sigma_Z}
+\end{equation}
+sehingga diperoleh penulisan ringkas matriks bobot tereparameterisasi pada layer $\ell$:
+\begin{equation}
+    W^{(\ell)} = M^{(\ell)} + \Sigma^{(\ell)} \odot Z_w^{(\ell)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell} \label{eq:matrix_W_reparam}
+\end{equation}
+
+% -------------------------------------------------------------------------
+\subsection{Forward Propagation}
+\label{subsec:forward_reparam}
+
+\subsubsection{Tinjau Satu Neuron}
+\label{subsubsec:forward_satu_neuron}
+
+\noindent Untuk neuron ke-$j$ pada layer $\ell$ ($j = 1, \dots, n_\ell$), komputasi terhadap data ke-$i$ ($i = 1, \dots, N$) dirumuskan sebagai:
+\begin{align}
+    z^{(\ell)}_{i, j} &= \sum_{k=1}^{n_{\ell-1}} x^{(\ell-1)}_{i, k} w^{(\ell)}_{k, j} + b^{(\ell)}_j = \sum_{k=1}^{n_{\ell-1}} x^{(\ell-1)}_{i, k} \left( \mu^{(\ell)}_{k, j} + \sigma^{(\ell)}_{k, j} z^{(\ell)}_{k, j} \right) + b^{(\ell)}_j \label{eq:forward_scalar_z} \\
+    x^{(\ell)}_{i, j} &= \sigma^{(\ell)}\!\left( z^{(\ell)}_{i, j} \right) \label{eq:forward_scalar_x}
+\end{align}
+
+\subsubsection{Tinjau Satu Data}
+\label{subsubsec:forward_satu_data}
+
+\noindent Didefinisikan data ke-$i$, $\mathbf{x}^{(\ell-1)}_i$, bias $\mathbf{b}^{(\ell)}$, dan $\mathbf{z}^{(\ell)}_i$ pada layer $\ell$:
+\begin{align}
+    \mathbf{x}^{(\ell-1)}_i &= \begin{bmatrix} x^{(\ell-1)}_{i, 1} & x^{(\ell-1)}_{i, 2} & \dots & x^{(\ell-1)}_{i, n_{\ell-1}} \end{bmatrix} \in \mathbb{R}^{1 \times n_{\ell-1}} \label{eq:single_data_vec_x} \\
+    \mathbf{b}^{(\ell)} &= \begin{bmatrix} b^{(\ell)}_1 & \dots & b^{(\ell)}_{n_\ell} \end{bmatrix} \in \mathbb{R}^{1 \times n_\ell}, \qquad
+    \mathbf{z}^{(\ell)}_i = \begin{bmatrix} z^{(\ell)}_{i, 1} & \dots & z^{(\ell)}_{i, n_\ell} \end{bmatrix} \in \mathbb{R}^{1 \times n_\ell} \label{eq:single_data_vecs}
+\end{align}
+Transformasi pada layer $\ell$ untuk data ke-$i$:
+\begin{align}
+    \underbrace{\mathbf{z}^{(\ell)}_i}_{(1 \times n_\ell)} &= \underbrace{\mathbf{x}^{(\ell-1)}_i}_{(1 \times n_{\ell-1})} \times \underbrace{W^{(\ell)}}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} = \underbrace{\mathbf{x}^{(\ell-1)}_i}_{(1 \times n_{\ell-1})} \times \underbrace{\left( M^{(\ell)} + \Sigma^{(\ell)} \odot Z_w^{(\ell)} \right)}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} \label{eq:single_data_z} \\
+    \underbrace{\mathbf{x}^{(\ell)}_i}_{(1 \times n_\ell)} &= \sigma^{(\ell)}\!\left( \mathbf{z}^{(\ell)}_i \right) \label{eq:single_data_layer}
+\end{align}
+
+\subsubsection{Tinjau \texorpdfstring{$N$}{N} Data}
+\label{subsubsec:forward_N_data}
+
+\noindent Diberikan matriks data input $X^{(\ell-1)} \in \mathbb{R}^{N \times n_{\ell-1}}$ dengan $X^{(0)} = X \in \mathbb{R}^{N \times D}$:
+\begin{equation}
+    X^{(\ell-1)} = \begin{bmatrix}
+        x^{(\ell-1)}_{1, 1} & x^{(\ell-1)}_{1, 2} & \dots & x^{(\ell-1)}_{1, n_{\ell-1}} \\
+        x^{(\ell-1)}_{2, 1} & x^{(\ell-1)}_{2, 2} & \dots & x^{(\ell-1)}_{2, n_{\ell-1}} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        x^{(\ell-1)}_{N, 1} & x^{(\ell-1)}_{N, 2} & \dots & x^{(\ell-1)}_{N, n_{\ell-1}}
+    \end{bmatrix} \in \mathbb{R}^{N \times n_{\ell-1}} \label{eq:matrix_batch_X_reparam}
+\end{equation}
+Operasi tingkat \textit{batch}:
+\begin{align}
+    \underbrace{Z^{(\ell)}}_{(N \times n_\ell)} &= \underbrace{X^{(\ell-1)}}_{(N \times n_{\ell-1})} \times \underbrace{W^{(\ell)}}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{1}_N}_{(N \times 1)} \times \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} = \underbrace{X^{(\ell-1)}}_{(N \times n_{\ell-1})} \times \underbrace{\left( M^{(\ell)} + \Sigma^{(\ell)} \odot Z_w^{(\ell)} \right)}_{(n_{\ell-1} \times n_\ell)} + \underbrace{\mathbf{1}_N}_{(N \times 1)} \times \underbrace{\mathbf{b}^{(\ell)}}_{(1 \times n_\ell)} \label{eq:batch_reparam_z} \\
+    \underbrace{X^{(\ell)}}_{(N \times n_\ell)} &= \sigma^{(\ell)}\!\left( Z^{(\ell)} \right) \label{eq:forward_hidden_reparam}
+\end{align}
+
+% -------------------------------------------------------------------------
+\subsection{Backward Propagation}
+\label{subsec:backprop_reparam}
+
+\subsubsection{Motivasi}
+\label{subsubsec:motivasi_reparam}
+
+\noindent Pada bobot berdistribusi, parameter yang diperbarui menggunakan \textit{Gradient Descent} dengan \textit{learning rate} $\eta > 0$ adalah parameter distribusi $M^{(\ell)}$, $\Sigma^{(\ell)}$, serta vektor bias $\mathbf{b}^{(\ell)}$:
+\begin{equation}
+    M^{(\ell)}_{n+1} = M^{(\ell)}_n - \eta \frac{\partial \mathcal{L}}{\partial M^{(\ell)}_n}, \qquad
+    \Sigma^{(\ell)}_{n+1} = \Sigma^{(\ell)}_n - \eta \frac{\partial \mathcal{L}}{\partial \Sigma^{(\ell)}_n}, \qquad
+    \mathbf{b}^{(\ell)}_{n+1} = \mathbf{b}^{(\ell)}_n - \eta \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(\ell)}_n} \label{eq:gd_update_reparam}
+\end{equation}
+dengan $n$ menyatakan indeks iterasi.
+
+% -------------------------------------------------------------------------
+\subsubsection{Turunan Parameter pada Layer Output (\texorpdfstring{$\ell = L$}{l = L})}
+\label{subsubsec:gradien_layer_L_reparam}
+
+\noindent Diberikan $\hat{Y}$ dan fungsi objektif $\mathcal{L}$:
+\begin{equation}
+    \hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)} \in \mathbb{R}^{N \times n_L}, \qquad
+    \mathcal{L} = \frac{1}{2N} \sum_{i=1}^N \sum_{j=1}^{n_L} \left( y_{i, j} - \hat{y}_{i, j} \right)^2 \label{eq:output_loss_reparam}
+\end{equation}
+
+\begin{claim}
+Turunan fungsi objektif $\mathcal{L}$ terhadap $\hat{Y} \in \mathbb{R}^{N \times n_L}$ adalah:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} \left( \hat{Y} - Y \right) \in \mathbb{R}^{N \times n_L} \label{eq:claim_dL_dYhat_reparam}
+\end{equation}
+\end{claim}
+\begin{proof}
+Turunan fungsi skalar $\mathcal{L}$ terhadap matriks $\hat{Y}$ didefinisikan sebagai:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \begin{bmatrix}
+        \frac{\partial \mathcal{L}}{\partial \hat{y}_{1, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{1, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{1, n_L}} \\
+        \frac{\partial \mathcal{L}}{\partial \hat{y}_{2, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{2, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{2, n_L}} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, 1}} & \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, 2}} & \dots & \frac{\partial \mathcal{L}}{\partial \hat{y}_{N, n_L}}
+    \end{bmatrix} \in \mathbb{R}^{N \times n_L}
+\end{equation}
+Dengan \textit{chain rule}, turunan terhadap setiap elemen $\hat{y}_{i, j}$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \hat{y}_{i, j}} = \frac{\partial \mathcal{L}}{\partial (y_{i, j} - \hat{y}_{i, j})} \frac{\partial (y_{i, j} - \hat{y}_{i, j})}{\partial \hat{y}_{i, j}} = \frac{1}{N} (y_{i, j} - \hat{y}_{i, j}) \cdot (-1) = \frac{1}{N} (\hat{y}_{i, j} - y_{i, j})
+\end{equation}
+Sehingga diperoleh $\frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} \left( \hat{Y} - Y \right)$.
+\end{proof}
+
+\begin{claim}
+Gradien fungsi objektif $\mathcal{L}$ terhadap matriks rata-rata bobot $M^{(L)} \in \mathbb{R}^{n_{L-1} \times n_L}$ adalah:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial M^{(L)}} = \frac{1}{N} \left( X^{(L-1)} \right)^T \left( \hat{Y} - Y \right) \in \mathbb{R}^{n_{L-1} \times n_L} \label{eq:grad_ML}
+\end{equation}
+\end{claim}
+\begin{proof}
+Dengan \textit{chain rule} terhadap $\hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)}$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial W^{(L)}} = \frac{\partial \mathcal{L}}{\partial \hat{Y}} \frac{\partial \hat{Y}}{\partial W^{(L)}} = \left( X^{(L-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} \left( X^{(L-1)} \right)^T \left( \hat{Y} - Y \right) \in \mathbb{R}^{n_{L-1} \times n_L} \label{eq:dL_dWL_reparam}
+\end{equation}
+Untuk setiap elemen $w^{(L)}_{k, j} = \mu^{(L)}_{k, j} + \sigma^{(L)}_{k, j} z^{(L)}_{k, j}$, dengan \textit{chain rule}:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \mu^{(L)}_{k, j}} = \frac{\partial \mathcal{L}}{\partial w^{(L)}_{k, j}} \frac{\partial w^{(L)}_{k, j}}{\partial \mu^{(L)}_{k, j}} = \frac{\partial \mathcal{L}}{\partial w^{(L)}_{k, j}} \cdot 1 = \frac{\partial \mathcal{L}}{\partial w^{(L)}_{k, j}}
+\end{equation}
+Menyusun seluruh elemen $(k, j)$ ke dalam bentuk matriks menghasilkan:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial M^{(L)}} = \frac{\partial \mathcal{L}}{\partial W^{(L)}} = \frac{1}{N} \left( X^{(L-1)} \right)^T \left( \hat{Y} - Y \right) \qedhere
+\end{equation}
+\end{proof}
+
+\begin{claim}
+Gradien fungsi objektif $\mathcal{L}$ terhadap matriks simpangan baku bobot $\Sigma^{(L)} \in \mathbb{R}^{n_{L-1} \times n_L}$ adalah:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \Sigma^{(L)}} = \left[ \frac{1}{N} \left( X^{(L-1)} \right)^T \left( \hat{Y} - Y \right) \right] \odot Z_w^{(L)} \in \mathbb{R}^{n_{L-1} \times n_L} \label{eq:grad_SigmaL}
+\end{equation}
+\end{claim}
+\begin{proof}
+Untuk setiap elemen $w^{(L)}_{k, j} = \mu^{(L)}_{k, j} + \sigma^{(L)}_{k, j} z^{(L)}_{k, j}$, dengan \textit{chain rule}:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \sigma^{(L)}_{k, j}} = \frac{\partial \mathcal{L}}{\partial w^{(L)}_{k, j}} \frac{\partial w^{(L)}_{k, j}}{\partial \sigma^{(L)}_{k, j}} = \frac{\partial \mathcal{L}}{\partial w^{(L)}_{k, j}} \cdot z^{(L)}_{k, j}
+\end{equation}
+Menyusun seluruh elemen $(k, j)$ ke dalam bentuk matriks menghasilkan:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \Sigma^{(L)}} = \frac{\partial \mathcal{L}}{\partial W^{(L)}} \odot Z_w^{(L)} = \left[ \frac{1}{N} \left( X^{(L-1)} \right)^T \left( \hat{Y} - Y \right) \right] \odot Z_w^{(L)} \qedhere
+\end{equation}
+\end{proof}
+
+\begin{claim}
+Gradien fungsi objektif $\mathcal{L}$ terhadap vektor bias $\mathbf{b}^{(L)} \in \mathbb{R}^{1 \times n_L}$ adalah:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L)}} = \frac{1}{N} \mathbf{1}_N^T \left( \hat{Y} - Y \right) \in \mathbb{R}^{1 \times n_L} \label{eq:grad_bL}
+\end{equation}
+\end{claim}
+\begin{proof}
+Dengan \textit{chain rule} terhadap $\hat{Y} = X^{(L-1)} W^{(L)} + \mathbf{1}_N \mathbf{b}^{(L)}$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L)}} = \frac{\partial \mathcal{L}}{\partial \hat{Y}} \frac{\partial \hat{Y}}{\partial \mathbf{b}^{(L)}} = \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \hat{Y}} = \frac{1}{N} \mathbf{1}_N^T \left( \hat{Y} - Y \right) \qedhere
+\end{equation}
+\end{proof}
+
+% -------------------------------------------------------------------------
+\clearpage
+\subsubsection{Turunan Parameter pada Layer \texorpdfstring{$\ell = L-1, \dots, 2, 1$}{l = L-1, ..., 2, 1}}
+\label{subsubsec:gradien_layer_hidden_reparam}
+
+\noindent Pada hidden layer $\ell \in \{L-1, \dots, 2, 1\}$, fungsi aktivasi $\sigma^{(\ell)}$ diterapkan terhadap bentuk matriks:
+\begin{equation}
+    X^{(\ell)} = \sigma^{(\ell)}\!\left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right), \qquad W^{(\ell)} = M^{(\ell)} + \Sigma^{(\ell)} \odot Z_w^{(\ell)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell}
+\end{equation}
+
+\noindent \textbf{\textit{Backward Propagation} pada Layer $\ell = L-1$}: \\
+\textit{Backward propagation} galat dari layer output ke fitur $X^{(L-1)}$:
+\begin{equation}
+    \frac{\partial \mathcal{L}}{\partial X^{(L-1)}} = \frac{\partial \mathcal{L}}{\partial \hat{Y}} \frac{\partial \hat{Y}}{\partial X^{(L-1)}} = \frac{1}{N} \left( \hat{Y} - Y \right) \left( W^{(L)} \right)^T \in \mathbb{R}^{N \times n_{L-1}} \label{eq:dL_dXLprev_reparam}
+\end{equation}
+Turunan terhadap $X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} &= \frac{\partial \mathcal{L}}{\partial X^{(L-1)}} \frac{\partial X^{(L-1)}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial X^{(L-1)}} \odot {\sigma^{(L-1)}}'\!\left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right) \in \mathbb{R}^{N \times n_{L-1}}
+\end{align}
+Gradien parameter $W^{(L-1)}$, $M^{(L-1)}$, $\Sigma^{(L-1)}$, dan $\mathbf{b}^{(L-1)}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial W^{(L-1)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \frac{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)}{\partial W^{(L-1)}} \nonumber \\
+    &= \left( X^{(L-2)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \in \mathbb{R}^{n_{L-2} \times n_{L-1}} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial M^{(L-1)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \frac{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)}{\partial W^{(L-1)}} \frac{\partial W^{(L-1)}}{\partial M^{(L-1)}} = \frac{\partial \mathcal{L}}{\partial W^{(L-1)}} \frac{\partial W^{(L-1)}}{\partial M^{(L-1)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial W^{(L-1)}} = \left( X^{(L-2)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \in \mathbb{R}^{n_{L-2} \times n_{L-1}} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial \Sigma^{(L-1)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \frac{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)}{\partial W^{(L-1)}} \frac{\partial W^{(L-1)}}{\partial \Sigma^{(L-1)}} = \frac{\partial \mathcal{L}}{\partial W^{(L-1)}} \frac{\partial W^{(L-1)}}{\partial \Sigma^{(L-1)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial W^{(L-1)}} \odot Z_w^{(L-1)} = \left[ \left( X^{(L-2)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \right] \odot Z_w^{(L-1)} \in \mathbb{R}^{n_{L-2} \times n_{L-1}} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L-1)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \frac{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)}{\partial \mathbf{b}^{(L-1)}} \nonumber \\
+    &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \in \mathbb{R}^{1 \times n_{L-1}}
+\end{align}
+\textit{Backward propagation} ke fitur layer $L-2$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial X^{(L-2)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \frac{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)}{\partial X^{(L-2)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-2)} W^{(L-1)} + \mathbf{1}_N \mathbf{b}^{(L-1)} \right)} \left( W^{(L-1)} \right)^T \in \mathbb{R}^{N \times n_{L-2}}
+\end{align}
+
+\noindent \textbf{\textit{Backward Propagation} pada Layer $\ell = L-2$}: \\
+Turunan terhadap $X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} &= \frac{\partial \mathcal{L}}{\partial X^{(L-2)}} \frac{\partial X^{(L-2)}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial X^{(L-2)}} \odot {\sigma^{(L-2)}}'\!\left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right) \in \mathbb{R}^{N \times n_{L-2}}
+\end{align}
+Gradien parameter $W^{(L-2)}$, $M^{(L-2)}$, $\Sigma^{(L-2)}$, dan $\mathbf{b}^{(L-2)}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial W^{(L-2)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \frac{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)}{\partial W^{(L-2)}} \nonumber \\
+    &= \left( X^{(L-3)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \in \mathbb{R}^{n_{L-3} \times n_{L-2}} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial M^{(L-2)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \frac{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)}{\partial W^{(L-2)}} \frac{\partial W^{(L-2)}}{\partial M^{(L-2)}} = \frac{\partial \mathcal{L}}{\partial W^{(L-2)}} \frac{\partial W^{(L-2)}}{\partial M^{(L-2)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial W^{(L-2)}} = \left( X^{(L-3)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \in \mathbb{R}^{n_{L-3} \times n_{L-2}} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial \Sigma^{(L-2)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \frac{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)}{\partial W^{(L-2)}} \frac{\partial W^{(L-2)}}{\partial \Sigma^{(L-2)}} = \frac{\partial \mathcal{L}}{\partial W^{(L-2)}} \frac{\partial W^{(L-2)}}{\partial \Sigma^{(L-2)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial W^{(L-2)}} \odot Z_w^{(L-2)} = \left[ \left( X^{(L-3)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \right] \odot Z_w^{(L-2)} \in \mathbb{R}^{n_{L-3} \times n_{L-2}} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(L-2)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \frac{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)}{\partial \mathbf{b}^{(L-2)}} \nonumber \\
+    &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \in \mathbb{R}^{1 \times n_{L-2}}
+\end{align}
+\textit{Backward propagation} ke fitur layer $L-3$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial X^{(L-3)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \frac{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)}{\partial X^{(L-3)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial \left( X^{(L-3)} W^{(L-2)} + \mathbf{1}_N \mathbf{b}^{(L-2)} \right)} \left( W^{(L-2)} \right)^T \in \mathbb{R}^{N \times n_{L-3}}
+\end{align}
+
+\noindent \textbf{\textit{Backward Propagation} Umum pada Hidden Layer ($\ell = L-1, \dots, 2, 1$)}: \\
+Secara umum, untuk setiap \textit{hidden layer} $\ell \in \{L-1, \dots, 2, 1\}$:
+\begin{align}
+    \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} &= \frac{\partial \mathcal{L}}{\partial X^{(\ell)}} \frac{\partial X^{(\ell)}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial X^{(\ell)}} \odot {\sigma^{(\ell)}}'\!\left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right) \in \mathbb{R}^{N \times n_\ell} \label{eq:reparam_dL_dpre} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial W^{(\ell)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \frac{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)}{\partial W^{(\ell)}} \nonumber \\
+    &= \left( X^{(\ell-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell} \label{eq:reparam_dL_dW_hidden} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial M^{(\ell)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \frac{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)}{\partial W^{(\ell)}} \frac{\partial W^{(\ell)}}{\partial M^{(\ell)}} = \frac{\partial \mathcal{L}}{\partial W^{(\ell)}} \frac{\partial W^{(\ell)}}{\partial M^{(\ell)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial W^{(\ell)}} = \left( X^{(\ell-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell} \label{eq:reparam_dL_dM_hidden} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial \Sigma^{(\ell)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \frac{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)}{\partial W^{(\ell)}} \frac{\partial W^{(\ell)}}{\partial \Sigma^{(\ell)}} = \frac{\partial \mathcal{L}}{\partial W^{(\ell)}} \frac{\partial W^{(\ell)}}{\partial \Sigma^{(\ell)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial W^{(\ell)}} \odot Z_w^{(\ell)} = \left[ \left( X^{(\ell-1)} \right)^T \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \right] \odot Z_w^{(\ell)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell} \label{eq:reparam_dL_dSigma_hidden} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial \mathbf{b}^{(\ell)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \frac{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)}{\partial \mathbf{b}^{(\ell)}} \nonumber \\
+    &= \mathbf{1}_N^T \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \in \mathbb{R}^{1 \times n_\ell} \label{eq:reparam_dL_db_hidden} \\[0.2em]
+    \frac{\partial \mathcal{L}}{\partial X^{(\ell-1)}} &= \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \frac{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)}{\partial X^{(\ell-1)}} \nonumber \\
+    &= \frac{\partial \mathcal{L}}{\partial \left( X^{(\ell-1)} W^{(\ell)} + \mathbf{1}_N \mathbf{b}^{(\ell)} \right)} \left( W^{(\ell)} \right)^T \in \mathbb{R}^{N \times n_{\ell-1}} \label{eq:reparam_dL_dXprev_hidden}
+\end{align}
+dengan kondisi batas input awal $X^{(0)} = X \in \mathbb{R}^{N \times D}$.
+
+\end{document}

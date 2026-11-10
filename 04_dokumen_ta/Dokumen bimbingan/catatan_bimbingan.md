@@ -201,10 +201,35 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
   3. **Penajaman Landasan Teori Sesuai Ruang Lingkup Spesifik**:
      - Mengarahkan pembahasan teoretis yang disusun agar selaras dengan spesifikasi penelitian tugas akhir saya ($y = f + \varepsilon$ dengan $f = X^T W$).
 * **Tindak Lanjut (To-Do)**:
-  - [ ] Menyusun draf dokumen Kredit Bimbingan #7 yang memuat penjabaran matematis DNN secara mendalam (operasi matriks per layer dan neuron).
-  - [ ] Menuliskan dan menurunkan rumus analitis *backpropagation* untuk kasus bobot deterministik ($w$ skalar).
+  - [x] Menyusun draf dokumen Kredit Bimbingan #8 yang memuat penjabaran matematis DNN secara mendalam (operasi matriks per layer dan neuron).
+  - [x] Menuliskan dan menurunkan rumus analitis *backpropagation* untuk kasus bobot deterministik ($w$ skalar).
   - [ ] Menuliskan penurunan dan eksplorasi *backpropagation* untuk kasus bobot yang berdistribusi probabilitas ($w$ stokastik/Gaussian).
   - [ ] Mematangkan formulasi model spesifik $y = f + \varepsilon$ dengan $f = X^T W$ sebagai fondasi menuju pembentukan kovariansi dan Deep GP.
 
+---
 
+### Pertemuan #9 - Selasa, 03 November 2026 (Offline)
+* **Anggota Kelompok Topik**: Saya & Nabila Azizah Andien (*Topik: Image Segmentation with Deep Gaussian Process*)
+* **Agenda**: Pemaparan Progres Masing-Masing (Dokumen Kredit #8), Arahan *Reparameterization Trick* untuk Backpropagation Bobot Berdistribusi, Simulasi Arsitektur 2-Layer, & Eksplorasi Fitur Citra
+* **Poin Pembahasan**:
+  - **Pemaparan Progres Masing-Masing Anggota**:
+    - Pada sesi bimbingan ini, saya dan Nabila Azizah Andien masing-masing mempresentasikan progres materi yang telah dipelajari sesuai fokus pembagian topik.
+  - **Presentasi Dokumen Kredit Bimbingan #8 (`kredit_bimbingan_08.pdf`)**:
+    - Memaparkan formulasi matematis arsitektur *Deep Neural Network* (DNN) secara berjenjang dan terstruktur: mulai dari komputasi tingkat satu neuron (skalar), tingkat satu sampel data (vektor baris $\mathbf{x}_i^{(\ell)} \in \mathbb{R}^{1 \times n_\ell}$), hingga tingkat *batch* untuk $N$ sampel data ($X^{(\ell)} \in \mathbb{R}^{N \times n_\ell}$), serta perumusan fungsi objektif *Mean Squared Error* (MSE) berbasis norma Frobenius.
+    - Memaparkan penurunan analitis *Backward Propagation* untuk kasus bobot deterministik ($w$ skalar), mencakup pembuktian turunan fungsi objektif terhadap matriks prediksi $\hat{Y}$, gradien bobot $W^{(L)}$ dan bias $\mathbf{b}^{(L)}$ pada *output layer*, hingga formulasi rekursif gradien pada *hidden layer* ($\ell = L-1, \dots, 2, 1$).
+* **Saran & Masukan Dosen Pembimbing**:
+  1. **Eksplorasi *Reparameterization* dalam *Deep Gaussian Learning* untuk Backpropagation Bobot Berdistribusi**:
+     - Membaca literatur mengenai teknik *reparameterization* (*reparameterization trick*) pada *Deep Gaussian Learning* sebagai solusi/ide untuk melakukan *backpropagation* apabila bobot $w$ merupakan variabel acak yang berdistribusi (misalnya berdistribusi Gaussian $w \sim \mathcal{N}(\mu, \sigma^2)$).
+     - Memanfaatkan hubungan transformasi variabel acak baku $z = \frac{w - \mu}{\sigma}$ (atau $w = \mu + \sigma z$ dengan $z \sim \mathcal{N}(0, 1)$) agar aliran gradien pada proses *backpropagation* dapat diturunkan secara terdiferensialkan terhadap parameter distribusi ($\mu$ dan $\sigma$).
+  2. **Simulasi Perhitungan Arsitektur 2-Layer Menggunakan Data Dummy**:
+     - Menyusun contoh perhitungan konkret (simulasi numerik *forward* dan *backward pass*) menggunakan arsitektur jaringan 2 *layer* dengan data *dummy* pada dua skenario:
+       1. Ketika bobot $w$ bernilai **skalar** (deterministik).
+       2. Ketika bobot $w$ **berdistribusi** (probabilistik/stokastik).
+  3. **Eksplorasi Representasi Fitur pada *Training* Citra (*Image*) dan Alternatifnya**:
+     - Mencari tahu dan merumuskan apa yang menjadi fitur input ($\mathbf{x}$) ketika melakukan *training* pada data gambar/citra, serta mengeksplorasi berbagai alternatif representasi fitur yang dapat digunakan (seperti intensitas warna piksel RGB/Grayscale/Lab, koordinat spasial piksel, fitur berbasis *patch*/ketetanggaan lokal, *superpixel*, maupun ekstraksi fitur tekstur/filter).
+* **Tindak Lanjut (To-Do)**:
+  - [ ] Membaca literatur dan merangkum konsep *reparameterization* dalam *Deep Gaussian Learning* ($z = \frac{w - \mu}{\sigma} \iff w = \mu + \sigma z$) untuk penurunan *backpropagation* pada bobot berdistribusi.
+  - [ ] Menurunkan persamaan *backpropagation* terhadap parameter distribusi bobot ($\mu$ dan $\sigma$) menggunakan teknik reparameterisasi.
+  - [ ] Membuat contoh perhitungan lengkap dengan arsitektur 2 *layer* menggunakan data *dummy* untuk kasus bobot $w$ skalar dan kasus bobot $w$ berdistribusi.
+  - [ ] Mengkaji dan menyusun penjelasan mengenai fitur-fitur yang digunakan saat melakukan *training* gambar (*image*) beserta berbagai alternatifnya.
 
