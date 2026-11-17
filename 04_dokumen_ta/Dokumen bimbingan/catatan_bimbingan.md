@@ -228,8 +228,41 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
   3. **Eksplorasi Representasi Fitur pada *Training* Citra (*Image*) dan Alternatifnya**:
      - Mencari tahu dan merumuskan apa yang menjadi fitur input ($\mathbf{x}$) ketika melakukan *training* pada data gambar/citra, serta mengeksplorasi berbagai alternatif representasi fitur yang dapat digunakan (seperti intensitas warna piksel RGB/Grayscale/Lab, koordinat spasial piksel, fitur berbasis *patch*/ketetanggaan lokal, *superpixel*, maupun ekstraksi fitur tekstur/filter).
 * **Tindak Lanjut (To-Do)**:
-  - [ ] Membaca literatur dan merangkum konsep *reparameterization* dalam *Deep Gaussian Learning* ($z = \frac{w - \mu}{\sigma} \iff w = \mu + \sigma z$) untuk penurunan *backpropagation* pada bobot berdistribusi.
-  - [ ] Menurunkan persamaan *backpropagation* terhadap parameter distribusi bobot ($\mu$ dan $\sigma$) menggunakan teknik reparameterisasi.
+  - [x] Membaca literatur dan merangkum konsep *reparameterization* dalam *Deep Gaussian Learning* ($z = \frac{w - \mu}{\sigma} \iff w = \mu + \sigma z$) untuk penurunan *backpropagation* pada bobot berdistribusi.
+  - [x] Menurunkan persamaan *backpropagation* terhadap parameter distribusi bobot ($\mu$ dan $\sigma$) menggunakan teknik reparameterisasi.
   - [ ] Membuat contoh perhitungan lengkap dengan arsitektur 2 *layer* menggunakan data *dummy* untuk kasus bobot $w$ skalar dan kasus bobot $w$ berdistribusi.
   - [ ] Mengkaji dan menyusun penjelasan mengenai fitur-fitur yang digunakan saat melakukan *training* gambar (*image*) beserta berbagai alternatifnya.
+
+---
+
+### Pertemuan #10 - Selasa, 10 November 2026 (Offline)
+* **Anggota Kelompok Topik**: Saya & Nabila Azizah Andien (*Topik: Image Segmentation with Deep Gaussian Process*)
+* **Agenda**: Pemaparan Dokumen Kredit Bimbingan #9 (*Reparameterization Trick* dan *Backpropagation* pada Bobot Berdistribusi), Evaluasi Penurunan Matematis, serta Pembahasan Rencana Simulasi Perhitungan Data *Dummy*
+* **Poin Pembahasan**:
+  - **Presentasi Dokumen Kredit Bimbingan #9 (`kredit_bimbingan_09.pdf`)**:
+    - Memaparkan konsep formal teknik *reparameterization* (*reparameterization trick*) pada bobot berdistribusi secara berjenjang:
+      - Tingkat satu bobot: $w^{(\ell)}_{k, j} \sim \mathcal{N}\!\left( \mu^{(\ell)}_{k, j}, \left(\sigma^{(\ell)}_{k, j}\right)^2 \right) \iff w^{(\ell)}_{k, j} = \mu^{(\ell)}_{k, j} + \sigma^{(\ell)}_{k, j} z^{(\ell)}_{k, j}$ dengan $z^{(\ell)}_{k, j} \sim \mathcal{N}(0, 1)$.
+      - Tingkat satu neuron: vektor bobot $\mathbf{w}^{(\ell)}_j \sim \mathcal{N}\!\left(\boldsymbol{\mu}^{(\ell)}_j, \Sigma^{(\ell)}_j\right)$ dengan kovariansi diagonal ekuivalen dengan perkalian elemen-demi-elemen $\boldsymbol{\mu}^{(\ell)}_j + \boldsymbol{\sigma}^{(\ell)}_j \odot \mathbf{z}^{(\ell)}_j$.
+      - Tingkat satu layer: matriks bobot $W^{(\ell)} = M^{(\ell)} + \Sigma^{(\ell)} \odot Z_w^{(\ell)} \in \mathbb{R}^{n_{\ell-1} \times n_\ell}$.
+    - Memaparkan *Forward Propagation* (tinjau satu neuron, satu data, dan tingkat *batch* $N$ data).
+    - Memaparkan penurunan analitis *Backward Propagation* berbasis aturan rantai (*chain rule*) dengan format *Claim--Proof* untuk parameter distribusi rata-rata bobot $M^{(\ell)}$, simpangan baku $\Sigma^{(\ell)}$, dan bias $\mathbf{b}^{(\ell)}$, baik pada *output layer* ($\ell = L$) maupun *hidden layer* ($\ell = L-1, \dots, 2, 1$).
+  - **Hasil & Evaluasi Bimbingan**:
+    - Sesi pemaparan materi berjalan dengan sangat lancar dan baik. Formulasi *reparameterization trick* serta alur penurunan *backpropagation* bobot berdistribusi dinilai sudah tepat dan runtut.
+  - **Arahan untuk Bimbingan Selanjutnya**:
+    - Melanjutkan ke tahap konkretisasi dengan memasukkan contoh perhitungan matematis/simulasi numerik (*toy example* / data *dummy*) pada arsitektur jaringan 2 *layer* untuk dua skenario pembanding:
+      1. Arsitektur 2 *layer* dengan bobot $w$ bernilai konstan/**skalar** (deterministik).
+      2. Arsitektur 2 *layer* dengan bobot $w$ **berdistribusi** (probabilistik menggunakan *reparameterization trick*).
+    - Memperlihatkan secara eksplisit bagaimana nilai angka-angka pada data *dummy* mengalir saat *forward pass* dan bagaimana nilai gradien dihitung saat *backward pass* pada kedua kasus tersebut.
+* **Saran & Masukan Dosen Pembimbing**:
+  1. **Penyusunan Contoh Perhitungan Numerik Arsitektur 2-Layer**:
+     - Menyiapkan contoh data *dummy* sederhana dengan dimensi kecil (misalnya $N$ data kecil, $D$ fitur kecil) agar alur komputasi matriks dapat diikuti dan diverifikasi dengan mudah langkah demi langkah.
+     - Menyajikan perbandingan berdampingan atau terstruktur antara kasus bobot deterministik ($w$ skalar) dan kasus bobot probabilistik ($w$ berdistribusi).
+  2. **Persiapan Eksplorasi Fitur Citra (*Image*)**:
+     - Tetap menyimpan agenda kajian fitur data citra untuk pembahasan bimbingan berikutnya setelah simulasi perhitungan data *dummy* tuntas.
+* **Tindak Lanjut (To-Do)**:
+  - [ ] Menyiapkan dokumen Kredit Bimbingan #10 (`kredit_bimbingan_10.tex`).
+  - [ ] Merancang skenario arsitektur 2 *layer* dan spesifikasi data *dummy* (dimensi input, jumlah neuron tersembunyi, inisialisasi bobot/parameter distribusi, serta data target).
+  - [ ] Menuliskan contoh perhitungan lengkap (*forward pass*, *loss*, dan *backward pass*) untuk kasus bobot $w$ skalar.
+  - [ ] Menuliskan contoh perhitungan lengkap (*forward pass*, *loss*, dan *backward pass*) untuk kasus bobot $w$ berdistribusi.
+
 
