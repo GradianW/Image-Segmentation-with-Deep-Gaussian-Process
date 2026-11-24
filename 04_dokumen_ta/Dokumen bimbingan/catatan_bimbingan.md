@@ -260,9 +260,35 @@ Dokumen ini digunakan untuk mencatat hasil diskusi, saran, revisi, dan tindak la
   2. **Persiapan Eksplorasi Fitur Citra (*Image*)**:
      - Tetap menyimpan agenda kajian fitur data citra untuk pembahasan bimbingan berikutnya setelah simulasi perhitungan data *dummy* tuntas.
 * **Tindak Lanjut (To-Do)**:
-  - [ ] Menyiapkan dokumen Kredit Bimbingan #10 (`kredit_bimbingan_10.tex`).
-  - [ ] Merancang skenario arsitektur 2 *layer* dan spesifikasi data *dummy* (dimensi input, jumlah neuron tersembunyi, inisialisasi bobot/parameter distribusi, serta data target).
-  - [ ] Menuliskan contoh perhitungan lengkap (*forward pass*, *loss*, dan *backward pass*) untuk kasus bobot $w$ skalar.
-  - [ ] Menuliskan contoh perhitungan lengkap (*forward pass*, *loss*, dan *backward pass*) untuk kasus bobot $w$ berdistribusi.
+  - [x] Menyiapkan dokumen Kredit Bimbingan #10 (`kredit_bimbingan_10.tex`).
+  - [x] Merancang skenario arsitektur 2 *layer* dan spesifikasi data *dummy* (dimensi input, jumlah neuron tersembunyi, inisialisasi bobot/parameter distribusi, serta data target).
+  - [x] Menuliskan contoh perhitungan lengkap (*forward pass*, *loss*, dan *backward pass*) untuk kasus bobot $w$ skalar.
+  - [x] Menuliskan contoh perhitungan lengkap (*forward pass*, *loss*, dan *backward pass*) untuk kasus bobot $w$ berdistribusi.
+
+---
+
+### Pertemuan #11 - Selasa, 17 November 2026 (Offline)
+* **Anggota Kelompok Topik**: Saya & Nabila Azizah Andien (*Topik: Image Segmentation with Deep Gaussian Process*)
+* **Agenda**: Pemaparan Dokumen Kredit Bimbingan #10 (Simulasi Numerik Arsitektur 2 *Hidden Layers* Bobot Skalar vs Bobot Berdistribusi), Arahan Evaluasi *Forward Pass* dengan *Generated* $Z \sim \mathcal{N}(0, 1)$ Sebanyak 1000 Sampel per Layer, serta Arahan Mulai Menulis Buku Skripsi (Bab 1–3)
+* **Poin Pembahasan**:
+  - **Presentasi Dokumen Kredit Bimbingan #10 (`kredit_bimbingan_10.pdf`)**:
+    - Memaparkan hasil simulasi perhitungan numerik pada arsitektur jaringan $3 \to 4 \to 6 \to \{1, 2\}$ (2 *hidden layers*) menggunakan $N = 5$ data *dummy* untuk skenario pemetaan $\mathbb{R}^3 \to \mathbb{R}^1$ dan $\mathbb{R}^3 \to \mathbb{R}^2$.
+    - Menampilkan perbandingan proses *forward propagation*, perhitungan *loss* MSE, dan *backward propagation* (pembaruan parameter) antara kasus bobot deterministik ($W$ skalar) dan kasus bobot probabilistik ($W$ berdistribusi dengan *reparameterization trick* $W^{(\ell)} = M^{(\ell)} + \Sigma^{(\ell)} \odot Z_w^{(\ell)}$).
+  - **Hasil & Evaluasi Bimbingan**:
+    - Sesi bimbingan berjalan dengan lancar.
+* **Saran & Masukan Dosen Pembimbing**:
+  1. **Penyimpanan Parameter Hasil *Training*, Evaluasi *Forward Pass* Stokastik (1000 Sampel $Z$), & Perhitungan Persentil untuk Pita Ketidakpastian (*Uncertainty Band*)**:
+     - Menyimpan nilai parameter hasil *training* pada model bobot berdistribusi, yaitu matriks rata-rata (*mean*) $M^{(\ell)}$, matriks simpangan baku (*standar deviasi*) $\Sigma^{(\ell)}$, dan vektor bias $\mathbf{b}^{(\ell)}$ untuk setiap layer.
+     - Menggunakan parameter terlatih ($M^{(\ell)}, \Sigma^{(\ell)}, \mathbf{b}^{(\ell)}$) tersebut untuk melakukan proses *forward pass* (inferensi/prediksi Monte Carlo) dengan membangkitkan nilai *generated* $Z_w^{(\ell)} \sim \mathcal{N}(0, 1)$ sebanyak **1000 kali** untuk setiap layer.
+     - Menghitung **persentil** (misalnya persentil bawah $P_{2.5}$ / $P_5$, median $P_{50}$ beserta rata-rata/*mean*, dan persentil atas $P_{97.5}$ / $P_{95}$) dari 1000 hasil nilai prediksi output $\left\{\hat{Y}^{(1)}, \hat{Y}^{(2)}, \dots, \hat{Y}^{(1000)}\right\}$ pada setiap titik data. Penggunaan persentil empiris ini bertujuan untuk membentuk batas bawah dan batas atas **pita ketidakpastian (*uncertainty band* / *confidence interval*)** pada grafik prediksi secara akurat (mengingat propagasi melewati fungsi aktivasi non-linier seperti Sigmoid/ReLU dapat membuat distribusi output tidak lagi simetris Gaussian, serta pada grafik bimbingan sebelumnya belum terdapat pita ketidakpastian).
+     - Menghitung dan mencatat berapa lama waktu komputasi (*execution/running time*) yang dibutuhkan untuk menjalankan proses *forward pass* 1000 sampel tersebut.
+  2. **Mulai Menyusun Buku Skripsi (Bab 1 sampai Bab 3)**:
+     - Mulai mencicil dan menuliskan naskah buku Tugas Akhir (skripsi) terlebih dahulu hingga **Bab 3** (Pendahuluan, Tinjauan Pustaka / Landasan Teori, dan Metodologi Penelitian) sembari melanjutkan eksperimen teknis.
+* **Tindak Lanjut (To-Do)**:
+  - [ ] Menyimpan parameter hasil *training* ($M^{(\ell)}$, $\Sigma^{(\ell)}$, dan $\mathbf{b}^{(\ell)}$) dari model bobot berdistribusi.
+  - [ ] Mengimplementasikan dan menjalankan *forward pass* menggunakan parameter terlatih dengan membangkitkan $Z_w^{(\ell)} \sim \mathcal{N}(0, 1)$ sebanyak 1000 sampel untuk setiap layer, menghitung persentil dari 1000 prediksi output untuk memvisualisasikan pita ketidakpastian (*uncertainty band*) pada grafik prediksi, serta mengukur waktu komputasi prosesnya.
+  - [ ] Menyiapkan dokumen Kredit Bimbingan #11 untuk melaporkan hasil eksperimen 1000 sampel *forward pass* (beserta tabel/grafik persentil pita ketidakpastian dan waktu komputasinya).
+  - [ ] Mulai menyusun draf buku skripsi dari Bab 1 hingga Bab 3.
+
 
 

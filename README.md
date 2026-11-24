@@ -41,8 +41,11 @@ TA/
 │   ├── checkpoints/                    # Bobot model terlatih (.pt, .pth, .ckpt)
 │   └── train.py                        # Script utama pelatihan & pengujian
 └── 04_dokumen_ta/                       # Dokumen pendukung TA
-    ├── referensi_paper/                # Jurnal, paper, dan referensi riset
-    └── catatan_bimbingan.md            # Log konsultasi & progres bimbingan TA
+    ├── buku_skripsi/                   # Naskah buku skripsi / laporan akhir TA
+    ├── Dokumen bimbingan/              # Dokumen kredit bimbingan & log konsultasi
+    │   └── catatan_bimbingan.md        # Log konsultasi & progres bimbingan TA
+    ├── Seminar TA/                     # Materi presentasi & aset gambar Seminar TA
+    └── referensi_paper/                # Jurnal, paper, dan referensi riset
 ```
 
 ---
@@ -50,4 +53,5 @@ TA/
 ## 💡 Panduan Penggunaan
 - Untuk **mempelajari teori dan eksplorasi**, buka folder `01_materi_belajar/`.
 - Ketika siap melakukan **kodifikasi sistem utama**, gunakan arsitektur modular di folder `03_proyek_ta/`.
-- Catat setiap hasil diskusi dosen pembimbing pada file `04_dokumen_ta/catatan_bimbingan.md`.
+- Catat setiap hasil diskusi dosen pembimbing pada file `04_dokumen_ta/Dokumen bimbingan/catatan_bimbingan.md`.
+- Untuk **menulis naskah buku skripsi**, gunakan folder `04_dokumen_ta/buku_skripsi/`.

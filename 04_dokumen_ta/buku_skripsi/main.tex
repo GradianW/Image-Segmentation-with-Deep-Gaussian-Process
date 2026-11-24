@@ -1,0 +1,357 @@
+% =========================================================================
+% TEMPLATE TUGAS AKHIR PROGRAM STUDI SARJANA MATEMATIKA FMIPA ITB
+% Sesuai Pedoman Penulisan Tugas Akhir - Januari 2017
+% =========================================================================
+
+\documentclass[12pt,a4paper,oneside]{book}
+
+% -------------------------------------------------------------------------
+% PAKET-PAKET UTAMA
+% -------------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}            % Huruf Times New Roman (Font 12)
+\usepackage[indonesian]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{setspace}         % Pengaturan spasi baris
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{caption}
+\usepackage{tocbibind}        % Memasukkan Daftar Pustaka ke Daftar Isi
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=false,         % Cetakan resmi hitam-putih
+    pdfborder={0 0 0},
+    pdfencoding=auto,
+    psdextra
+}
+
+% -------------------------------------------------------------------------
+% GEOMETRI HALAMAN (Bab III.2 & III.4 Pedoman ITB 2017)
+% 1 sisi (tebal < 1.5 cm): kiri = 4 cm, atas = 3 cm, kanan = 3 cm, bawah = 3 cm
+% Nomor halaman di tengah, 1.5 cm dari tepi bawah kertas (footskip)
+% -------------------------------------------------------------------------
+\usepackage{geometry}
+\geometry{
+    a4paper,
+    left=40mm,
+    top=30mm,
+    right=30mm,
+    bottom=30mm,
+    footskip=15mm
+}
+
+% Jarak baris 1.5 spasi (Bab III.2.3)
+\onehalfspacing
+
+% Penomoran halaman di bawah tengah
+\pagestyle{plain}
+
+% Kedalaman Daftar Isi: Hanya sampai tingkat Bab (tanpa subbab)
+\setcounter{tocdepth}{0}
+
+% -------------------------------------------------------------------------
+% PENGATURAN JUDUL BAB & FORMAT TEKS
+% Sesuai Bab V.1: Judul bab 14pt tebal, simetris/centered
+% -------------------------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\fontsize{14}{17}\bfseries\centering}
+  {\MakeUppercase{\chaptertitlename\ \Roman{chapter}}}
+  {0.5ex}
+  {\fontsize{14}{17}\bfseries}
+\titlespacing*{\chapter}{0pt}{-20pt}{25pt}
+
+\titleformat{\section}
+  {\normalfont\fontsize{12}{15}\bfseries}
+  {\thesection}
+  {1em}
+  {}
+
+\titleformat{\subsection}
+  {\normalfont\fontsize{12}{15}\bfseries}
+  {\thesubsection}
+  {1em}
+  {}
+
+% Format penomoran subbab: II.1, II.2 (Roman.Arab)
+\renewcommand{\thechapter}{\Roman{chapter}}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+
+% Format caption tabel & gambar: Nomor bab Arab diikuti nomor urut (contoh: Tabel 2.1)
+\renewcommand{\thetable}{\arabic{chapter}.\arabic{table}}
+\renewcommand{\thefigure}{\arabic{chapter}.\arabic{figure}}
+
+% Penyesuaian kata bahasa Indonesia
+\addto\captionsindonesian{%
+  \renewcommand{\chaptername}{Bab}%
+  \renewcommand{\contentsname}{DAFTAR ISI}%
+  \renewcommand{\listfigurename}{DAFTAR GAMBAR DAN ILUSTRASI}%
+  \renewcommand{\listtablename}{DAFTAR TABEL}%
+  \renewcommand{\bibname}{DAFTAR PUSTAKA}%
+  \renewcommand{\appendixname}{LAMPIRAN}%
+}
+
+% Lingkungan teorema matematika
+\newtheorem{teorema}{Teorema}[chapter]
+\newtheorem{definisi}{Definisi}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{contoh}{Contoh}[chapter]
+
+% =========================================================================
+% DOKUMEN UTAMA
+% =========================================================================
+\begin{document}
+
+% -------------------------------------------------------------------------
+% 1. SAMPUL LUAR / SAMPUL DALAM (Lampiran A)
+% Tanpa nomor halaman
+% -------------------------------------------------------------------------
+\begin{titlepage}
+    \centering
+    \vspace*{0.5cm}
+    {\fontsize{14}{17}\bfseries SEGMENTASI GAMBAR DENGAN DNN DENGAN BOBOT BERDISTRIBUSI NORMAL\par}
+    
+    \vspace{2.0cm}
+    {\fontsize{14}{17}\bfseries TUGAS AKHIR\par}
+    \vspace{0.6cm}
+    {\fontsize{12}{15} Karya tulis sebagai salah satu syarat\\
+    untuk memperoleh gelar Sarjana dari\\
+    Institut Teknologi Bandung\par}
+    
+    \vspace{1.5cm}
+    {\fontsize{12}{15}\bfseries Oleh\par}
+    \vspace{0.3cm}
+    {\fontsize{14}{17}\bfseries GULIT RADIAN WIYARNO\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries NIM: 10123033\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries (Program Studi Sarjana Matematika)\par}
+    
+    \vspace{1.5cm}
+    \includegraphics[width=3.0cm]{figures/logo-itb-hitam.jpg}\par
+    
+    \vfill
+    {\fontsize{14}{17}\bfseries INSTITUT TEKNOLOGI BANDUNG\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries Juni 2027\par}
+    \vspace*{0.5cm}
+\end{titlepage}
+
+% -------------------------------------------------------------------------
+% BAGIAN PERSIAPAN TUGAS AKHIR (Bab II.4 & III.3)
+% Penomoran halaman angka Romawi kecil (i, ii, iii, ...)
+% -------------------------------------------------------------------------
+\frontmatter
+\pagenumbering{roman}
+
+% -------------------------------------------------------------------------
+% 2. HALAMAN PENGESAHAN (Lampiran D)
+% -------------------------------------------------------------------------
+\newpage
+\thispagestyle{plain}
+\begin{center}
+    \vspace*{0.5cm}
+    {\fontsize{14}{17}\bfseries SEGMENTASI GAMBAR DENGAN DNN DENGAN BOBOT BERDISTRIBUSI NORMAL\par}
+    
+    \vspace{2.5cm}
+    {\fontsize{12}{15} Oleh\par}
+    \vspace{0.3cm}
+    {\fontsize{12}{15}\bfseries Gulit Radian Wiyarno\par}
+    \vspace{0.2cm}
+    {\fontsize{12}{15}\bfseries NIM: 10123033\par}
+    \vspace{0.2cm}
+    {\fontsize{12}{15}(Program Studi Sarjana Matematika)\par}
+    
+    \vspace{0.8cm}
+    {\fontsize{12}{15} Institut Teknologi Bandung\par}
+    
+    \vspace{1.5cm}
+    {\fontsize{12}{15} Menyetujui\\
+    Tim Pembimbing\par}
+    
+    \vspace{0.4cm}
+    {\fontsize{12}{15} Tanggal .....................................\par}
+    
+    \vspace{1.5cm}
+    \noindent
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\fontsize{12}{15} Pembimbing Pertama\par}
+        \vspace{2.0cm}
+        \underline{\hspace{5.5cm}}\par
+        \vspace{0.2cm}
+        {\fontsize{11}{14}\bfseries Prof. Sapto Wahyu Indratno, S.Si., M.Sc., Ph.D.\par}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\fontsize{12}{15} Pembimbing Kedua\par}
+        \vspace{2.0cm}
+        \underline{\hspace{5.5cm}}\par
+        \vspace{0.2cm}
+        {\fontsize{11}{14}\bfseries Maharani Ahsani Ummi, S.Si., M.Si., M.Sc., Ph.D.\par}
+    \end{minipage}\par
+\end{center}
+
+% -------------------------------------------------------------------------
+% 3. HALAMAN PERUNTUKAN / PERSEMBAHAN (Opsional, Bab IV.3 - dinonaktifkan)
+% -------------------------------------------------------------------------
+% \newpage
+% \thispagestyle{plain}
+% \vspace*{6cm}
+% \begin{flushright}
+%     \textit{Kupersembahkan karya tulis ini untuk...}
+% \end{flushright}
+
+% -------------------------------------------------------------------------
+% 4. ABSTRAK (BAHASA INDONESIA) (Bab II.2 & Lampiran B)
+% -------------------------------------------------------------------------
+\newpage
+\thispagestyle{plain}
+\begin{center}
+    {\fontsize{14}{17}\bfseries ABSTRAK\par}
+    \vspace{1.0cm}
+    {\fontsize{14}{17}\bfseries SEGMENTASI GAMBAR DENGAN DNN DENGAN BOBOT BERDISTRIBUSI NORMAL\par}
+    \vspace{0.8cm}
+    {\fontsize{12}{15} Oleh\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries Gulit Radian Wiyarno\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries NIM: 10123033\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries (Program Studi Sarjana Matematika)\par}
+\end{center}
+
+\vspace{1.0cm}
+\noindent
+Abstrak Tugas Akhir memuat secara komprehensif permasalahan penelitian yang akan dilaksanakan dengan menjelaskan masalah ilmiah yang telah diteliti. Abstrak Tugas Akhir mencakup latar belakang, permasalahan yang dikaji, tahapan, tujuan, metode yang digunakan, ulasan singkat, serta penjelasan hasil dan kesimpulan yang diperoleh dalam penelitian. Abstrak terdiri atas 500 -- 800 kata dan di dalam abstrak tidak boleh ada rujukan referensi (tidak boleh ada hasil kajian dari referensi).
+
+\vspace{0.8cm}
+\noindent
+\textbf{Kata kunci:} kata kunci 1, kata kunci 2, kata kunci 3.
+
+% -------------------------------------------------------------------------
+% 5. ABSTRACT (BAHASA INGGRIS) (Bab II.3)
+% -------------------------------------------------------------------------
+\newpage
+\thispagestyle{plain}
+\begin{center}
+    {\fontsize{14}{17}\bfseries ABSTRACT\par}
+    \vspace{1.0cm}
+    {\fontsize{14}{17}\bfseries IMAGE SEGMENTATION USING DNN WITH NORMALLY DISTRIBUTED WEIGHTS\par}
+    \vspace{0.8cm}
+    {\fontsize{12}{15} By\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries Gulit Radian Wiyarno\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries NIM: 10123033\par}
+    \vspace{0.2cm}
+    {\fontsize{14}{17}\bfseries (Undergraduate Program in Mathematics)\par}
+\end{center}
+
+\vspace{1.0cm}
+\noindent
+\textit{The abstract comprehensively contains the research problems, objectives, methods, stages of research, concise discussion, and results/conclusions obtained. Written in 500 -- 800 words without literature citations.}
+
+\vspace{0.8cm}
+\noindent
+\textit{\textbf{Keywords:} keyword 1, keyword 2, keyword 3.}
+
+% -------------------------------------------------------------------------
+% 6. KATA PENGANTAR (Bab IV.4)
+% -------------------------------------------------------------------------
+\newpage
+\thispagestyle{plain}
+\begin{center}
+    {\fontsize{14}{17}\bfseries KATA PENGANTAR\par}
+\end{center}
+\vspace{0.8cm}
+
+Puji dan syukur penulis panjatkan ke hadirat Tuhan Yang Maha Esa atas segala rahmat dan karunia-Nya sehingga Tugas Akhir ini dapat diselesaikan. Tugas Akhir ini disusun sebagai salah satu syarat untuk memperoleh gelar Sarjana dari Institut Teknologi Bandung.
+
+% Tuliskan ucapan terima kasih kepada pihak-pihak terkait di sini saat naskah siap.
+
+\vspace{1.5cm}
+\begin{flushright}
+    Bandung, Juni 2027\\[1.8cm]
+    \underline{\hspace{5cm}}\\[0.2cm]
+    Gulit Radian Wiyarno\\
+    NIM: 10123033
+\end{flushright}
+
+% -------------------------------------------------------------------------
+% 7. DAFTAR ISI, DAFTAR GAMBAR, DAFTAR TABEL (Bab IV.5 & IV.6)
+% Jarak baris satu spasi (Bab IV.5)
+% -------------------------------------------------------------------------
+\newpage
+\begin{singlespace}
+    \tableofcontents
+\end{singlespace}
+
+\newpage
+\begin{singlespace}
+    \listoffigures
+\end{singlespace}
+
+\newpage
+\begin{singlespace}
+    \listoftables
+\end{singlespace}
+
+% -------------------------------------------------------------------------
+% TUBUH UTAMA TUGAS AKHIR (Bab II.5, III.3, & V)
+% Penomoran angka Arab (1, 2, 3, ...)
+% -------------------------------------------------------------------------
+\mainmatter
+\pagenumbering{arabic}
+
+\include{bab/bab1_pendahuluan}
+\include{bab/bab2_tinjauan_pustaka}
+\include{bab/bab3_metodologi}
+\include{bab/bab4_hasil_pembahasan}
+\include{bab/bab5_kesimpulan}
+
+% -------------------------------------------------------------------------
+% DAFTAR PUSTAKA (Bab II.6 & Lampiran E)
+% Menggunakan satu spasi per entri
+% -------------------------------------------------------------------------
+\newpage
+\begin{singlespace}
+    \bibliographystyle{apalike}
+    \bibliography{references}
+\end{singlespace}
+
+% -------------------------------------------------------------------------
+% LAMPIRAN (Bab II.7)
+% Didahului halaman pemisah bertuliskan LAMPIRAN di tengah halaman
+% Nomor halaman kelanjutan angka Arab dari tubuh utama
+% -------------------------------------------------------------------------
+\newpage
+\thispagestyle{plain}
+\vspace*{\fill}
+\begin{center}
+    {\fontsize{14}{17}\bfseries LAMPIRAN}
+\end{center}
+\vspace*{\fill}
+
+\appendix
+% Penomoran lampiran: Lampiran A, B, C, dst.
+\titleformat{\chapter}[display]
+  {\normalfont\fontsize{14}{17}\bfseries\centering}
+  {\MakeUppercase{\appendixname\ \Alph{chapter}}}
+  {0.5ex}
+  {\fontsize{14}{17}\bfseries}
+
+\renewcommand{\thechapter}{\Alph{chapter}}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\renewcommand{\thetable}{\Alph{chapter}.\arabic{table}}
+\renewcommand{\thefigure}{\Alph{chapter}.\arabic{figure}}
+
+\include{lampiran/lampiran_A}
+
+\end{document}
